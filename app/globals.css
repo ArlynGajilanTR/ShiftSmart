@@ -1,5 +1,51 @@
 @import "tailwindcss";
 
+/* Reuters Branding - Knowledge2017 Font */
+@font-face {
+  font-family: 'Knowledge2017';
+  src: url('/fonts/Knowledge2017-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Knowledge2017';
+  src: url('/fonts/Knowledge2017-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Knowledge2017';
+  src: url('/fonts/Knowledge2017-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Reuters Brand Colors */
+  --reuters-orange: #FF6600;
+  --reuters-orange-dark: #E65C00;
+  --reuters-gray-50: #F8F9FA;
+  --reuters-gray-100: #E9ECEF;
+  --reuters-gray-200: #DEE2E6;
+  --reuters-gray-300: #CED4DA;
+  --reuters-gray-400: #ADB5BD;
+  --reuters-gray-500: #6C757D;
+  --reuters-gray-600: #495057;
+  --reuters-gray-700: #343A40;
+  --reuters-gray-800: #212529;
+}
+
+body {
+  font-family: 'Knowledge2017', system-ui, -apple-system, sans-serif;
+  background: white;
+  color: var(--reuters-gray-800);
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

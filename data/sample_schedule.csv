@@ -1,0 +1,14 @@
+date,start_time,end_time,staff_name,staff_email,role,bureau
+2025-11-01,09:00,17:00,Sarah Johnson,sarah.johnson@example.com,senior,Main Bureau
+2025-11-01,09:00,17:00,Mike Chen,mike.chen@example.com,junior,Main Bureau
+2025-11-01,17:00,01:00,Emily Rodriguez,emily.rodriguez@example.com,lead,Main Bureau
+2025-11-01,17:00,01:00,David Kim,david.kim@example.com,junior,Main Bureau
+2025-11-02,09:00,17:00,Sarah Johnson,sarah.johnson@example.com,senior,Main Bureau
+2025-11-02,09:00,17:00,Alex Turner,alex.turner@example.com,support,Main Bureau
+2025-11-02,17:00,01:00,Emily Rodriguez,emily.rodriguez@example.com,lead,Main Bureau
+2025-11-02,17:00,01:00,Mike Chen,mike.chen@example.com,junior,Main Bureau
+2025-11-03,09:00,17:00,Jennifer Lopez,jennifer.lopez@example.com,senior,Main Bureau
+2025-11-03,09:00,17:00,David Kim,david.kim@example.com,junior,Main Bureau
+2025-11-03,17:00,01:00,Sarah Johnson,sarah.johnson@example.com,senior,Main Bureau
+2025-11-03,17:00,01:00,Alex Turner,alex.turner@example.com,support,Main Bureau
+
