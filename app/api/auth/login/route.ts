@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@supabase/supabase-js';
 import { verifyPassword, generateSessionToken, getSessionExpiration } from '@/lib/auth/password';
 
 export async function POST(request: NextRequest) {
@@ -13,7 +13,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
+    // Use service role key to bypass RLS for login (needs to read password_hash before auth)
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    );
 
     // Find user by email
     const { data: user, error: userError } = await supabase

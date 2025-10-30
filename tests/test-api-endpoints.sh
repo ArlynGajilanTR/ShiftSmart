@@ -87,10 +87,10 @@ response=$(curl -s -X POST "$API_URL/api/auth/login" \
     -H "Content-Type: application/json" \
     -d "{\"email\":\"$TEST_EMAIL\",\"password\":\"$TEST_PASSWORD\"}")
 
-if echo "$response" | grep -q "token"; then
+if echo "$response" | grep -q "access_token"; then
     echo -e "${GREEN}✅ PASS${NC}: Login successful"
     PASSED=$((PASSED + 1))
-    AUTH_TOKEN=$(echo "$response" | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+    AUTH_TOKEN=$(echo "$response" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
     echo "   Token obtained: ${AUTH_TOKEN:0:20}..."
 else
     echo -e "${RED}❌ FAIL${NC}: Login failed"
@@ -117,7 +117,7 @@ echo "Re-authenticating for remaining tests..."
 response=$(curl -s -X POST "$API_URL/api/auth/login" \
     -H "Content-Type: application/json" \
     -d "{\"email\":\"$TEST_EMAIL\",\"password\":\"$TEST_PASSWORD\"}")
-AUTH_TOKEN=$(echo "$response" | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+AUTH_TOKEN=$(echo "$response" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
 echo ""
 
 echo "=== Phase 2: Employee Tests (7 tests) ==="
