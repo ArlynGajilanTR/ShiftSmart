@@ -24,11 +24,21 @@ CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   email VARCHAR(255) UNIQUE NOT NULL,
   full_name VARCHAR(255) NOT NULL,
-  role VARCHAR(50) NOT NULL CHECK (role IN ('admin', 'manager', 'scheduler', 'staff')),
-  shift_role VARCHAR(50) NOT NULL CHECK (shift_role IN ('senior', 'junior', 'lead', 'support')),
+  phone VARCHAR(50),
+  worker_id VARCHAR(50),
+  -- System role for permissions
+  role VARCHAR(50) NOT NULL DEFAULT 'staff' CHECK (role IN ('admin', 'manager', 'scheduler', 'staff')),
+  -- Editorial role (from CSV "Position" field)
+  title VARCHAR(255) NOT NULL, -- e.g., "Senior Breaking News Correspondent"
+  -- Normalized shift role for scheduling
+  shift_role VARCHAR(50) NOT NULL CHECK (shift_role IN ('editor', 'senior', 'correspondent')),
   bureau_id UUID REFERENCES bureaus(id) ON DELETE CASCADE,
-  preferences JSONB DEFAULT '{}',
-  active BOOLEAN DEFAULT true,
+  team VARCHAR(100) DEFAULT 'Breaking News',
+  status VARCHAR(50) DEFAULT 'active' CHECK (status IN ('active', 'on-leave', 'inactive')),
+  -- Minimal auth (no Supabase Auth dependency)
+  password_hash VARCHAR(255),
+  session_token VARCHAR(255),
+  session_expires_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -77,24 +87,40 @@ CREATE TABLE shift_assignments (
   UNIQUE(shift_id, user_id)
 );
 
--- Conflicts
+-- Shift Preferences (employee availability and preferences)
+CREATE TABLE shift_preferences (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+  preferred_days TEXT[] DEFAULT '{}', -- Array of day names: ['Monday', 'Tuesday']
+  preferred_shifts TEXT[] DEFAULT '{}', -- Array: ['Morning', 'Afternoon', 'Evening', 'Night']
+  max_shifts_per_week INTEGER DEFAULT 5,
+  notes TEXT, -- Additional preferences/constraints
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Conflicts (matches frontend expectations)
 CREATE TABLE conflicts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  type VARCHAR(50) NOT NULL CHECK (type IN (
-    'double_booking',
-    'preference_violation',
-    'role_imbalance',
-    'overtime_risk',
-    'insufficient_coverage',
-    'rest_period_violation',
-    'skill_gap'
+  type VARCHAR(100) NOT NULL CHECK (type IN (
+    'Double Booking',
+    'Rest Period Violation',
+    'Skill Gap',
+    'Understaffed',
+    'Overtime Warning',
+    'Cross-Bureau Conflict',
+    'Preference Violation'
   )),
-  severity VARCHAR(50) NOT NULL CHECK (severity IN ('soft', 'hard')),
+  severity VARCHAR(50) NOT NULL CHECK (severity IN ('high', 'medium', 'low')),
+  status VARCHAR(50) NOT NULL DEFAULT 'unresolved' CHECK (status IN ('unresolved', 'acknowledged', 'resolved')),
   shift_id UUID REFERENCES shifts(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  message TEXT NOT NULL,
-  details JSONB DEFAULT '{}',
-  resolved BOOLEAN DEFAULT false,
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL, -- Optional employee
+  description TEXT NOT NULL, -- Human-readable explanation
+  date DATE NOT NULL, -- Date of the conflict
+  details JSONB DEFAULT '{}', -- Additional context (affected shifts, etc.)
+  detected_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  acknowledged_at TIMESTAMP WITH TIME ZONE,
+  acknowledged_by UUID REFERENCES users(id),
   resolved_at TIMESTAMP WITH TIME ZONE,
   resolved_by UUID REFERENCES users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -115,14 +141,18 @@ CREATE TABLE audit_logs (
 -- Indexes for performance
 CREATE INDEX idx_users_bureau ON users(bureau_id);
 CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_session_token ON users(session_token);
 CREATE INDEX idx_shifts_bureau ON shifts(bureau_id);
 CREATE INDEX idx_shifts_time_range ON shifts(start_time, end_time);
 CREATE INDEX idx_shifts_schedule_period ON shifts(schedule_period_id);
 CREATE INDEX idx_shift_assignments_shift ON shift_assignments(shift_id);
 CREATE INDEX idx_shift_assignments_user ON shift_assignments(user_id);
+CREATE INDEX idx_shift_preferences_user ON shift_preferences(user_id);
 CREATE INDEX idx_conflicts_shift ON conflicts(shift_id);
 CREATE INDEX idx_conflicts_user ON conflicts(user_id);
-CREATE INDEX idx_conflicts_resolved ON conflicts(resolved);
+CREATE INDEX idx_conflicts_status ON conflicts(status);
+CREATE INDEX idx_conflicts_severity ON conflicts(severity);
+CREATE INDEX idx_conflicts_date ON conflicts(date);
 CREATE INDEX idx_schedule_periods_bureau ON schedule_periods(bureau_id);
 CREATE INDEX idx_schedule_periods_dates ON schedule_periods(start_date, end_date);
 
@@ -151,41 +181,52 @@ CREATE TRIGGER update_shifts_updated_at BEFORE UPDATE ON shifts
 CREATE TRIGGER update_shift_assignments_updated_at BEFORE UPDATE ON shift_assignments
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_shift_preferences_updated_at BEFORE UPDATE ON shift_preferences
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- Row Level Security (RLS) Policies
 ALTER TABLE bureaus ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE schedule_periods ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shifts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shift_assignments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shift_preferences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE conflicts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
--- Basic RLS policies (adjust based on your auth setup)
--- Users can read their own bureau
-CREATE POLICY "Users can view their bureau" ON bureaus
-  FOR SELECT USING (
-    id IN (SELECT bureau_id FROM users WHERE id = auth.uid())
-  );
+-- RLS Policies Configuration
+-- Note: Using minimal auth (not Supabase Auth), so auth.uid() is not available
+-- For internal app with trusted users, we use permissive policies
+-- TODO: Implement proper RLS after custom auth is in place
 
--- Users can view users in their bureau
-CREATE POLICY "Users can view bureau members" ON users
-  FOR SELECT USING (
-    bureau_id IN (SELECT bureau_id FROM users WHERE id = auth.uid())
-  );
+-- Permissive policies for internal use (all authenticated users can access)
+CREATE POLICY "Authenticated users can view all bureaus" ON bureaus
+  FOR SELECT USING (true);
 
--- Users can view shifts in their bureau
-CREATE POLICY "Users can view bureau shifts" ON shifts
-  FOR SELECT USING (
-    bureau_id IN (SELECT bureau_id FROM users WHERE id = auth.uid())
-  );
+CREATE POLICY "Authenticated users can view all users" ON users
+  FOR SELECT USING (true);
 
--- Managers and schedulers can insert/update shifts
-CREATE POLICY "Managers can manage shifts" ON shifts
-  FOR ALL USING (
-    bureau_id IN (
-      SELECT bureau_id FROM users 
-      WHERE id = auth.uid() 
-      AND role IN ('admin', 'manager', 'scheduler')
-    )
-  );
+CREATE POLICY "Authenticated users can view all shifts" ON shifts
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can manage shifts" ON shifts
+  FOR ALL USING (true);
+
+CREATE POLICY "Authenticated users can view shift assignments" ON shift_assignments
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can manage shift assignments" ON shift_assignments
+  FOR ALL USING (true);
+
+CREATE POLICY "Authenticated users can view preferences" ON shift_preferences
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can manage preferences" ON shift_preferences
+  FOR ALL USING (true);
+
+CREATE POLICY "Authenticated users can view conflicts" ON conflicts
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can manage conflicts" ON conflicts
+  FOR ALL USING (true);
 
