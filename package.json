@@ -1,7 +1,21 @@
 {
-  "name": "shiftsmart-v1",
-  "version": "0.1.0",
+  "name": "shiftsmart-api",
+  "version": "1.0.0",
   "private": true,
+  "description": "Backend API for Reuters Breaking News shift scheduling system",
+  "author": "Reuters Breaking News Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArlynGajilanTR/ShiftSmart.git"
+  },
+  "keywords": [
+    "shift-scheduling",
+    "reuters",
+    "breaking-news",
+    "api",
+    "supabase",
+    "ai-scheduling"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

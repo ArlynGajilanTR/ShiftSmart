@@ -217,5 +217,27 @@ npm run lint
 
 ---
 
-**Version:** 1.0.0  
+## Version
+
+**Current Version:** 1.0.0  
+**Release Date:** October 30, 2025  
+**Status:** Production Ready
+
+See [CHANGELOG.md](./CHANGELOG.md) for version history and [API_REFERENCE.md](./API_REFERENCE.md) for detailed API documentation.
+
+---
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+---
+
+**Maintained by:** Reuters Breaking News Team  
 **Last Updated:** October 30, 2025

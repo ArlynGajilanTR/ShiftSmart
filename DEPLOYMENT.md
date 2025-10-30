@@ -1,5 +1,8 @@
 # ShiftSmart API - Deployment Guide
 
+**Version:** 1.0.0  
+**Last Updated:** October 30, 2025
+
 Complete guide for setting up database, deploying API, and connecting frontend.
 
 ---
@@ -69,9 +72,11 @@ In Vercel Project Settings → Environment Variables:
 NEXT_PUBLIC_SUPABASE_URL=https://kkqiknndofddjugbdefa.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+ANTHROPIC_API_KEY=sk-ant-your-key-here  # Required for AI scheduling features
 ```
 
-Get these from: Supabase Dashboard → Project Settings → API
+Get Supabase keys from: Supabase Dashboard → Project Settings → API  
+Get Anthropic key from: https://console.anthropic.com/
 
 **2.3 Deploy**
 
@@ -421,6 +426,38 @@ module.exports = {
 
 ---
 
-**Status:** Phase 2 Ready  
-**Next:** Phase 3 - AI Scheduling Implementation
+## Version Information
+
+**Current Version:** 1.0.0  
+**Release Date:** October 30, 2025  
+**Status:** Production Ready
+
+### What's Included in v1.0.0
+
+- ✅ Complete REST API (24 endpoints)
+- ✅ Authentication system (minimal, portable)
+- ✅ Real employee data (15 Breaking News staff)
+- ✅ Shift management with drag-and-drop
+- ✅ Conflict detection and resolution
+- ✅ AI-powered scheduling (Claude Sonnet 4.5)
+- ✅ Dashboard statistics
+- ✅ Employee preferences
+
+### Version History
+
+See [CHANGELOG.md](./CHANGELOG.md) for detailed version history.
+
+---
+
+## Additional Resources
+
+- **API Documentation:** See [API_REFERENCE.md](./API_REFERENCE.md)
+- **Contributing Guide:** See [CONTRIBUTING.md](./CONTRIBUTING.md)
+- **Security Policy:** See [SECURITY.md](./SECURITY.md)
+- **GitHub Repository:** https://github.com/ArlynGajilanTR/ShiftSmart
+
+---
+
+**Maintained by:** Reuters Breaking News Team  
+**Last Updated:** October 30, 2025
 
