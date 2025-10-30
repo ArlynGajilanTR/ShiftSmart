@@ -8,7 +8,7 @@ import { verifyAuth } from '@/lib/auth/verify';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -21,12 +21,13 @@ export async function GET(
     }
 
     const supabase = createClient();
+    const { id } = await params;
 
     // Get employee
     const { data: employee, error } = await supabase
       .from('users')
       .select('*, bureaus(name, code)')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error || !employee) {
@@ -40,7 +41,7 @@ export async function GET(
     const { data: preferences } = await supabase
       .from('shift_preferences')
       .select('*')
-      .eq('user_id', params.id)
+      .eq('user_id', id)
       .single();
 
     // Calculate shifts this month
@@ -51,7 +52,7 @@ export async function GET(
     const { data: shifts } = await supabase
       .from('shift_assignments')
       .select('shifts!inner(start_time)')
-      .eq('user_id', params.id)
+      .eq('user_id', id)
       .gte('shifts.start_time', monthStart.toISOString())
       .lte('shifts.start_time', monthEnd.toISOString())
       .eq('status', 'confirmed');
@@ -96,7 +97,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -112,12 +113,13 @@ export async function PUT(
     const { name, email, phone, role, bureau, status } = body;
 
     const supabase = createClient();
+    const { id } = await params;
 
     // Check if employee exists
     const { data: existingEmployee } = await supabase
       .from('users')
       .select('id, email')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!existingEmployee) {
@@ -188,7 +190,7 @@ export async function PUT(
     const { data: updatedEmployee, error: updateError } = await supabase
       .from('users')
       .update(updates)
-      .eq('id', params.id)
+      .eq('id', id)
       .select('*, bureaus(name)')
       .single();
 
@@ -233,7 +235,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -246,12 +248,13 @@ export async function DELETE(
     }
 
     const supabase = createClient();
+    const { id } = await params;
 
     // Check if employee exists
     const { data: existingEmployee } = await supabase
       .from('users')
       .select('id')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!existingEmployee) {
@@ -265,7 +268,7 @@ export async function DELETE(
     const { error: deleteError } = await supabase
       .from('users')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (deleteError) {
       console.error('Error deleting employee:', deleteError);

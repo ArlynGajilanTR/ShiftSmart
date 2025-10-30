@@ -9,7 +9,7 @@ import { verifyAuth } from '@/lib/auth/verify';
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -32,12 +32,13 @@ export async function PATCH(
     }
 
     const supabase = createClient();
+    const { id } = await params;
 
     // Check if conflict exists
     const { data: existingConflict } = await supabase
       .from('conflicts')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!existingConflict) {
@@ -66,7 +67,7 @@ export async function PATCH(
     const { data: updatedConflict, error: updateError } = await supabase
       .from('conflicts')
       .update(updates)
-      .eq('id', params.id)
+      .eq('id', id)
       .select('*, users(full_name)')
       .single();
 
@@ -110,7 +111,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -123,12 +124,13 @@ export async function DELETE(
     }
 
     const supabase = createClient();
+    const { id } = await params;
 
     // Check if conflict exists
     const { data: existingConflict } = await supabase
       .from('conflicts')
       .select('id')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!existingConflict) {
@@ -142,7 +144,7 @@ export async function DELETE(
     const { error: deleteError } = await supabase
       .from('conflicts')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (deleteError) {
       console.error('Error deleting conflict:', deleteError);

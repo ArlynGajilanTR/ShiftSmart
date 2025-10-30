@@ -9,7 +9,7 @@ import { format } from 'date-fns';
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -25,12 +25,13 @@ export async function PUT(
     const { employee_id, bureau, date, start_time, end_time, status } = body;
 
     const supabase = createClient();
+    const { id } = await params;
 
     // Check if shift exists
     const { data: existingShift } = await supabase
       .from('shifts')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!existingShift) {
@@ -75,7 +76,7 @@ export async function PUT(
     const { data: updatedShift, error: updateError } = await supabase
       .from('shifts')
       .update(updates)
-      .eq('id', params.id)
+      .eq('id', id)
       .select('*, bureaus(name)')
       .single();
 
@@ -93,7 +94,7 @@ export async function PUT(
       const { data: existingAssignment } = await supabase
         .from('shift_assignments')
         .select('*')
-        .eq('shift_id', params.id)
+        .eq('shift_id', id)
         .maybeSingle();
 
       if (employee_id === null && existingAssignment) {
@@ -107,7 +108,7 @@ export async function PUT(
         await supabase
           .from('shift_assignments')
           .insert({
-            shift_id: params.id,
+            shift_id: id,
             user_id: employee_id,
             status: status === 'confirmed' ? 'confirmed' : 'assigned',
             assigned_by: user.id,
@@ -128,7 +129,7 @@ export async function PUT(
     const { data: assignment } = await supabase
       .from('shift_assignments')
       .select('*, users(full_name, title, shift_role)')
-      .eq('shift_id', params.id)
+      .eq('shift_id', id)
       .maybeSingle();
 
     // Format response
@@ -162,7 +163,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -175,12 +176,13 @@ export async function DELETE(
     }
 
     const supabase = createClient();
+    const { id } = await params;
 
     // Check if shift exists
     const { data: existingShift } = await supabase
       .from('shifts')
       .select('id')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!existingShift) {
@@ -194,7 +196,7 @@ export async function DELETE(
     const { error: deleteError } = await supabase
       .from('shifts')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (deleteError) {
       console.error('Error deleting shift:', deleteError);
@@ -223,7 +225,7 @@ export async function DELETE(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -246,12 +248,13 @@ export async function PATCH(
     }
 
     const supabase = createClient();
+    const { id } = await params;
 
     // Check if shift exists
     const { data: existingShift } = await supabase
       .from('shifts')
       .select('*, bureaus(name)')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!existingShift) {
@@ -275,7 +278,7 @@ export async function PATCH(
         start_time: `${date}T${newStartTime}:00`,
         end_time: `${date}T${newEndTime}:00`,
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select('*, bureaus(name)')
       .single();
 
@@ -294,7 +297,7 @@ export async function PATCH(
     const { data: assignment } = await supabase
       .from('shift_assignments')
       .select('*, users(full_name, title, shift_role)')
-      .eq('shift_id', params.id)
+      .eq('shift_id', id)
       .maybeSingle();
 
     // Format response

@@ -72,13 +72,13 @@ export default function Home() {
       }}>
         <p style={{ margin: 0, fontSize: '0.9rem' }}>
           <strong>Note:</strong> All endpoints except authentication require a Bearer token in the Authorization header.
-        </p>
-      </div>
+          </p>
+        </div>
 
       <div style={{ marginTop: '30px', color: '#999', fontSize: '0.85rem' }}>
         <p>Frontend: <a href="https://github.com/ArlynGajilanTR/v0-shift-smart-frontend-development" style={{ color: '#FF6600' }}>V0 Vercel Frontend</a></p>
         <p>Version: 1.0.0</p>
-      </div>
+        </div>
     </div>
   );
 }

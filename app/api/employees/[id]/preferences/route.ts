@@ -8,7 +8,7 @@ import { verifyAuth } from '@/lib/auth/verify';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -21,12 +21,13 @@ export async function GET(
     }
 
     const supabase = createClient();
+    const { id } = await params;
 
     // Check if employee exists
     const { data: employee } = await supabase
       .from('users')
       .select('id')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!employee) {
@@ -40,7 +41,7 @@ export async function GET(
     const { data: preferences, error } = await supabase
       .from('shift_preferences')
       .select('*')
-      .eq('user_id', params.id)
+      .eq('user_id', id)
       .single();
 
     if (error && error.code !== 'PGRST116') { // Not found is ok
@@ -53,7 +54,7 @@ export async function GET(
 
     // Format response
     const response = {
-      employee_id: params.id,
+      employee_id: id,
       preferred_days: preferences?.preferred_days || [],
       preferred_shifts: preferences?.preferred_shifts || [],
       max_shifts_per_week: preferences?.max_shifts_per_week || 5,
@@ -76,7 +77,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -92,12 +93,13 @@ export async function PUT(
     const { preferred_days, preferred_shifts, max_shifts_per_week, notes } = body;
 
     const supabase = createClient();
+    const { id } = await params;
 
     // Check if employee exists
     const { data: employee } = await supabase
       .from('users')
       .select('id')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!employee) {
@@ -111,12 +113,12 @@ export async function PUT(
     const { data: existingPrefs } = await supabase
       .from('shift_preferences')
       .select('id')
-      .eq('user_id', params.id)
+      .eq('user_id', id)
       .single();
 
     // Build update/insert object
     const prefsData: any = {
-      user_id: params.id,
+      user_id: id,
     };
 
     if (preferred_days !== undefined) prefsData.preferred_days = preferred_days;
@@ -130,7 +132,7 @@ export async function PUT(
       const { data, error: updateError } = await supabase
         .from('shift_preferences')
         .update(prefsData)
-        .eq('user_id', params.id)
+        .eq('user_id', id)
         .select()
         .single();
 
@@ -162,7 +164,7 @@ export async function PUT(
 
     // Format response
     const response = {
-      employee_id: params.id,
+      employee_id: id,
       preferred_days: updatedPrefs.preferred_days || [],
       preferred_shifts: updatedPrefs.preferred_shifts || [],
       max_shifts_per_week: updatedPrefs.max_shifts_per_week || 5,
