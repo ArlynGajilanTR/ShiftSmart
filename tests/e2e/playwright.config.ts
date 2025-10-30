@@ -13,10 +13,12 @@ export default defineConfig({
   ],
   
   use: {
-    baseURL: process.env.FRONTEND_URL || 'http://localhost:3001',
+    baseURL: process.env.FRONTEND_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
   },
 
   projects: [
@@ -35,9 +37,10 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'cd ../../v0-frontend && npm run dev',
-    url: 'http://localhost:3001',
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
+    timeout: 120000,
   },
 });
 

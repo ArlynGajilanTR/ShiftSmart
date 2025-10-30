@@ -20,7 +20,12 @@
     "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "playwright test --config=tests/e2e/playwright.config.ts",
+    "test:headed": "playwright test --config=tests/e2e/playwright.config.ts --headed",
+    "test:debug": "playwright test --config=tests/e2e/playwright.config.ts --debug",
+    "test:ui": "playwright test --config=tests/e2e/playwright.config.ts --ui",
+    "test:report": "playwright show-report"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.68.0",
@@ -59,6 +64,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22",

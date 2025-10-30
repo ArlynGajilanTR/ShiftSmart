@@ -26,12 +26,14 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Edit, Trash2, Copy, Filter, ChevronLeft, ChevronRight, GripVertical } from "lucide-react"
+import { Plus, Edit, Trash2, Copy, Filter, ChevronLeft, ChevronRight, GripVertical, Sparkles } from "lucide-react"
 import {
   format,
   addDays,
@@ -225,6 +227,20 @@ export default function SchedulePage() {
   const [currentQuarter, setCurrentQuarter] = useState(new Date())
   const [activeShift, setActiveShift] = useState<any>(null)
 
+  // AI Schedule Generation state
+  const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+  const [generatedSchedule, setGeneratedSchedule] = useState<any>(null)
+  const [generationConfig, setGenerationConfig] = useState({
+    start_date: format(startOfMonth(new Date()), "yyyy-MM-dd"),
+    end_date: format(endOfMonth(new Date()), "yyyy-MM-dd"),
+    type: "month" as "week" | "month" | "quarter",
+    bureau: "both" as "Milan" | "Rome" | "both",
+    preserve_existing: false,
+  })
+
   // Fetch shifts from API
   useEffect(() => {
     async function fetchShifts() {
@@ -262,6 +278,117 @@ export default function SchedulePage() {
 
     fetchShifts()
   }, [toast])
+
+  // Refetch shifts from API
+  const refetchShifts = async () => {
+    try {
+      const response = await api.shifts.list({
+        start_date: format(addDays(new Date(), -30), "yyyy-MM-dd"),
+        end_date: format(addDays(new Date(), 60), "yyyy-MM-dd"),
+      })
+      
+      const shiftData = response.shifts.map((shift: any) => ({
+        id: shift.id,
+        employee: shift.users?.full_name || "Unassigned",
+        role: shift.users?.title || shift.users?.shift_role || "Unknown",
+        bureau: shift.bureaus?.name || "Milan",
+        date: new Date(shift.start_time),
+        startTime: format(new Date(shift.start_time), "HH:mm"),
+        endTime: format(new Date(shift.end_time), "HH:mm"),
+        status: shift.status || "pending",
+      }))
+      
+      setShifts(shiftData)
+    } catch (error: any) {
+      console.error("Failed to fetch shifts:", error)
+    }
+  }
+
+  // Handle AI schedule generation
+  const handleGenerateSchedule = async () => {
+    setIsGenerating(true)
+    try {
+      const response = await api.ai.generateSchedule({
+        start_date: generationConfig.start_date,
+        end_date: generationConfig.end_date,
+        type: generationConfig.type,
+        bureau: generationConfig.bureau,
+        preserve_existing: generationConfig.preserve_existing,
+        save_to_database: false, // Preview mode
+      })
+
+      setGeneratedSchedule(response.schedule)
+      setShowPreview(true)
+      toast({
+        title: "Schedule generated successfully",
+        description: `Generated ${response.schedule.shifts.length} shifts`,
+      })
+    } catch (error: any) {
+      console.error("Failed to generate schedule:", error)
+      
+      // Handle specific error messages
+      let errorMessage = error.message || "Failed to generate schedule"
+      if (error.message?.includes("not configured")) {
+        errorMessage = "AI scheduling is not configured. Please contact administrator."
+      } else if (error.message?.includes("No employees found")) {
+        errorMessage = "No available employees for the selected bureau and date range."
+      }
+      
+      toast({
+        title: "Generation failed",
+        description: errorMessage,
+        variant: "destructive",
+      })
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  // Handle saving generated schedule to database
+  const handleSaveSchedule = async () => {
+    setIsSaving(true)
+    try {
+      const response = await api.ai.generateSchedule({
+        start_date: generationConfig.start_date,
+        end_date: generationConfig.end_date,
+        type: generationConfig.type,
+        bureau: generationConfig.bureau,
+        preserve_existing: generationConfig.preserve_existing,
+        save_to_database: true, // Save mode
+      })
+
+      toast({
+        title: "Schedule saved successfully",
+        description: `Successfully added ${response.shift_ids?.length || 0} shifts to calendar`,
+      })
+
+      // Close dialog and reset state
+      setIsGenerateDialogOpen(false)
+      setShowPreview(false)
+      setGeneratedSchedule(null)
+
+      // Refresh the calendar
+      await refetchShifts()
+    } catch (error: any) {
+      console.error("Failed to save schedule:", error)
+      toast({
+        title: "Failed to save schedule",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  // Reset dialog state when closing
+  const handleCloseGenerateDialog = () => {
+    setIsGenerateDialogOpen(false)
+    setShowPreview(false)
+    setGeneratedSchedule(null)
+    setIsGenerating(false)
+    setIsSaving(false)
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
