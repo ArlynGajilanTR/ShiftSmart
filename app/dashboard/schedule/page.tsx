@@ -315,7 +315,7 @@ export default function SchedulePage() {
         bureau: generationConfig.bureau,
         preserve_existing: generationConfig.preserve_existing,
         save_to_database: false, // Preview mode
-      })
+      }) as any
 
       setGeneratedSchedule(response.schedule)
       setShowPreview(true)
@@ -355,7 +355,7 @@ export default function SchedulePage() {
         bureau: generationConfig.bureau,
         preserve_existing: generationConfig.preserve_existing,
         save_to_database: true, // Save mode
-      })
+      }) as any
 
       toast({
         title: "Schedule saved successfully",
