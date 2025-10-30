@@ -53,7 +53,7 @@ BEGIN
     milan_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'  -- Default password: "changeme"
+    '$2a$10$default.hash.for.demo.purposes.only'  -- Default password: "changeme"
   ) ON CONFLICT (email) DO NOTHING;
 
   -- 2. Sabina Suzzi - Senior Breaking News Correspondent
@@ -68,7 +68,7 @@ BEGIN
     milan_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- Add preference: Unavailable Tuesday
@@ -89,7 +89,7 @@ BEGIN
     milan_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- 4. Alessia Pe' - Breaking News Correspondent
@@ -104,7 +104,7 @@ BEGIN
     milan_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- Add preference: Unavailable Monday and Tuesday
@@ -125,7 +125,7 @@ BEGIN
     milan_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- 6. Claudia Cristoferi - Breaking News Correspondent
@@ -140,7 +140,7 @@ BEGIN
     milan_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- Add preference: Unavailable Wednesday every two weeks (stored as note for Phase 2 enhancement)
@@ -161,7 +161,7 @@ BEGIN
     milan_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- Add preference: Unavailable Thursday and Friday
@@ -182,7 +182,7 @@ BEGIN
     milan_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- ============================================================================
@@ -202,7 +202,7 @@ BEGIN
     'Breaking News',
     'active',
     'manager',  -- Editor gets manager role for permissions
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- 10. Alvise Armellini - Senior Correspondent
@@ -217,7 +217,7 @@ BEGIN
     rome_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- 11. Giulia Segreti - Senior Breaking News Correspondent
@@ -232,7 +232,7 @@ BEGIN
     rome_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- 12. Stefano Bernabei - Senior Breaking News Correspondent
@@ -247,7 +247,7 @@ BEGIN
     rome_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- 13. Antonella Cinelli - Breaking News Correspondent
@@ -262,7 +262,7 @@ BEGIN
     rome_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- 14. Francesca Piscioneri - Breaking News Correspondent
@@ -277,7 +277,7 @@ BEGIN
     rome_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   -- 15. Valentina Consiglio - Breaking News Correspondent
@@ -292,7 +292,7 @@ BEGIN
     rome_bureau_id,
     'Breaking News',
     'active',
-    '$2b$10$sXLEZXajOIjN3m8SZMDHkuWzqa72yIve5J07FjgubcSXoVn1eOrJS'
+    '$2a$10$default.hash.for.demo.purposes.only'
   ) ON CONFLICT (email) DO NOTHING;
 
   RAISE NOTICE 'Successfully seeded 15 Breaking News team members (8 Milan, 7 Rome)';
