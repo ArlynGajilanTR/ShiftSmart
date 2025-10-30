@@ -421,7 +421,7 @@ export default function ConflictsPage() {
                       {conflict.shifts && (
                         <div className="space-y-1">
                           <span className="text-sm text-muted-foreground">Affected Shifts:</span>
-                          {conflict.shifts.map((shift, idx) => (
+                          {conflict.shifts.map((shift: any, idx: number) => (
                             <div key={idx} className="text-sm bg-muted/50 rounded p-2">
                               {shift.date && <span className="font-medium">{shift.date}: </span>}
                               {shift.time} - {shift.bureau}
