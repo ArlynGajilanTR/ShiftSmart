@@ -350,7 +350,7 @@ export default function DashboardPage() {
                     <div
                       key={shift.id}
                       className="bg-[#FF6600] text-white rounded px-1 py-0.5 text-xs truncate font-medium hover:bg-[#e55a00] transition-colors cursor-pointer"
-                      title={`${shift.employee} - ${shift.time}`}
+                      title={`${shift.employee} - ${shift.startTime} to ${shift.endTime}`}
                     >
                       {shift.employee.split(" ")[0]}
                     </div>
