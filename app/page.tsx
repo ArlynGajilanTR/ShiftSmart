@@ -56,6 +56,13 @@ export default function Home() {
         <li><code>GET /api/dashboard/stats</code> - Get statistics</li>
       </ul>
 
+      <h3 style={{ fontSize: '1.2rem', marginTop: '20px', marginBottom: '10px' }}>AI Scheduling (Claude Sonnet 4.5)</h3>
+      <ul style={{ marginBottom: '20px', lineHeight: '1.8' }}>
+        <li><code>POST /api/ai/generate-schedule</code> - Generate AI-powered schedule</li>
+        <li><code>POST /api/ai/resolve-conflict</code> - Get AI conflict resolution suggestions</li>
+        <li><code>GET /api/ai/status</code> - Check AI configuration</li>
+      </ul>
+
       <div style={{ 
         marginTop: '40px', 
         padding: '20px', 

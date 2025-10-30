@@ -67,6 +67,11 @@ shiftsmart-v1/
 ### Dashboard (1 endpoint)
 - `GET /api/dashboard/stats` - Aggregated statistics
 
+### AI Scheduling (3 endpoints) - Claude Sonnet 4.5
+- `POST /api/ai/generate-schedule` - Generate AI-powered schedule
+- `POST /api/ai/resolve-conflict` - Get AI suggestions for conflict resolution
+- `GET /api/ai/status` - Check AI configuration status
+
 ## Setup
 
 1. **Install dependencies:**
@@ -84,6 +89,7 @@ Edit `.env.local`:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+ANTHROPIC_API_KEY=your_anthropic_key  # Optional: For AI scheduling features
 ```
 
 3. **Run database migrations:**
