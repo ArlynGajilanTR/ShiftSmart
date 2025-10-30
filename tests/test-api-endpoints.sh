@@ -210,9 +210,39 @@ echo ""
 # Test 22: Check AI status
 run_test "Check AI status" "GET" "/api/ai/status" "" "200" "true"
 
-# Test 23-24: AI generation tests
-echo "Tests 23-24: AI schedule generation..."
-echo -e "${YELLOW}⚠️  SKIP${NC}: AI tests (require ANTHROPIC_API_KEY)"
+# Test 23: AI schedule generation
+if [ -z "$ANTHROPIC_API_KEY" ]; then
+    # Try to load from .env.local
+    if [ -f "../.env.local" ]; then
+        export $(grep ANTHROPIC_API_KEY ../.env.local | xargs)
+    fi
+fi
+
+if [ -n "$ANTHROPIC_API_KEY" ]; then
+    echo "Test 23: AI schedule generation..."
+    response=$(curl -s -X POST "$API_URL/api/ai/generate-schedule" \
+        -H "Authorization: Bearer $AUTH_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "bureau": "Milan",
+            "start_date": "2025-11-03",
+            "end_date": "2025-11-09",
+            "constraints": {"min_senior_per_shift": 1}
+        }')
+    
+    if echo "$response" | grep -q '"success":true'; then
+        echo -e "${GREEN}✅ PASS${NC}: AI schedule generation"
+        PASSED=$((PASSED + 1))
+    else
+        echo -e "${RED}❌ FAIL${NC}: AI schedule generation"
+        echo "   Response: ${response:0:200}"
+        FAILED=$((FAILED + 1))
+        FAILURES+=("AI schedule generation")
+    fi
+    TOTAL=$((TOTAL + 1))
+else
+    echo -e "${YELLOW}⚠️  SKIP${NC}: AI tests (ANTHROPIC_API_KEY not set)"
+fi
 echo ""
 
 echo "=========================================="
