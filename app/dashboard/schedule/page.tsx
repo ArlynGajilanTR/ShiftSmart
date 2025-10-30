@@ -487,6 +487,10 @@ export default function SchedulePage() {
               <Filter className="mr-2 h-4 w-4" />
               Filter
             </Button>
+            <Button variant="outline" onClick={() => setIsGenerateDialogOpen(true)}>
+              <Sparkles className="mr-2 h-4 w-4" />
+              Generate Schedule
+            </Button>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
@@ -504,6 +508,287 @@ export default function SchedulePage() {
             </Dialog>
           </div>
         </div>
+
+        {/* AI Schedule Generation Dialog */}
+        <Dialog open={isGenerateDialogOpen} onOpenChange={handleCloseGenerateDialog}>
+          <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {showPreview ? "Review Generated Schedule" : "Generate AI Schedule"}
+              </DialogTitle>
+              <DialogDescription>
+                {showPreview
+                  ? "Review the AI-generated schedule and approve to save it to the calendar"
+                  : "Configure parameters for AI-powered schedule generation"}
+              </DialogDescription>
+            </DialogHeader>
+
+            {!showPreview ? (
+              // Configuration Form
+              <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="start_date">Start Date</Label>
+                    <Input
+                      id="start_date"
+                      type="date"
+                      value={generationConfig.start_date}
+                      onChange={(e) =>
+                        setGenerationConfig({ ...generationConfig, start_date: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="end_date">End Date</Label>
+                    <Input
+                      id="end_date"
+                      type="date"
+                      value={generationConfig.end_date}
+                      onChange={(e) =>
+                        setGenerationConfig({ ...generationConfig, end_date: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="period_type">Period Type</Label>
+                  <Select
+                    value={generationConfig.type}
+                    onValueChange={(value: "week" | "month" | "quarter") =>
+                      setGenerationConfig({ ...generationConfig, type: value })
+                    }
+                  >
+                    <SelectTrigger id="period_type">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="week">Week</SelectItem>
+                      <SelectItem value="month">Month</SelectItem>
+                      <SelectItem value="quarter">Quarter</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="bureau">Bureau</Label>
+                  <Select
+                    value={generationConfig.bureau}
+                    onValueChange={(value: "Milan" | "Rome" | "both") =>
+                      setGenerationConfig({ ...generationConfig, bureau: value })
+                    }
+                  >
+                    <SelectTrigger id="bureau">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="both">Both Bureaus</SelectItem>
+                      <SelectItem value="Milan">Milan Only</SelectItem>
+                      <SelectItem value="Rome">Rome Only</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="preserve_existing"
+                    checked={generationConfig.preserve_existing}
+                    onCheckedChange={(checked) =>
+                      setGenerationConfig({ ...generationConfig, preserve_existing: checked as boolean })
+                    }
+                  />
+                  <Label htmlFor="preserve_existing" className="cursor-pointer">
+                    Keep existing shifts and fill gaps only
+                  </Label>
+                </div>
+
+                <Alert>
+                  <Sparkles className="h-4 w-4" />
+                  <AlertTitle>AI-Powered Scheduling</AlertTitle>
+                  <AlertDescription>
+                    Claude Sonnet 4.5 will analyze employee preferences, recent shift history, and
+                    Italian holidays to generate a fair and compliant schedule.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button variant="outline" onClick={handleCloseGenerateDialog} disabled={isGenerating}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleGenerateSchedule} disabled={isGenerating}>
+                    {isGenerating ? (
+                      <>
+                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-foreground" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Generate Preview
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              // Preview Display
+              <div className="space-y-4 py-4">
+                {generatedSchedule && (
+                  <>
+                    {/* Summary Cards */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <Card>
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm">Total Shifts</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-2xl font-bold">{generatedSchedule.shifts.length}</div>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm">Preference Satisfaction</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-2xl font-bold">
+                            {Math.round(
+                              (generatedSchedule.fairness_metrics.preference_satisfaction_rate || 0) * 100
+                            )}
+                            %
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Fairness Metrics */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Fairness Metrics</CardTitle>
+                        <CardDescription>Distribution of shifts across the team</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <h4 className="text-sm font-medium mb-2">Weekend Shifts per Person</h4>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            {Object.entries(generatedSchedule.fairness_metrics.weekend_shifts_per_person || {})
+                              .slice(0, 6)
+                              .map(([name, count]) => (
+                                <div key={name} className="flex justify-between">
+                                  <span className="text-muted-foreground">{name}</span>
+                                  <Badge variant="secondary">{count as number}</Badge>
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="text-sm font-medium mb-2">Night Shifts per Person</h4>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            {Object.entries(generatedSchedule.fairness_metrics.night_shifts_per_person || {})
+                              .slice(0, 6)
+                              .map(([name, count]) => (
+                                <div key={name} className="flex justify-between">
+                                  <span className="text-muted-foreground">{name}</span>
+                                  <Badge variant="secondary">{count as number}</Badge>
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+
+                        {generatedSchedule.fairness_metrics.hard_constraint_violations?.length > 0 && (
+                          <Alert variant="destructive">
+                            <AlertTitle>Constraint Violations</AlertTitle>
+                            <AlertDescription>
+                              {generatedSchedule.fairness_metrics.hard_constraint_violations.join(", ")}
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* AI Recommendations */}
+                    {generatedSchedule.recommendations && generatedSchedule.recommendations.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>AI Recommendations</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <ul className="space-y-2">
+                            {generatedSchedule.recommendations.map((rec: string, idx: number) => (
+                              <li key={idx} className="text-sm flex gap-2">
+                                <span className="text-primary">•</span>
+                                <span>{rec}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Shifts Preview */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Generated Shifts Preview</CardTitle>
+                        <CardDescription>
+                          Showing {Math.min(10, generatedSchedule.shifts.length)} of{" "}
+                          {generatedSchedule.shifts.length} shifts
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Date</TableHead>
+                              <TableHead>Employee</TableHead>
+                              <TableHead>Time</TableHead>
+                              <TableHead>Bureau</TableHead>
+                              <TableHead>Type</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {generatedSchedule.shifts.slice(0, 10).map((shift: any, idx: number) => (
+                              <TableRow key={idx}>
+                                <TableCell>{shift.date}</TableCell>
+                                <TableCell className="font-medium">{shift.assigned_to}</TableCell>
+                                <TableCell>
+                                  {shift.start_time} - {shift.end_time}
+                                </TableCell>
+                                <TableCell>{shift.bureau}</TableCell>
+                                <TableCell>
+                                  <Badge variant="outline">{shift.shift_type}</Badge>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </CardContent>
+                    </Card>
+
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowPreview(false)}
+                        disabled={isSaving}
+                      >
+                        Back
+                      </Button>
+                      <Button onClick={handleSaveSchedule} disabled={isSaving}>
+                        {isSaving ? (
+                          <>
+                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-foreground" />
+                            Saving...
+                          </>
+                        ) : (
+                          "Approve & Save to Calendar"
+                        )}
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* View Tabs */}
         <Tabs value={selectedView} onValueChange={setSelectedView}>
