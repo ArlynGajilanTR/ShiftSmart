@@ -20,7 +20,7 @@ export async function GET(
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { id } = await params;
 
     // Check if employee exists
@@ -92,7 +92,7 @@ export async function PUT(
     const body = await request.json();
     const { preferred_days, preferred_shifts, max_shifts_per_week, notes } = body;
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { id } = await params;
 
     // Check if employee exists

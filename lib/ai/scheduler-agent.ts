@@ -143,7 +143,7 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
       };
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // 1. Fetch employees
     let employeeQuery = supabase
@@ -314,7 +314,7 @@ export async function saveSchedule(
   userId: string
 ): Promise<{ success: boolean; shift_ids?: string[]; error?: string }> {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const createdShiftIds: string[] = [];
 
     for (const shift of scheduleData.shifts) {

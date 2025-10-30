@@ -24,7 +24,7 @@ export async function PUT(
     const body = await request.json();
     const { employee_id, bureau, date, start_time, end_time, status } = body;
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { id } = await params;
 
     // Check if shift exists
@@ -175,7 +175,7 @@ export async function DELETE(
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { id } = await params;
 
     // Check if shift exists
@@ -247,7 +247,7 @@ export async function PATCH(
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { id } = await params;
 
     // Check if shift exists

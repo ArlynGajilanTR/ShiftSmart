@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const days = parseInt(searchParams.get('days') || '7');
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Calculate date range
     const now = new Date();

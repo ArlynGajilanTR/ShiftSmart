@@ -28,7 +28,7 @@ export function parseCSV(content: string): CSVImportRow[] {
  * Seed database from CSV data
  */
 export async function seedFromCSV(data: CSVImportRow[], bureauId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const results = {
     users: 0,
     shifts: 0,

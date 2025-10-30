@@ -38,7 +38,7 @@ export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
   }
 
   const token = authHeader.substring(7);
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Find user by session token
   const { data: user, error: userError } = await supabase

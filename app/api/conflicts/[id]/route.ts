@@ -31,7 +31,7 @@ export async function PATCH(
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { id } = await params;
 
     // Check if conflict exists
@@ -123,7 +123,7 @@ export async function DELETE(
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { id } = await params;
 
     // Check if conflict exists

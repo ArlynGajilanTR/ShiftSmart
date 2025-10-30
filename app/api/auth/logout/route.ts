@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Clear the session token
     const { error } = await supabase

@@ -20,7 +20,7 @@ export async function GET(
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { id } = await params;
 
     // Get employee
@@ -112,7 +112,7 @@ export async function PUT(
     const body = await request.json();
     const { name, email, phone, role, bureau, status } = body;
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { id } = await params;
 
     // Check if employee exists
@@ -247,7 +247,7 @@ export async function DELETE(
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { id } = await params;
 
     // Check if employee exists

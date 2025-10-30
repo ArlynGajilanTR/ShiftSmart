@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const search = searchParams.get('search');
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Build query
     let query = supabase
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Check if email already exists
     const { data: existingUser } = await supabase

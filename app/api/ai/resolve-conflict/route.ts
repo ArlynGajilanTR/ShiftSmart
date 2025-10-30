@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Fetch conflict details
     const { data: conflict, error: conflictError } = await supabase

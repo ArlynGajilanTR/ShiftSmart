@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const bureau = searchParams.get('bureau');
     const employeeId = searchParams.get('employee_id');
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Build query for shifts with assignments
     let query = supabase
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Get bureau ID
     const { data: bureauData } = await supabase

@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const severity = searchParams.get('severity');
     const limit = searchParams.get('limit');
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Build query
     let query = supabase
