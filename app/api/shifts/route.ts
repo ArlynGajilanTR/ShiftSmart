@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
         shift_assignments(
           id,
           status,
-          users(id, full_name, title, shift_role)
+          user:users!user_id(id, full_name, title, shift_role)
         )
       `);
 
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error('Error fetching shifts:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch shifts' },
+        { error: 'Failed to fetch shifts', details: error.message, code: error.code },
         { status: 500 }
       );
     }
@@ -82,19 +82,19 @@ export async function GET(request: NextRequest) {
       // If shift has assignments, create one entry per assignment
       if (shift.shift_assignments && shift.shift_assignments.length > 0) {
         shift.shift_assignments.forEach((assignment: any) => {
-          if (assignment.users) {
+          if (assignment.user) {
             // Filter by employee if specified
-            if (employeeId && assignment.users.id !== employeeId) {
+            if (employeeId && assignment.user.id !== employeeId) {
               return;
             }
 
             formattedShifts.push({
               id: shift.id,
               assignment_id: assignment.id,
-              employee: assignment.users.full_name,
-              employee_id: assignment.users.id,
-              role: assignment.users.title,
-              shift_role: assignment.users.shift_role,
+              employee: assignment.user.full_name,
+              employee_id: assignment.user.id,
+              role: assignment.user.title,
+              shift_role: assignment.user.shift_role,
               bureau: shift.bureaus?.name || 'Unknown',
               date: format(new Date(shift.start_time), 'yyyy-MM-dd'),
               startTime: format(new Date(shift.start_time), 'HH:mm'),
@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
           status: status === 'confirmed' ? 'confirmed' : 'assigned',
           assigned_by: user.id,
         })
-        .select('*, users(full_name, title, shift_role)')
+        .select('*, user:users!user_id(full_name, title, shift_role)')
         .single();
 
       if (assignError) {
@@ -227,10 +227,10 @@ export async function POST(request: NextRequest) {
     const response = {
       id: newShift.id,
       assignment_id: assignmentData?.id || null,
-      employee: assignmentData?.users?.full_name || null,
+      employee: assignmentData?.user?.full_name || null,
       employee_id: employee_id || null,
-      role: assignmentData?.users?.title || null,
-      shift_role: assignmentData?.users?.shift_role || null,
+      role: assignmentData?.user?.title || null,
+      shift_role: assignmentData?.user?.shift_role || null,
       bureau,
       date,
       startTime: start_time,

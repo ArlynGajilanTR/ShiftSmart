@@ -128,7 +128,7 @@ export async function PUT(
     // Fetch updated assignment
     const { data: assignment } = await supabase
       .from('shift_assignments')
-      .select('*, users(full_name, title, shift_role)')
+      .select('*, user:users!user_id(full_name, title, shift_role)')
       .eq('shift_id', id)
       .maybeSingle();
 
@@ -136,10 +136,10 @@ export async function PUT(
     const response = {
       id: updatedShift.id,
       assignment_id: assignment?.id || null,
-      employee: assignment?.users?.full_name || null,
+      employee: assignment?.user?.full_name || null,
       employee_id: assignment?.user_id || null,
-      role: assignment?.users?.title || null,
-      shift_role: assignment?.users?.shift_role || null,
+      role: assignment?.user?.title || null,
+      shift_role: assignment?.user?.shift_role || null,
       bureau: updatedShift.bureaus?.name,
       date: format(new Date(updatedShift.start_time), 'yyyy-MM-dd'),
       startTime: format(new Date(updatedShift.start_time), 'HH:mm'),
@@ -296,7 +296,7 @@ export async function PATCH(
     // Fetch assignment
     const { data: assignment } = await supabase
       .from('shift_assignments')
-      .select('*, users(full_name, title, shift_role)')
+      .select('*, user:users!user_id(full_name, title, shift_role)')
       .eq('shift_id', id)
       .maybeSingle();
 
@@ -304,10 +304,10 @@ export async function PATCH(
     const response = {
       id: updatedShift.id,
       assignment_id: assignment?.id || null,
-      employee: assignment?.users?.full_name || null,
+      employee: assignment?.user?.full_name || null,
       employee_id: assignment?.user_id || null,
-      role: assignment?.users?.title || null,
-      shift_role: assignment?.users?.shift_role || null,
+      role: assignment?.user?.title || null,
+      shift_role: assignment?.user?.shift_role || null,
       bureau: updatedShift.bureaus?.name,
       date: format(new Date(updatedShift.start_time), 'yyyy-MM-dd'),
       startTime: format(new Date(updatedShift.start_time), 'HH:mm'),

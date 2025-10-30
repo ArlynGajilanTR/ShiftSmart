@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
         shift_assignments(
           id,
           status,
-          users(id, full_name, title, shift_role)
+          user:users!user_id(id, full_name, title, shift_role)
         )
       `)
       .gte('start_time', now.toISOString())
@@ -58,11 +58,11 @@ export async function GET(request: NextRequest) {
     shifts.forEach((shift: any) => {
       if (shift.shift_assignments && shift.shift_assignments.length > 0) {
         shift.shift_assignments.forEach((assignment: any) => {
-          if (assignment.users) {
+          if (assignment.user) {
             formattedShifts.push({
               id: shift.id,
-              employee: assignment.users.full_name,
-              role: assignment.users.title,
+              employee: assignment.user.full_name,
+              role: assignment.user.title,
               bureau: shift.bureaus?.name || 'Unknown',
               date: format(new Date(shift.start_time), 'yyyy-MM-dd'),
               time: `${format(new Date(shift.start_time), 'HH:mm')} - ${format(new Date(shift.end_time), 'HH:mm')}`,

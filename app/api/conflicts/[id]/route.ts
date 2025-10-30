@@ -68,7 +68,7 @@ export async function PATCH(
       .from('conflicts')
       .update(updates)
       .eq('id', id)
-      .select('*, users(full_name)')
+      .select('*, user:users!user_id(full_name)')
       .single();
 
     if (updateError) {
@@ -85,7 +85,7 @@ export async function PATCH(
       type: updatedConflict.type,
       severity: updatedConflict.severity,
       status: updatedConflict.status,
-      employee: updatedConflict.users?.full_name || null,
+      employee: updatedConflict.user?.full_name || null,
       description: updatedConflict.description,
       date: updatedConflict.date,
       detected_at: updatedConflict.detected_at,

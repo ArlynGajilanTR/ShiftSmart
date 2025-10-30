@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     // Build query
     let query = supabase
       .from('conflicts')
-      .select('*, users(full_name), shifts(start_time, end_time, bureaus(name))');
+      .select('*, user:users!user_id(full_name), shifts(start_time, end_time, bureaus(name))');
 
     // Apply filters
     if (status && status !== 'all') {
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
         type: conflict.type,
         severity: conflict.severity,
         status: conflict.status,
-        employee: conflict.users?.full_name || null,
+        employee: conflict.user?.full_name || null,
         description: conflict.description,
         date: conflict.date,
         shifts: shifts,
