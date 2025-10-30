@@ -285,7 +285,7 @@ export default function DashboardPage() {
                       className="bg-white border-l-4 border-l-[#FF6600] rounded p-2 text-xs shadow-sm hover:shadow-md transition-all hover:scale-[1.02]"
                     >
                       <div className="font-semibold text-[#FF6600]">{shift.employee}</div>
-                      <div className="text-gray-600 font-medium">{shift.time}</div>
+                      <div className="text-gray-600 font-medium">{shift.startTime} - {shift.endTime}</div>
                       <Badge variant="secondary" className="mt-1 text-xs">
                         {shift.bureau}
                       </Badge>
