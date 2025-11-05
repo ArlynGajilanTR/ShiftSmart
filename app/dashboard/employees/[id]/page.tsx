@@ -33,10 +33,10 @@ const mockEmployee = {
   },
 }
 
-export default function EmployeeDetailPage({ params }: { params: { id: string } }) {
+export default function EmployeeDetailPage({ params: _params }: { params: { id: string } }) {
   const router = useRouter()
   const [employee, setEmployee] = useState(mockEmployee)
-  const [isEditing, setIsEditing] = useState(true)
+  const [isEditing, setIsEditing] = useState(false)
 
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
   const shiftTypes = ["Morning", "Afternoon", "Evening", "Night"]

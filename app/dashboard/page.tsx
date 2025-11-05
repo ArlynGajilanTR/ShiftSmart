@@ -46,13 +46,6 @@ interface Conflict {
   severity: string;
 }
 
-interface Stats {
-  totalEmployees: number;
-  activeEmployees: number;
-  upcomingShifts: number;
-  unresolvedConflicts: number;
-}
-
 // Mock data as fallback
 const mockUpcomingShifts = [
   {

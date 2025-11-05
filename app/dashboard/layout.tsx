@@ -4,6 +4,7 @@ import type React from "react"
 
 import { Calendar, Users, AlertCircle, Settings, LogOut } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import {
   Sidebar,
@@ -37,9 +38,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-3 px-2 py-2">
-            <img
+            <Image
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/r_pri_logo_rgb_color%20%281%29-zb8SoziJFx53ete2qb0nuMZV21AEdt.png"
               alt="Reuters"
+              width={120}
+              height={40}
               className="h-10 w-auto"
             />
           </div>

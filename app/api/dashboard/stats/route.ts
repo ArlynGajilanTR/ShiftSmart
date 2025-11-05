@@ -26,8 +26,6 @@ export async function GET(request: NextRequest) {
     const thisWeekEnd = endOfWeek(now, { weekStartsOn: 1 });
     const lastWeekStart = startOfWeek(subWeeks(now, 1), { weekStartsOn: 1 });
     const lastWeekEnd = endOfWeek(subWeeks(now, 1), { weekStartsOn: 1 });
-    const thisMonthStart = startOfMonth(now);
-    const thisMonthEnd = endOfMonth(now);
 
     // 1. Total Employees
     const { count: totalEmployees } = await supabase

@@ -1,6 +1,6 @@
 {
   "name": "shiftsmart-api",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "description": "Unified fullstack application for Reuters Breaking News shift scheduling",
   "author": "Reuters Breaking News Team",
@@ -25,7 +25,16 @@
     "test:headed": "playwright test --config=tests/e2e/playwright.config.ts --headed",
     "test:debug": "playwright test --config=tests/e2e/playwright.config.ts --debug",
     "test:ui": "playwright test --config=tests/e2e/playwright.config.ts --ui",
-    "test:report": "playwright show-report"
+    "test:report": "playwright show-report",
+    "test:unit": "jest --config=jest.config.js",
+    "test:unit:watch": "jest --config=jest.config.js --watch",
+    "test:coverage": "jest --config=jest.config.js --coverage",
+    "test:api": "cd tests && bash test-api-endpoints.sh",
+    "test:api:enhanced": "cd tests/api-enhanced && bash enhanced-api-tests.sh",
+    "test:database": "jest --config=jest.config.js --testPathPattern=tests/database",
+    "test:a11y": "playwright test --config=tests/e2e/playwright.config.ts --grep=accessibility",
+    "test:performance": "k6 run tests/performance/load-test.js",
+    "test:all": "npm run test:unit && npm run test:api && npm run test && npm run test:a11y"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.68.0",
@@ -64,16 +73,21 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.8.2",
     "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jest": "^29.5.11",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
+    "jest": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
+    "ts-jest": "^29.1.1",
     "typescript": "^5"
   }
 }

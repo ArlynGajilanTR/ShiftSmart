@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import {
   DndContext,
   type DragEndEvent,
@@ -195,8 +193,9 @@ function DroppableMonthDay({
   children: React.ReactNode
   isCurrentMonth?: boolean
 }) {
+  const stableId = React.useId()
   const { setNodeRef, isOver } = useDroppable({
-    id: day ? `day-${format(day, "yyyy-MM-dd")}` : `empty-${Math.random()}`,
+    id: day ? `day-${format(day, "yyyy-MM-dd")}` : `empty-${stableId}`,
     data: { date: day },
     disabled: !day,
   })

@@ -504,7 +504,6 @@ export default function ConflictsPage() {
         <TabsContent value="resolved" className="space-y-4">
           <div className="space-y-4">
             {resolvedConflicts.map((conflict) => {
-              const Icon = conflictTypeIcons[conflict.type as keyof typeof conflictTypeIcons] || AlertCircle
               return (
                 <Card key={conflict.id} className="opacity-75">
                   <CardHeader>

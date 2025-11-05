@@ -10,6 +10,9 @@ const SALT_ROUNDS = 10;
  * Hash a plain text password
  */
 export async function hashPassword(password: string): Promise<string> {
+  if (!password || password.trim().length === 0) {
+    throw new Error('Password cannot be empty');
+  }
   return bcrypt.hash(password, SALT_ROUNDS);
 }
 
@@ -17,6 +20,16 @@ export async function hashPassword(password: string): Promise<string> {
  * Verify a password against a hash
  */
 export async function verifyPassword(
+  password: string,
+  hash: string
+): Promise<boolean> {
+  return bcrypt.compare(password, hash);
+}
+
+/**
+ * Compare password (alias for verifyPassword for test compatibility)
+ */
+export async function comparePassword(
   password: string,
   hash: string
 ): Promise<boolean> {
