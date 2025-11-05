@@ -11,14 +11,26 @@
    - Paste into SQL Editor
    - Click "Run"
 
-3. **Create Milan and Rome bureaus**:
-   - Copy contents from `scripts/setup-breaking-news-bureaus.sql`
+3. **Seed Breaking News team data**:
+   - Copy contents from `supabase/seed-breaking-news-team.sql`
    - Paste into SQL Editor
    - Click "Run"
    
    This creates:
-   - **Milan Bureau** (MILAN) - Europe/Rome timezone
-   - **Rome Bureau** (ROME) - Europe/Rome timezone
+   - **Milan Bureau** (ITA-MILAN) - Europe/Rome timezone
+   - **Rome Bureau** (ITA-ROME) - Europe/Rome timezone
+   - 15 Breaking News team members with real data
+
+4. **[Optional] Create dev admin user**:
+   - Copy contents from `supabase/create-dev-admin.sql`
+   - Paste into SQL Editor
+   - Click "Run"
+   
+   This creates a development admin account:
+   - **Email:** arlyn.gajilan@thomsonreuters
+   - **Password:** testtest
+   - **Role:** admin (full access to all features)
+   - **Shift Role:** editor (highest scheduling permissions)
 
 ### Step 2: Disable Email Confirmation (Development Only)
 
@@ -28,8 +40,23 @@ For easier testing during development:
 2. Turn OFF "Confirm email"
 3. Save
 
-### Step 3: Create Your First Account
+### Step 3: Login to the App
 
+**Option A: Use Dev Admin Account** (if you ran `create-dev-admin.sql`):
+1. Go to http://localhost:3000/login
+2. Login with:
+   - **Email:** arlyn.gajilan@thomsonreuters
+   - **Password:** testtest
+3. You'll have full admin access
+
+**Option B: Use Seeded User Account**:
+1. Go to http://localhost:3000/login
+2. Login with any Breaking News team member:
+   - **Example Email:** gianluca.semeraro@thomsonreuters.com
+   - **Password:** changeme (all seeded users)
+3. Access dashboard features
+
+**Option C: Create New Account**:
 1. Go to http://localhost:3000/signup
 2. Fill in the form:
    - **Full Name**: Your name
@@ -40,11 +67,10 @@ For easier testing during development:
    - **Role Level**: Choose your role (Junior, Senior, Lead, or Support)
 3. Click "Sign Up"
 
-### Step 4: Login and Access Dashboard
+### Step 4: Access Dashboard
 
-1. Go to http://localhost:3000/login
-2. Enter your credentials
-3. You'll be automatically redirected to the dashboard
+1. After login, you'll be automatically redirected to the dashboard
+2. Start exploring employees, schedules, and conflicts
 
 ## Importing Staff via CSV
 

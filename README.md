@@ -1,8 +1,8 @@
-# ShiftSmart v1.1.0
+# ShiftSmart v1.1.1
 
 Unified fullstack application for Reuters Breaking News shift scheduling system.
 
-**Version:** 1.1.0 | **Status:** ✅ Production Ready | **Test Coverage:** 100%
+**Version:** 1.1.1 | **Status:** ✅ Production Ready | **Test Coverage:** 100%
 
 ## Overview
 
@@ -128,8 +128,9 @@ ANTHROPIC_API_KEY=your_anthropic_key  # Optional: For AI scheduling features
 3. **Run database migrations:**
 ```sql
 -- In Supabase SQL editor:
--- 1. Run supabase/schema.sql
--- 2. Run supabase/seed-breaking-news-team.sql
+-- 1. Run supabase/schema.sql (required - creates tables)
+-- 2. Run supabase/seed-breaking-news-team.sql (optional - 15 real team members)
+-- 3. Run supabase/create-dev-admin.sql (optional - dev admin account)
 ```
 
 4. **Start the dev server:**
@@ -160,7 +161,9 @@ The system manages **15 Breaking News team members**:
 - **Milan Bureau:** 8 staff (3 Senior + 5 Correspondents)
 - **Rome Bureau:** 7 staff (1 Editor + 3 Senior + 3 Correspondents)
 
-Default password for seeded users: `changeme`
+**Test Credentials:**
+- Seeded users password: `changeme`
+- Dev admin (if created): arlyn.gajilan@thomsonreuters / `testtest`
 
 ## Frontend
 
@@ -291,8 +294,8 @@ Password: changeme
 
 ## Version
 
-**Current Version:** 1.1.0  
-**Release Date:** October 30, 2025  
+**Current Version:** 1.1.1  
+**Release Date:** November 5, 2025  
 **Status:** ✅ Production Ready - 100% Tested
 
 See [CHANGELOG.md](./CHANGELOG.md) for version history and [API_REFERENCE.md](./API_REFERENCE.md) for detailed API documentation.
@@ -312,4 +315,4 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ---
 
 **Maintained by:** Reuters Breaking News Team  
-**Last Updated:** October 30, 2025
+**Last Updated:** November 5, 2025

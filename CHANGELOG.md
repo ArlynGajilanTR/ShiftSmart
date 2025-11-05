@@ -5,6 +5,23 @@ All notable changes to ShiftSmart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-11-05
+
+### Added
+- **Dev Admin Setup Script:**
+  - Created `supabase/create-dev-admin.sql` for quick admin account setup
+  - Pre-configured admin credentials for testing/demo purposes
+  - Email: arlyn.gajilan@thomsonreuters | Password: testtest
+  - Idempotent script (safe to run multiple times)
+
+### Documentation
+- Updated SETUP_INSTRUCTIONS.md with dev admin setup option
+- Updated QUICKSTART.md with dev admin quick start path
+- Updated SETUP.md with dev admin configuration step
+- Updated README.md to reference dev admin script
+
+---
+
 ## [1.1.0] - 2025-10-30
 
 ### Added - Phase 4: Frontend-Backend Integration & Testing
@@ -258,7 +275,8 @@ ShiftSmart follows [Semantic Versioning](https://semver.org/):
 
 ### Version History Summary
 
-- **1.1.0** - Unified fullstack app with 100% test coverage (Current)
+- **1.1.1** - Dev admin setup script and documentation updates (Current)
+- **1.1.0** - Unified fullstack app with 100% test coverage
 - **1.0.0** - Production-ready API with AI scheduling
 - **0.4.0** - API-only backend conversion
 - **0.3.0** - Core API endpoints implementation
@@ -276,6 +294,7 @@ ShiftSmart follows [Semantic Versioning](https://semver.org/):
 
 ---
 
+[1.1.1]: https://github.com/ArlynGajilanTR/ShiftSmart/releases/tag/v1.1.1
 [1.1.0]: https://github.com/ArlynGajilanTR/ShiftSmart/releases/tag/v1.1.0
 [1.0.0]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v0.4.0...v1.0.0
 [0.4.0]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v0.3.0...v0.4.0

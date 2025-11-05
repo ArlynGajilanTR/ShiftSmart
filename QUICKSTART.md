@@ -37,6 +37,16 @@ Welcome to ShiftSmart! This guide will get you up and running in under 10 minute
 4. Paste and click "Run"
 5. ✅ You should see "Success" messages
 
+**Optional: Seed with Breaking News team data**
+1. Copy contents from `supabase/seed-breaking-news-team.sql`
+2. Run in SQL Editor
+3. This creates 15 real Breaking News team members
+
+**Optional: Create dev admin account for testing**
+1. Copy contents from `supabase/create-dev-admin.sql`
+2. Run in SQL Editor
+3. Login with: arlyn.gajilan@thomsonreuters / testtest
+
 ### Step 3: Install & Run (1 min)
 
 ```bash

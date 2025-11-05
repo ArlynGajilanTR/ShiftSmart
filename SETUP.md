@@ -27,6 +27,22 @@
 4. Run the SQL to create all tables, indexes, and policies
 5. Verify the tables were created successfully
 
+### Optional: Seed Sample Data
+
+**For Breaking News team setup:**
+1. Copy contents from `supabase/seed-breaking-news-team.sql`
+2. Run in SQL Editor
+3. This creates Milan and Rome bureaus with 15 real team members
+4. Default password for all seeded users: `changeme`
+
+**For development/testing:**
+1. Copy contents from `supabase/create-dev-admin.sql`
+2. Run in SQL Editor
+3. This creates an admin account:
+   - Email: arlyn.gajilan@thomsonreuters
+   - Password: testtest
+   - Role: admin (full access)
+
 ## Step 3: Install Dependencies
 
 ```bash
