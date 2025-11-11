@@ -59,15 +59,18 @@ export const api = {
     login: async (email: string, password: string) => {
       const response = await apiCall<{
         user: any;
-        token: string;
+        session: {
+          access_token: string;
+          expires_at: string;
+        };
       }>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
         requireAuth: false,
       });
 
-      // Store token
-      localStorage.setItem('auth_token', response.token);
+      // Store token from session object
+      localStorage.setItem('auth_token', response.session.access_token);
       localStorage.setItem('user', JSON.stringify(response.user));
 
       return response;
