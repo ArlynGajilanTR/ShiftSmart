@@ -1,0 +1,52 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - img "Reuters" [ref=e8]
+      - list [ref=e13]:
+        - listitem [ref=e14]:
+          - link "Dashboard" [active] [ref=e15] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e16]
+            - generic [ref=e18]: Dashboard
+        - listitem [ref=e19]:
+          - link "Schedule" [ref=e20] [cursor=pointer]:
+            - /url: /dashboard/schedule
+            - img [ref=e21]
+            - generic [ref=e23]: Schedule
+        - listitem [ref=e24]:
+          - link "Employees" [ref=e25] [cursor=pointer]:
+            - /url: /dashboard/employees
+            - img [ref=e26]
+            - generic [ref=e31]: Employees
+        - listitem [ref=e32]:
+          - link "Conflicts" [ref=e33] [cursor=pointer]:
+            - /url: /dashboard/conflicts
+            - img [ref=e34]
+            - generic [ref=e36]: Conflicts
+      - list [ref=e38]:
+        - listitem [ref=e39]:
+          - link "Settings" [ref=e40] [cursor=pointer]:
+            - /url: /dashboard/settings
+            - img [ref=e41]
+            - generic [ref=e44]: Settings
+        - listitem [ref=e45]:
+          - link "Log Out" [ref=e46] [cursor=pointer]:
+            - /url: /
+            - img [ref=e47]
+            - generic [ref=e50]: Log Out
+      - button "Toggle Sidebar" [ref=e51]
+    - main [ref=e52]:
+      - generic [ref=e53]:
+        - button "Toggle Sidebar" [ref=e54]:
+          - img
+          - generic [ref=e55]: Toggle Sidebar
+        - heading "ShiftSmart" [level=1] [ref=e56]
+      - main [ref=e57]:
+        - paragraph [ref=e61]: Loading dashboard...
+  - button "Open Next.js Dev Tools" [ref=e67] [cursor=pointer]:
+    - img [ref=e68]
+  - alert [ref=e71]
+```

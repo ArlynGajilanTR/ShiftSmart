@@ -39,10 +39,12 @@ export async function apiCall<T>(
     headers,
   };
   
-  console.log('API Call:', {
+  console.log('API Call:', JSON.stringify({
     url: `${API_URL}${endpoint}`,
-    config: fetchConfig
-  });
+    method: fetchConfig.method,
+    body: fetchConfig.body,
+    headers: fetchConfig.headers
+  }));
 
   const response = await fetch(`${API_URL}${endpoint}`, fetchConfig);
 
@@ -64,7 +66,7 @@ export const api = {
 
   auth: {
     login: async (email: string, password: string) => {
-      console.log('Login attempt with:', { email, passwordLength: password.length });
+      console.log('Login attempt with:', JSON.stringify({ email, passwordLength: password.length }));
       
       const response = await apiCall<{
         user: any;

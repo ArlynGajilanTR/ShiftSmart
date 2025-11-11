@@ -23,7 +23,7 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    console.log('Login form values:', { email, password })
+    console.log('Login form values:', JSON.stringify({ email, password }))
 
     try {
       // Real API authentication
