@@ -23,6 +23,8 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
 
+    console.log('Login form values:', { email, password })
+
     try {
       // Real API authentication
       await api.auth.login(email, password)

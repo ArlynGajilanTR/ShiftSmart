@@ -34,10 +34,17 @@ export async function apiCall<T>(
     }
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
+  const fetchConfig = {
     ...fetchOptions,
     headers,
+  };
+  
+  console.log('API Call:', {
+    url: `${API_URL}${endpoint}`,
+    config: fetchConfig
   });
+
+  const response = await fetch(`${API_URL}${endpoint}`, fetchConfig);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ error: 'Request failed' }));
@@ -57,6 +64,8 @@ export const api = {
 
   auth: {
     login: async (email: string, password: string) => {
+      console.log('Login attempt with:', { email, passwordLength: password.length });
+      
       const response = await apiCall<{
         user: any;
         session: {
