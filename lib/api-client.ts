@@ -3,7 +3,8 @@
  * Connected to backend: https://github.com/ArlynGajilanTR/ShiftSmart
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+// Use empty string for relative URLs (works in both dev and production)
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 interface ApiOptions extends RequestInit {
   requireAuth?: boolean;
