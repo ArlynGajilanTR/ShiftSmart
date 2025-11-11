@@ -125,6 +125,9 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ANTHROPIC_API_KEY=your_anthropic_key  # Optional: For AI scheduling features
 ```
 
+> 🤖 **AI Setup:** To enable AI-powered schedule generation, see [AI_SETUP_TROUBLESHOOTING.md](./AI_SETUP_TROUBLESHOOTING.md)  
+> Quick check: `npm run check:ai`
+
 3. **Run database migrations:**
 ```sql
 -- In Supabase SQL editor:

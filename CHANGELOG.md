@@ -5,6 +5,72 @@ All notable changes to ShiftSmart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2025-11-11
+
+### Fixed
+- **Generate Preview Button:** Fixed non-functional Generate Preview button in Schedule Management
+  - Added pre-flight AI configuration check before generation attempts
+  - Implemented proper error handling with specific, actionable error messages
+  - Button now correctly disables when AI is not configured
+  - Added visual alerts when ANTHROPIC_API_KEY is missing
+
+- **Security Warning:** Removed `NODE_TLS_REJECT_UNAUTHORIZED=0` from default development script
+  - Eliminates Node.js security warning on server startup
+  - SSL certificate verification now enabled by default
+  - Added optional `dev:unsafe` script for special development scenarios
+
+- **Configuration Checker:** Updated `scripts/check-ai-config.js` to properly load `.env.local`
+  - Now correctly reads environment variables from file
+  - Validates ANTHROPIC_API_KEY format and presence
+  - Checks Supabase configuration completeness
+
+### Added
+- **AI Status Validation:** Real-time AI configuration check when opening Generate Schedule dialog
+  - Prevents silent failures
+  - Shows clear feedback about AI availability
+  - Displays setup instructions when not configured
+
+- **Console Logging:** Comprehensive debug logging throughout schedule generation flow
+  - `[Schedule]` prefixed logs for easy filtering
+  - Tracks each step: button click → status check → API call → response
+  - Helps developers diagnose issues quickly
+
+- **Error Handling:** Specific error messages for different failure scenarios
+  - AI Not Configured: Clear instructions to add ANTHROPIC_API_KEY
+  - No Employees: Guidance about database and bureau selection
+  - Authentication Errors: Prompts to log out and back in
+  - Network Errors: Detailed context about failures
+
+- **Documentation:** Complete troubleshooting and setup documentation
+  - `AI_SETUP_TROUBLESHOOTING.md`: Setup guide with common issues/solutions
+  - `TESTING_THE_FIX.md`: 6 comprehensive test scenarios with expected results
+  - `FIX_SUMMARY.md`: Technical details of all changes
+  - `GENERATE_PREVIEW_FIX.md`: Complete fix documentation
+
+### Changed
+- **Development Scripts:**
+  - `npm run dev`: Now runs without SSL verification disabled (secure by default)
+  - `npm run dev:unsafe`: New script for development with self-signed certificates
+  - `npm run check:ai`: Enhanced to validate full configuration
+
+- **Button States:** Generate Preview button now shows contextual states
+  - "Checking AI..." - During initial configuration check
+  - "AI Not Available" - When not configured (disabled)
+  - "Generate Preview" - Ready to generate (enabled)
+  - "Generating..." - Generation in progress (with spinner)
+
+- **User Experience:** Improved feedback at every step
+  - Pre-emptive validation prevents wasted clicks
+  - Clear error messages with solutions
+  - Visual indicators of configuration status
+  - No more silent failures
+
+### Security
+- **SSL Verification:** Re-enabled SSL certificate verification in development
+  - Removed insecure `NODE_TLS_REJECT_UNAUTHORIZED=0` from default script
+  - Maintains secure HTTPS connections
+  - Provides optional unsafe mode when needed
+
 ## [1.2.0] - 2025-11-06
 
 ### Added - Comprehensive Automated Testing Infrastructure

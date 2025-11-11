@@ -232,6 +232,7 @@ export default function SchedulePage() {
   const [isSaving, setIsSaving] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [generatedSchedule, setGeneratedSchedule] = useState<any>(null)
+  const [aiConfigured, setAiConfigured] = useState<boolean | null>(null)
   const [generationConfig, setGenerationConfig] = useState({
     start_date: format(startOfMonth(new Date()), "yyyy-MM-dd"),
     end_date: format(endOfMonth(new Date()), "yyyy-MM-dd"),
@@ -278,6 +279,25 @@ export default function SchedulePage() {
     fetchShifts()
   }, [toast])
 
+  // Check AI configuration when dialog opens
+  useEffect(() => {
+    async function checkAiStatus() {
+      if (isGenerateDialogOpen && aiConfigured === null) {
+        try {
+          console.log('[Schedule] Checking AI configuration status...')
+          const statusResponse = await api.ai.checkStatus() as any
+          console.log('[Schedule] AI Status Response:', statusResponse)
+          setAiConfigured(statusResponse.ai_enabled)
+        } catch (error: any) {
+          console.error('[Schedule] Failed to check AI status:', error)
+          setAiConfigured(false)
+        }
+      }
+    }
+
+    checkAiStatus()
+  }, [isGenerateDialogOpen, aiConfigured])
+
   // Refetch shifts from API
   const refetchShifts = async () => {
     try {
@@ -305,8 +325,26 @@ export default function SchedulePage() {
 
   // Handle AI schedule generation
   const handleGenerateSchedule = async () => {
+    console.log('[Schedule] Generate button clicked', generationConfig)
     setIsGenerating(true)
+    
     try {
+      // First check if AI is configured
+      console.log('[Schedule] Checking AI status...')
+      const statusResponse = await api.ai.checkStatus() as any
+      console.log('[Schedule] AI Status:', statusResponse)
+      
+      if (!statusResponse.ai_enabled) {
+        toast({
+          title: "AI Not Configured",
+          description: statusResponse.configuration_status || "Please set ANTHROPIC_API_KEY environment variable and restart the server.",
+          variant: "destructive",
+        })
+        setIsGenerating(false)
+        return
+      }
+
+      console.log('[Schedule] Calling AI generate schedule...')
       const response = await api.ai.generateSchedule({
         start_date: generationConfig.start_date,
         end_date: generationConfig.end_date,
@@ -316,6 +354,12 @@ export default function SchedulePage() {
         save_to_database: false, // Preview mode
       }) as any
 
+      console.log('[Schedule] AI Response:', response)
+
+      if (!response.schedule || !response.schedule.shifts) {
+        throw new Error("Invalid response from AI: missing schedule data")
+      }
+
       setGeneratedSchedule(response.schedule)
       setShowPreview(true)
       toast({
@@ -323,18 +367,24 @@ export default function SchedulePage() {
         description: `Generated ${response.schedule.shifts.length} shifts`,
       })
     } catch (error: any) {
-      console.error("Failed to generate schedule:", error)
+      console.error("[Schedule] Failed to generate schedule:", error)
       
       // Handle specific error messages
       let errorMessage = error.message || "Failed to generate schedule"
-      if (error.message?.includes("not configured")) {
-        errorMessage = "AI scheduling is not configured. Please contact administrator."
-      } else if (error.message?.includes("No employees found")) {
-        errorMessage = "No available employees for the selected bureau and date range."
+      let errorTitle = "Generation Failed"
+      
+      if (error.message?.includes("not configured") || error.message?.includes("API key")) {
+        errorTitle = "AI Not Configured"
+        errorMessage = "AI scheduling requires ANTHROPIC_API_KEY. Please contact your administrator to configure it."
+      } else if (error.message?.includes("No employees found") || error.message?.includes("No authentication token")) {
+        errorMessage = error.message
+      } else if (error.message?.includes("Unauthorized")) {
+        errorTitle = "Authentication Error"
+        errorMessage = "Please log out and log back in."
       }
       
       toast({
-        title: "Generation failed",
+        title: errorTitle,
         description: errorMessage,
         variant: "destructive",
       })
@@ -387,6 +437,7 @@ export default function SchedulePage() {
     setGeneratedSchedule(null)
     setIsGenerating(false)
     setIsSaving(false)
+    setAiConfigured(null) // Reset AI check for next time
   }
 
   const sensors = useSensors(
@@ -525,6 +576,17 @@ export default function SchedulePage() {
             {!showPreview ? (
               // Configuration Form
               <div className="space-y-4 py-4">
+                {/* AI Status Alert */}
+                {aiConfigured === false && (
+                  <Alert variant="destructive">
+                    <AlertTitle>AI Not Configured</AlertTitle>
+                    <AlertDescription>
+                      AI scheduling requires the ANTHROPIC_API_KEY environment variable to be set. 
+                      Please contact your system administrator to configure Claude AI integration.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="start_date">Start Date</Label>
@@ -614,11 +676,24 @@ export default function SchedulePage() {
                   <Button variant="outline" onClick={handleCloseGenerateDialog} disabled={isGenerating}>
                     Cancel
                   </Button>
-                  <Button onClick={handleGenerateSchedule} disabled={isGenerating}>
+                  <Button 
+                    onClick={handleGenerateSchedule} 
+                    disabled={isGenerating || aiConfigured === false || aiConfigured === null}
+                  >
                     {isGenerating ? (
                       <>
                         <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-foreground" />
                         Generating...
+                      </>
+                    ) : aiConfigured === null ? (
+                      <>
+                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-foreground" />
+                        Checking AI...
+                      </>
+                    ) : aiConfigured === false ? (
+                      <>
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        AI Not Available
                       </>
                     ) : (
                       <>
