@@ -1,15 +1,13 @@
-"use client"
-
-import type React from "react"
+'use client'
 
 import { useState } from "react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
+import Image from "next/image"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { api } from "@/lib/api-client"
 import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
@@ -23,11 +21,25 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    console.log('Login form values:', JSON.stringify({ email, password }))
-
     try {
-      // Real API authentication
-      await api.auth.login(email, password)
+      // Direct API call - we know this works!
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password })
+      })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed')
+      }
+      
+      // Store auth data
+      localStorage.setItem('auth_token', data.session.access_token)
+      localStorage.setItem('user', JSON.stringify(data.user))
       
       toast({
         title: "Login successful",
@@ -47,14 +59,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header */}
-      <header className="border-b border-border bg-white">
-        <div className="container mx-auto px-6 py-4">
-          <Link href="/" className="flex items-center gap-3">
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/r_pri_logo_rgb_color%20%281%29-zb8SoziJFx53ete2qb0nuMZV21AEdt.png"
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <Link href="/" className="inline-block">
+            <Image
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/r_pri_logo_rgb_color%20(1)-zb8SoziJFx53ete2qb0nuMZV21AEdt.png"
               alt="Reuters"
+              width={120}
+              height={40}
               className="h-12 w-auto"
             />
           </Link>
@@ -79,6 +93,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -89,16 +104,16 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Log In"}
               </Button>
             </form>
-
-            <div className="mt-6 text-center text-sm">
-              <span className="text-muted-foreground">Don't have an account? </span>
-              <Link href="/signup" className="text-primary hover:underline font-medium">
+            <div className="mt-4 text-center text-sm">
+              Don't have an account?{" "}
+              <Link href="/signup" className="text-blue-600 hover:underline">
                 Sign up
               </Link>
             </div>
