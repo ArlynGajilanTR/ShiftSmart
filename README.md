@@ -70,12 +70,14 @@ shiftsmart-v1/
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/login` - Login with email/password
 - `POST /api/auth/signup` - Register new user
 - `POST /api/auth/logout` - Logout
 - `GET /api/auth/session` - Get current user
 
 ### Employees (7 endpoints)
+
 - `GET /api/employees` - List employees (filters: bureau, role, status, search)
 - `POST /api/employees` - Create employee
 - `GET /api/employees/:id` - Get employee details
@@ -85,6 +87,7 @@ shiftsmart-v1/
 - `PUT /api/employees/:id/preferences` - Update shift preferences
 
 ### Shifts (6 endpoints)
+
 - `GET /api/shifts` - List shifts (filters: date_range, bureau, employee_id)
 - `POST /api/shifts` - Create shift with optional assignment
 - `GET /api/shifts/upcoming` - Upcoming shifts (default: 7 days)
@@ -93,14 +96,17 @@ shiftsmart-v1/
 - `DELETE /api/shifts/:id` - Delete shift
 
 ### Conflicts (3 endpoints)
+
 - `GET /api/conflicts` - List conflicts (filters: status, severity, limit)
 - `PATCH /api/conflicts/:id` - Resolve or acknowledge (body: `{action: 'resolve'|'acknowledge'}`)
 - `DELETE /api/conflicts/:id` - Dismiss conflict
 
 ### Dashboard (1 endpoint)
+
 - `GET /api/dashboard/stats` - Aggregated statistics
 
 ### AI Scheduling (3 endpoints) - Claude Sonnet 4.5
+
 - `POST /api/ai/generate-schedule` - Generate AI-powered schedule
 - `POST /api/ai/resolve-conflict` - Get AI suggestions for conflict resolution
 - `GET /api/ai/status` - Check AI configuration status
@@ -108,16 +114,19 @@ shiftsmart-v1/
 ## Setup
 
 1. **Install dependencies:**
+
 ```bash
 npm install
 ```
 
 2. **Configure environment variables:**
+
 ```bash
 cp .env.local.example .env.local
 ```
 
 Edit `.env.local`:
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
@@ -129,6 +138,7 @@ ANTHROPIC_API_KEY=your_anthropic_key  # Optional: For AI scheduling features
 > Quick check: `npm run check:ai`
 
 3. **Run database migrations:**
+
 ```sql
 -- In Supabase SQL editor:
 -- 1. Run supabase/schema.sql (required - creates tables)
@@ -137,6 +147,7 @@ ANTHROPIC_API_KEY=your_anthropic_key  # Optional: For AI scheduling features
 ```
 
 4. **Start the dev server:**
+
 ```bash
 npm run dev
 ```
@@ -161,17 +172,20 @@ curl http://localhost:3000/api/employees \
 ## Data
 
 The system manages **15 Breaking News team members**:
+
 - **Milan Bureau:** 8 staff (3 Senior + 5 Correspondents)
 - **Rome Bureau:** 7 staff (1 Editor + 3 Senior + 3 Correspondents)
 
 **Test Credentials:**
+
 - Seeded users password: `changeme`
 - Dev admin (if created): arlyn.gajilan@thomsonreuters / `testtest`
 
 ## Frontend
 
 This is an API-only backend. The frontend is built separately:
-- **Repository:** https://github.com/ArlynGajilanTR/v0-shift-smart-frontend-development
+
+- **Repository:** <https://github.com/ArlynGajilanTR/v0-shift-smart-frontend-development>
 - **Deployed:** Vercel
 
 ## Development
@@ -194,6 +208,7 @@ npm run lint
 ## API Response Formats
 
 ### Employee Object
+
 ```json
 {
   "id": "uuid",
@@ -209,6 +224,7 @@ npm run lint
 ```
 
 ### Shift Object
+
 ```json
 {
   "id": "uuid",
@@ -224,6 +240,7 @@ npm run lint
 ```
 
 ### Conflict Object
+
 ```json
 {
   "id": "uuid",
@@ -234,8 +251,8 @@ npm run lint
   "description": "Employee is scheduled for overlapping shifts",
   "date": "2025-11-02",
   "shifts": [
-    {"time": "08:00 - 16:00", "bureau": "Milan"},
-    {"time": "14:00 - 22:00", "bureau": "Rome"}
+    { "time": "08:00 - 16:00", "bureau": "Milan" },
+    { "time": "14:00 - 22:00", "bureau": "Rome" }
   ],
   "detected_at": "2025-10-29T10:30:00Z"
 }
@@ -248,6 +265,7 @@ npm run lint
 ShiftSmart includes **300+ automated tests** with **100% critical path coverage**.
 
 **Quick Start:**
+
 ```bash
 # Run all tests
 cd tests && ./run-comprehensive-tests.sh
@@ -261,6 +279,7 @@ npm run test:a11y              # Accessibility tests (20+ tests)
 ```
 
 **Test Coverage:**
+
 - ✅ **Unit Tests (59/59)** - Utilities, auth, AI integration
 - ✅ **API Tests (20/20)** - All 24 endpoints + edge cases
 - ✅ **Database Tests (60+)** - Schema, constraints, triggers
@@ -270,6 +289,7 @@ npm run test:a11y              # Accessibility tests (20+ tests)
 - ✅ **Security Tests** - SQL injection, XSS prevention
 
 **Test Results:**
+
 - Authentication: 4/4 passing
 - Employee Management: 7/7 passing
 - Shift Scheduling: 6/6 passing
@@ -280,6 +300,7 @@ npm run test:a11y              # Accessibility tests (20+ tests)
 - TypeScript: 0 errors
 
 **Documentation:**
+
 - [Testing Quick Start](./tests/TESTING_QUICKSTART.md) - Daily reference
 - [Comprehensive Plan](./tests/COMPREHENSIVE_TESTING_PLAN.md) - Full strategy
 - [Test Execution Guide](./TEST_EXECUTION_GUIDE.md) - Commands
@@ -288,10 +309,12 @@ npm run test:a11y              # Accessibility tests (20+ tests)
 ### Manual Testing
 
 **Test credentials (all users):**
+
 - Password: `changeme`
 - Users: All 15 Breaking News team members (see database)
 
 **Example test user:**
+
 ```
 Email: gianluca.semeraro@thomsonreuters.com
 Password: changeme
@@ -336,6 +359,7 @@ This project follows the **ShiftSmart Engineering Build Rules** for safe, surgic
 ### Developer Setup
 
 1. **Install pre-commit hooks** (recommended):
+
    ```bash
    pip install pre-commit
    pre-commit install

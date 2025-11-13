@@ -28,7 +28,7 @@ export class ApiInterceptor {
       const request = route.request();
       const url = request.url();
       const method = request.method();
-      
+
       let requestBody = null;
       try {
         const postData = request.postData();
@@ -72,7 +72,7 @@ export class ApiInterceptor {
    */
   getCallsByPattern(pattern: RegExp | string): ApiCall[] {
     const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
-    return this.calls.filter(call => regex.test(call.url));
+    return this.calls.filter((call) => regex.test(call.url));
   }
 
   /**
@@ -95,8 +95,9 @@ export class ApiInterceptor {
    */
   verifyCall(method: string, urlPattern: RegExp | string, expectedStatus = 200): boolean {
     const calls = this.getCallsByPattern(urlPattern);
-    const matchingCall = calls.find(call => call.method === method && call.status === expectedStatus);
+    const matchingCall = calls.find(
+      (call) => call.method === method && call.status === expectedStatus
+    );
     return !!matchingCall;
   }
 }
-

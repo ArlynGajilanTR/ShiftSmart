@@ -1,4 +1,11 @@
-import { Shift, ShiftAssignment, User, Conflict, ConflictSeverity, ValidationResult } from '@/types';
+import {
+  Shift,
+  ShiftAssignment,
+  User,
+  Conflict,
+  ConflictSeverity,
+  ValidationResult,
+} from '@/types';
 import { differenceInHours, parseISO, isWithinInterval, addHours } from 'date-fns';
 
 /**
@@ -36,9 +43,9 @@ export async function validateShiftAssignment(
   }
 
   return {
-    valid: conflicts.filter(c => c.severity === 'hard').length === 0,
+    valid: conflicts.filter((c) => c.severity === 'hard').length === 0,
     conflicts,
-    warnings
+    warnings,
   };
 }
 
@@ -51,25 +58,25 @@ export function validateRoleBalance(
   users: User[]
 ): Conflict[] {
   const conflicts: Conflict[] = [];
-  
+
   const assignedUsers = assignments
-    .filter(a => a.shift_id === shift.id)
-    .map(a => users.find(u => u.id === a.user_id))
+    .filter((a) => a.shift_id === shift.id)
+    .map((a) => users.find((u) => u.id === a.user_id))
     .filter(Boolean) as User[];
 
   // Count roles
   const roleCounts = {
-    senior: assignedUsers.filter(u => u.shift_role === 'senior').length,
-    junior: assignedUsers.filter(u => u.shift_role === 'junior').length,
-    lead: assignedUsers.filter(u => u.shift_role === 'lead').length,
-    support: assignedUsers.filter(u => u.shift_role === 'support').length,
+    senior: assignedUsers.filter((u) => u.shift_role === 'senior').length,
+    junior: assignedUsers.filter((u) => u.shift_role === 'junior').length,
+    lead: assignedUsers.filter((u) => u.shift_role === 'lead').length,
+    support: assignedUsers.filter((u) => u.shift_role === 'support').length,
   };
 
   // Check required roles
   if (shift.required_roles && Array.isArray(shift.required_roles)) {
-    shift.required_roles.forEach(req => {
+    shift.required_roles.forEach((req) => {
       const actual = roleCounts[req.role] || 0;
-      
+
       if (actual < req.min_count) {
         conflicts.push({
           id: crypto.randomUUID(),
@@ -79,7 +86,7 @@ export function validateRoleBalance(
           message: `Insufficient ${req.role} staff: need ${req.min_count}, have ${actual}`,
           details: { required: req, actual: roleCounts },
           resolved: false,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         });
       }
 
@@ -92,7 +99,7 @@ export function validateRoleBalance(
           message: `Too many ${req.role} staff: max ${req.max_count}, have ${actual}`,
           details: { required: req, actual: roleCounts },
           resolved: false,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         });
       }
     });
@@ -108,7 +115,7 @@ export function validateRoleBalance(
       message: 'Shift has only junior staff - at least one senior or lead required',
       details: { roleCounts },
       resolved: false,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     });
   }
 
@@ -122,7 +129,7 @@ export function validateRoleBalance(
       message: `Understaffed: need ${shift.required_staff}, have ${assignedUsers.length}`,
       details: { required: shift.required_staff, actual: assignedUsers.length },
       resolved: false,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     });
   }
 
@@ -135,10 +142,10 @@ function checkDoubleBooking(
   existingAssignments: ShiftAssignment[],
   allShifts: Shift[]
 ): Conflict | null {
-  const userAssignments = existingAssignments.filter(a => a.user_id === user.id);
-  
+  const userAssignments = existingAssignments.filter((a) => a.user_id === user.id);
+
   for (const assignment of userAssignments) {
-    const otherShift = allShifts.find(s => s.id === assignment.shift_id);
+    const otherShift = allShifts.find((s) => s.id === assignment.shift_id);
     if (!otherShift) continue;
 
     // Check for time overlap
@@ -147,7 +154,7 @@ function checkDoubleBooking(
     const otherStart = parseISO(otherShift.start_time);
     const otherEnd = parseISO(otherShift.end_time);
 
-    const hasOverlap = 
+    const hasOverlap =
       (shiftStart >= otherStart && shiftStart < otherEnd) ||
       (shiftEnd > otherStart && shiftEnd <= otherEnd) ||
       (shiftStart <= otherStart && shiftEnd >= otherEnd);
@@ -160,13 +167,13 @@ function checkDoubleBooking(
         shift_id: shift.id,
         user_id: user.id,
         message: `${user.full_name} is already assigned to another shift during this time`,
-        details: { 
+        details: {
           conflicting_shift_id: otherShift.id,
           shift_time: `${shift.start_time} - ${shift.end_time}`,
-          conflict_time: `${otherShift.start_time} - ${otherShift.end_time}`
+          conflict_time: `${otherShift.start_time} - ${otherShift.end_time}`,
         },
         resolved: false,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
     }
   }
@@ -194,7 +201,7 @@ function checkPreferenceViolations(shift: Shift, user: User): Conflict[] {
       message: `${user.full_name} marked ${shiftDate} as unavailable`,
       details: { date: shiftDate },
       resolved: false,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     });
   }
 
@@ -210,7 +217,7 @@ function checkPreferenceViolations(shift: Shift, user: User): Conflict[] {
         message: `${user.full_name} prefers not to work on this day of the week`,
         details: { day: shiftDay },
         resolved: false,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       });
     }
   }
@@ -226,11 +233,11 @@ function checkRestPeriod(
 ): Conflict | null {
   const MINIMUM_REST_HOURS = 11; // Standard rest period
 
-  const userAssignments = existingAssignments.filter(a => a.user_id === user.id);
+  const userAssignments = existingAssignments.filter((a) => a.user_id === user.id);
   const shiftStart = parseISO(shift.start_time);
 
   for (const assignment of userAssignments) {
-    const otherShift = allShifts.find(s => s.id === assignment.shift_id);
+    const otherShift = allShifts.find((s) => s.id === assignment.shift_id);
     if (!otherShift) continue;
 
     const otherEnd = parseISO(otherShift.end_time);
@@ -244,13 +251,13 @@ function checkRestPeriod(
         shift_id: shift.id,
         user_id: user.id,
         message: `${user.full_name} has insufficient rest period (${hoursBetween.toFixed(1)}h, need ${MINIMUM_REST_HOURS}h)`,
-        details: { 
+        details: {
           hours_between: hoursBetween,
           minimum_required: MINIMUM_REST_HOURS,
-          previous_shift_end: otherShift.end_time
+          previous_shift_end: otherShift.end_time,
         },
         resolved: false,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
     }
   }
@@ -264,13 +271,13 @@ function checkOvertimeRisk(
   existingAssignments: ShiftAssignment[],
   allShifts: Shift[]
 ): Conflict | null {
-  const MAX_HOURS_PER_WEEK = user.preferences?.max_shifts_per_week 
-    ? user.preferences.max_shifts_per_week * 8 
+  const MAX_HOURS_PER_WEEK = user.preferences?.max_shifts_per_week
+    ? user.preferences.max_shifts_per_week * 8
     : 40;
 
-  const userAssignments = existingAssignments.filter(a => a.user_id === user.id);
+  const userAssignments = existingAssignments.filter((a) => a.user_id === user.id);
   const shiftStart = parseISO(shift.start_time);
-  
+
   // Calculate week boundaries
   const weekStart = new Date(shiftStart);
   weekStart.setDate(shiftStart.getDate() - shiftStart.getDay());
@@ -280,7 +287,7 @@ function checkOvertimeRisk(
   // Calculate hours already scheduled this week
   let totalHours = 0;
   for (const assignment of userAssignments) {
-    const otherShift = allShifts.find(s => s.id === assignment.shift_id);
+    const otherShift = allShifts.find((s) => s.id === assignment.shift_id);
     if (!otherShift) continue;
 
     const otherStart = parseISO(otherShift.start_time);
@@ -294,10 +301,7 @@ function checkOvertimeRisk(
   }
 
   // Add this shift's hours
-  const thisShiftHours = differenceInHours(
-    parseISO(shift.end_time),
-    parseISO(shift.start_time)
-  );
+  const thisShiftHours = differenceInHours(parseISO(shift.end_time), parseISO(shift.start_time));
   totalHours += thisShiftHours;
 
   if (totalHours > MAX_HOURS_PER_WEEK) {
@@ -308,16 +312,15 @@ function checkOvertimeRisk(
       shift_id: shift.id,
       user_id: user.id,
       message: `${user.full_name} would exceed weekly hour limit (${totalHours}h / ${MAX_HOURS_PER_WEEK}h)`,
-      details: { 
+      details: {
         total_hours: totalHours,
         max_hours: MAX_HOURS_PER_WEEK,
-        week_start: weekStart.toISOString()
+        week_start: weekStart.toISOString(),
       },
       resolved: false,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
   }
 
   return null;
 }
-

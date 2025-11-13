@@ -1,35 +1,41 @@
-"use client"
+'use client';
 
-import type React from "react"
+import type React from 'react';
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { api } from "@/lib/api-client"
-import { useToast } from "@/hooks/use-toast"
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { api } from '@/lib/api-client';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SignupPage() {
-  const router = useRouter()
-  const { toast } = useToast()
+  const router = useRouter();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    bureau_id: "",
-    role: "",
-    title: "",
-    shift_role: "",
-  })
-  const [isLoading, setIsLoading] = useState(false)
+    fullName: '',
+    email: '',
+    password: '',
+    bureau_id: '',
+    role: '',
+    title: '',
+    shift_role: '',
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
       // Real API signup
@@ -41,24 +47,24 @@ export default function SignupPage() {
         role: formData.role,
         title: formData.title,
         shift_role: formData.shift_role,
-      })
-      
+      });
+
       toast({
-        title: "Account created",
-        description: "Welcome to ShiftSmart! Please log in.",
-      })
-      
-      router.push("/login")
+        title: 'Account created',
+        description: 'Welcome to ShiftSmart! Please log in.',
+      });
+
+      router.push('/login');
     } catch (error: any) {
       toast({
-        title: "Signup failed",
-        description: error.message || "Please try again",
-        variant: "destructive",
-      })
+        title: 'Signup failed',
+        description: error.message || 'Please try again',
+        variant: 'destructive',
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -80,7 +86,9 @@ export default function SignupPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
-            <CardDescription>Set up your ShiftSmart account with your Reuters credentials</CardDescription>
+            <CardDescription>
+              Set up your ShiftSmart account with your Reuters credentials
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -118,7 +126,10 @@ export default function SignupPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bureau">Bureau</Label>
-                <Select value={formData.bureau_id} onValueChange={(value) => setFormData({ ...formData, bureau_id: value })}>
+                <Select
+                  value={formData.bureau_id}
+                  onValueChange={(value) => setFormData({ ...formData, bureau_id: value })}
+                >
                   <SelectTrigger id="bureau">
                     <SelectValue placeholder="Select your bureau" />
                   </SelectTrigger>
@@ -130,20 +141,20 @@ export default function SignupPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
-                <Select 
-                  value={formData.shift_role} 
+                <Select
+                  value={formData.shift_role}
                   onValueChange={(value) => {
                     const titleMap: any = {
-                      "editor": "Breaking News Editor",
-                      "senior": "Senior Breaking News Correspondent",
-                      "correspondent": "Breaking News Correspondent"
-                    }
-                    setFormData({ 
-                      ...formData, 
+                      editor: 'Breaking News Editor',
+                      senior: 'Senior Breaking News Correspondent',
+                      correspondent: 'Breaking News Correspondent',
+                    };
+                    setFormData({
+                      ...formData,
                       shift_role: value,
-                      role: "Breaking News",
-                      title: titleMap[value] || value
-                    })
+                      role: 'Breaking News',
+                      title: titleMap[value] || value,
+                    });
                   }}
                 >
                   <SelectTrigger id="role">
@@ -157,7 +168,7 @@ export default function SignupPage() {
                 </Select>
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating account..." : "Create Account"}
+                {isLoading ? 'Creating account...' : 'Create Account'}
               </Button>
             </form>
 
@@ -171,5 +182,5 @@ export default function SignupPage() {
         </Card>
       </main>
     </div>
-  )
+  );
 }

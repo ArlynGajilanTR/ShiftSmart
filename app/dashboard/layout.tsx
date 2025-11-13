@@ -1,11 +1,11 @@
-"use client"
+'use client';
 
-import type React from "react"
+import type React from 'react';
 
-import { Calendar, Users, AlertCircle, Settings, LogOut } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
-import { usePathname } from "next/navigation"
+import { Calendar, Users, AlertCircle, Settings, LogOut } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import {
   Sidebar,
   SidebarContent,
@@ -20,18 +20,18 @@ import {
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
+} from '@/components/ui/sidebar';
+import { Separator } from '@/components/ui/separator';
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: Calendar },
-  { name: "Schedule", href: "/dashboard/schedule", icon: Calendar },
-  { name: "Employees", href: "/dashboard/employees", icon: Users },
-  { name: "Conflicts", href: "/dashboard/conflicts", icon: AlertCircle },
-]
+  { name: 'Dashboard', href: '/dashboard', icon: Calendar },
+  { name: 'Schedule', href: '/dashboard/schedule', icon: Calendar },
+  { name: 'Employees', href: '/dashboard/employees', icon: Users },
+  { name: 'Conflicts', href: '/dashboard/conflicts', icon: AlertCircle },
+];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <SidebarProvider>
@@ -105,5 +105,5 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex-1 overflow-auto p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

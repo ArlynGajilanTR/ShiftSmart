@@ -7,6 +7,7 @@
 ## Step 1: Get Your API URL (30 seconds)
 
 Go to your Vercel dashboard and find your deployed API:
+
 ```
 https://shift-smart-YOUR-ID.vercel.app
 ```
@@ -105,6 +106,7 @@ npm run dev
 ```
 
 Try logging in with:
+
 - **Email:** `gianluca.semeraro@thomsonreuters.com`
 - **Password:** `changeme`
 
@@ -117,25 +119,29 @@ Try logging in with:
 Now that login works, wire up your other pages:
 
 ### Dashboard
+
 ```typescript
 const statsData = await api.dashboard.getStats();
 const shiftsData = await api.shifts.upcoming(7);
 ```
 
 ### Employee List
+
 ```typescript
 const data = await api.employees.list({ bureau: 'Milan' });
 ```
 
 ### Schedule/Calendar
+
 ```typescript
 const data = await api.shifts.list({
   start_date: '2025-11-01',
-  end_date: '2025-11-30'
+  end_date: '2025-11-30',
 });
 ```
 
 ### Drag-and-Drop
+
 ```typescript
 await api.shifts.move(shiftId, newDate, startTime, endTime);
 ```
@@ -145,13 +151,16 @@ await api.shifts.move(shiftId, newDate, startTime, endTime);
 ## 🐛 Troubleshooting
 
 **"No authentication token found"**
+
 - Make sure you logged in first
 - Check localStorage: `localStorage.getItem('auth_token')`
 
 **CORS errors**
+
 - Contact backend team to add your frontend URL to CORS whitelist
 
 **401 Unauthorized**
+
 - Token expired, log in again
 - Or check that token is being sent in Authorization header
 
@@ -160,6 +169,7 @@ await api.shifts.move(shiftId, newDate, startTime, endTime);
 ## 📚 Full Documentation
 
 See [FRONTEND_INTEGRATION_GUIDE.md](./FRONTEND_INTEGRATION_GUIDE.md) for:
+
 - Complete API client code
 - All 24 endpoint examples
 - Component-by-component integration
@@ -168,9 +178,10 @@ See [FRONTEND_INTEGRATION_GUIDE.md](./FRONTEND_INTEGRATION_GUIDE.md) for:
 
 ---
 
-## 🚀 You're Connected!
+## 🚀 You're Connected
 
 Your V0 frontend is now talking to the real backend API with:
+
 - ✅ 15 real Breaking News employees
 - ✅ Authentication system
 - ✅ Shift management
@@ -178,4 +189,3 @@ Your V0 frontend is now talking to the real backend API with:
 - ✅ AI scheduling (when configured)
 
 **Questions?** Check the [API_REFERENCE.md](../API_REFERENCE.md) for all endpoint details.
-

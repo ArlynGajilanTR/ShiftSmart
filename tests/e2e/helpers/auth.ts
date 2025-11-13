@@ -16,16 +16,16 @@ export async function login(page: Page) {
   await page.fill('input[type="email"]', TEST_CREDENTIALS.email);
   await page.fill('input[type="password"]', TEST_CREDENTIALS.password);
   await page.click('button[type="submit"]');
-  
+
   // Wait for navigation to dashboard
   await page.waitForURL('/dashboard', { timeout: 10000 });
-  
+
   // Verify token is stored
   const token = await page.evaluate(() => localStorage.getItem('auth_token'));
   if (!token) {
     throw new Error('Login failed: No auth token found in localStorage');
   }
-  
+
   return token;
 }
 
@@ -36,7 +36,7 @@ export async function logout(page: Page) {
   // Click logout in sidebar
   await page.click('text=Log Out');
   await page.waitForURL('/', { timeout: 5000 });
-  
+
   // Verify token is removed
   const token = await page.evaluate(() => localStorage.getItem('auth_token'));
   if (token) {
@@ -51,4 +51,3 @@ export async function isAuthenticated(page: Page): Promise<boolean> {
   const token = await page.evaluate(() => localStorage.getItem('auth_token'));
   return !!token;
 }
-

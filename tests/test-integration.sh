@@ -72,11 +72,11 @@ TOTAL=$((TOTAL + 1))
 if [ -n "$TOKEN" ]; then
     response=$(curl -s -X GET "$API_URL/api/employees" \
         -H "Authorization: Bearer $TOKEN")
-    
+
     if echo "$response" | grep -q "employees"; then
         echo -e "${GREEN}✅ PASS${NC}: Token-based request successful"
         PASSED=$((PASSED + 1))
-        
+
         # Check if we got 15 employees
         count=$(echo "$response" | grep -o '"id"' | wc -l)
         if [ "$count" -ge 15 ]; then
@@ -99,7 +99,7 @@ TOTAL=$((TOTAL + 1))
 if [ -n "$TOKEN" ]; then
     response=$(curl -s -X GET "$API_URL/api/employees?bureau=Milan" \
         -H "Authorization: Bearer $TOKEN")
-    
+
     if echo "$response" | grep -q "Milan"; then
         echo -e "${GREEN}✅ PASS${NC}: Milan bureau employees returned"
         PASSED=$((PASSED + 1))
@@ -118,11 +118,11 @@ TOTAL=$((TOTAL + 1))
 if [ -n "$TOKEN" ]; then
     response=$(curl -s -X GET "$API_URL/api/dashboard/stats" \
         -H "Authorization: Bearer $TOKEN")
-    
+
     if echo "$response" | grep -q "totalEmployees"; then
         echo -e "${GREEN}✅ PASS${NC}: Dashboard stats returned"
         PASSED=$((PASSED + 1))
-        
+
         # Extract stats
         total=$(echo "$response" | grep -o '"totalEmployees":[0-9]*' | grep -o '[0-9]*')
         echo "   ✓ Total employees: $total"
@@ -166,4 +166,3 @@ else
     echo -e "${RED}❌ SOME INTEGRATION TESTS FAILED${NC}"
     exit 1
 fi
-

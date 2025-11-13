@@ -3,6 +3,7 @@
 ## Pre-Testing Checklist
 
 Before you begin testing, ensure:
+
 - [ ] Development server is running (`npm run dev`)
 - [ ] You have browser developer tools available (F12)
 - [ ] You're logged into the application
@@ -14,9 +15,10 @@ Before you begin testing, ensure:
 
 **Purpose:** Verify the app handles missing AI configuration gracefully
 
-### Steps:
+### Steps
 
 1. **Ensure AI is not configured:**
+
    ```bash
    # Comment out or remove ANTHROPIC_API_KEY from .env.local
    # Restart the server
@@ -24,6 +26,7 @@ Before you begin testing, ensure:
    ```
 
 2. **Open browser and navigate to:**
+
    ```
    http://localhost:3000/dashboard/schedule
    ```
@@ -34,9 +37,10 @@ Before you begin testing, ensure:
 
 5. **Observe the dialog that opens**
 
-### Expected Results:
+### Expected Results
 
 ✅ **Visual Feedback:**
+
 - Red alert box appears at top of dialog
 - Alert says: "AI Not Configured"
 - Alert includes message about ANTHROPIC_API_KEY
@@ -44,17 +48,19 @@ Before you begin testing, ensure:
 - Button text shows "AI Not Available"
 
 ✅ **Console Logs:**
+
 ```
 [Schedule] Checking AI configuration status...
 [Schedule] AI Status Response: { ai_enabled: false, ... }
 ```
 
 ✅ **No Errors:**
+
 - No JavaScript errors in console
 - App doesn't crash
 - Dialog remains open and usable
 
-### Screenshot Locations to Check:
+### Screenshot Locations to Check
 
 1. Top of dialog - Red alert box
 2. Bottom of dialog - Disabled button
@@ -66,18 +72,19 @@ Before you begin testing, ensure:
 
 **Purpose:** Verify AI schedule generation works when properly configured
 
-### Steps:
+### Steps
 
 1. **Ensure AI is configured:**
+
    ```bash
    # Add to .env.local:
    # ANTHROPIC_API_KEY=sk-ant-your-actual-key-here
-   
+
    # Verify configuration
    npm run check:ai
-   
+
    # Should show: ✅ CONFIGURATION LOOKS GOOD!
-   
+
    # Restart server
    npm run dev
    ```
@@ -85,6 +92,7 @@ Before you begin testing, ensure:
 2. **Open browser with console (F12)**
 
 3. **Navigate to:**
+
    ```
    http://localhost:3000/dashboard/schedule
    ```
@@ -109,15 +117,17 @@ Before you begin testing, ensure:
 
 9. **Wait for generation to complete** (10-30 seconds)
 
-### Expected Results:
+### Expected Results
 
 ✅ **Button States:**
+
 1. "Checking AI..." with spinner (briefly)
 2. "Generate Preview" (enabled, green)
 3. "Generating..." with spinner (during generation)
 4. Preview appears
 
 ✅ **Console Logs (in order):**
+
 ```
 [Schedule] Generate button clicked { start_date: "...", end_date: "...", ... }
 [Schedule] Checking AI status...
@@ -127,18 +137,20 @@ Before you begin testing, ensure:
 ```
 
 ✅ **Success Toast:**
+
 - Green toast notification appears
 - Message: "Schedule generated successfully"
 - Description: "Generated X shifts"
 
 ✅ **Preview Display:**
+
 - Dialog changes to show preview
 - Summary cards show shift counts and metrics
 - Fairness metrics section shows distributions
 - Table shows first 10 shifts
 - "Approve & Save to Calendar" button appears
 
-### Screenshot Locations to Check:
+### Screenshot Locations to Check
 
 1. Initial dialog with form (AI configured alert should NOT appear)
 2. Button states during generation
@@ -152,7 +164,7 @@ Before you begin testing, ensure:
 
 **Purpose:** Verify proper error handling when data is missing
 
-### Steps:
+### Steps
 
 1. **With AI configured and server running**
 
@@ -165,9 +177,10 @@ Before you begin testing, ensure:
 
 5. **Click "Generate Preview"**
 
-### Expected Results:
+### Expected Results
 
 ✅ **Error Handling:**
+
 - Error toast appears
 - Message indicates no employees found
 - Button returns to "Generate Preview" state
@@ -175,6 +188,7 @@ Before you begin testing, ensure:
 - No crash or freeze
 
 ✅ **Console Logs:**
+
 ```
 [Schedule] Generate button clicked
 [Schedule] Checking AI status...
@@ -189,7 +203,7 @@ Before you begin testing, ensure:
 
 **Purpose:** Verify error handling for API failures
 
-### Steps:
+### Steps
 
 1. **With AI configured**
 
@@ -200,9 +214,10 @@ Before you begin testing, ensure:
 
 3. **Try to generate schedule**
 
-### Expected Results:
+### Expected Results
 
 ✅ **Error Handling:**
+
 - Error toast with descriptive message
 - Button returns to ready state
 - No infinite loading
@@ -214,7 +229,7 @@ Before you begin testing, ensure:
 
 **Purpose:** Verify dialog state resets properly
 
-### Steps:
+### Steps
 
 1. **Open Generate Schedule dialog**
 2. **Close it (click Cancel)**
@@ -224,9 +239,10 @@ Before you begin testing, ensure:
    - Previous preview is cleared
    - Form is reset to defaults
 
-### Expected Results:
+### Expected Results
 
 ✅ **State Management:**
+
 - Each time dialog opens, fresh AI check occurs
 - Previous generation results don't persist
 - Button state resets correctly
@@ -238,19 +254,21 @@ Before you begin testing, ensure:
 
 **Purpose:** Verify handling of auth failures
 
-### Steps:
+### Steps
 
 1. **Clear localStorage:**
+
    ```javascript
    // In browser console:
-   localStorage.clear()
+   localStorage.clear();
    ```
 
 2. **Try to generate schedule without logging in again**
 
-### Expected Results:
+### Expected Results
 
 ✅ **Auth Handling:**
+
 - Error about authentication
 - Clear message to log in again
 - Redirect to login page (may happen)
@@ -264,6 +282,7 @@ If something doesn't work as expected:
 ### Check Browser Console
 
 Look for:
+
 - [ ] `[Schedule]` prefixed logs showing flow
 - [ ] Any red error messages
 - [ ] Network request failures
@@ -271,6 +290,7 @@ Look for:
 ### Check Network Tab
 
 Look for:
+
 - [ ] `GET /api/ai/status` - Should return 200
 - [ ] `POST /api/ai/generate-schedule` - Check response
 - [ ] Any 401 (auth) or 500 (server) errors
@@ -278,17 +298,19 @@ Look for:
 ### Check Application State
 
 In browser console, run:
+
 ```javascript
 // Check if token exists
-localStorage.getItem('auth_token')
+localStorage.getItem('auth_token');
 
 // Check user
-localStorage.getItem('user')
+localStorage.getItem('user');
 ```
 
 ### Check Server Logs
 
 Terminal running `npm run dev` should show:
+
 - API requests being received
 - Any server-side errors
 - Database connection status
@@ -296,14 +318,17 @@ Terminal running `npm run dev` should show:
 ### Quick Fixes
 
 **Problem:** Button always disabled
+
 - **Fix:** Clear browser cache and localStorage
 - **Fix:** Check console for AI status response
 
 **Problem:** No console logs appearing
+
 - **Fix:** Hard refresh (Cmd+Shift+R / Ctrl+Shift+F5)
 - **Fix:** Verify code changes were saved
 
 **Problem:** API returns 500 error
+
 - **Fix:** Check server terminal for errors
 - **Fix:** Verify database connection
 - **Fix:** Check ANTHROPIC_API_KEY format
@@ -315,16 +340,19 @@ Terminal running `npm run dev` should show:
 All tests pass when:
 
 ✅ **Without AI configured:**
+
 - Clear error messages appear
 - Button is disabled appropriately
 - No crashes or silent failures
 
 ✅ **With AI configured:**
+
 - Generation works end-to-end
 - Preview displays correctly
 - Can save to database
 
 ✅ **Error scenarios:**
+
 - All errors show clear messages
 - App recovers gracefully
 - User knows what to do next
@@ -333,18 +361,19 @@ All tests pass when:
 
 ## Performance Expectations
 
-| Operation | Expected Time |
-|-----------|--------------|
-| Open dialog | < 1 second |
-| AI status check | < 2 seconds |
+| Operation           | Expected Time |
+| ------------------- | ------------- |
+| Open dialog         | < 1 second    |
+| AI status check     | < 2 seconds   |
 | Schedule generation | 10-30 seconds |
-| Save to database | 2-5 seconds |
+| Save to database    | 2-5 seconds   |
 
 ---
 
 ## Browser Compatibility
 
 Test in:
+
 - [ ] Chrome/Edge (Chromium)
 - [ ] Firefox
 - [ ] Safari
@@ -356,6 +385,7 @@ All modern browsers should work identically.
 ## Accessibility Testing
 
 While testing, verify:
+
 - [ ] Button is keyboard accessible (Tab + Enter)
 - [ ] Error messages are announced by screen readers
 - [ ] Dialog can be closed with Escape key
@@ -368,11 +398,13 @@ While testing, verify:
 After completing all tests:
 
 1. **Verify configuration checker:**
+
    ```bash
    npm run check:ai
    ```
 
 2. **Check file changes:**
+
    ```bash
    git status
    ```
@@ -391,6 +423,7 @@ After completing all tests:
 ## Reporting Issues
 
 If you find problems, include:
+
 - Browser and version
 - Steps to reproduce
 - Console error messages
@@ -403,4 +436,3 @@ If you find problems, include:
 **Happy Testing!** 🧪
 
 If all tests pass, the "Generate Preview" button is now fully functional with proper error handling and user feedback.
-

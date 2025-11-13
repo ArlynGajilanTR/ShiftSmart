@@ -23,20 +23,25 @@ const createQueryBuilder = (table: string) => {
       data: table === 'bureaus' ? { id: 'test-bureau-id', name: 'Milan' } : null,
       error: null,
     })),
-    then: jest.fn((resolve) => resolve({ 
-      data: table === 'users' ? [
-        {
-          id: 'test-user-1',
-          full_name: 'Marco Rossi',
-          email: 'marco@reuters.com',
-          title: 'Senior Editor',
-          shift_role: 'senior',
-          bureaus: { name: 'Milan' },
-          shift_preferences: null,
-        }
-      ] : [], 
-      error: null 
-    })),
+    then: jest.fn((resolve) =>
+      resolve({
+        data:
+          table === 'users'
+            ? [
+                {
+                  id: 'test-user-1',
+                  full_name: 'Marco Rossi',
+                  email: 'marco@reuters.com',
+                  title: 'Senior Editor',
+                  shift_role: 'senior',
+                  bureaus: { name: 'Milan' },
+                  shift_preferences: null,
+                },
+              ]
+            : [],
+        error: null,
+      })
+    ),
   };
   return builder;
 };
@@ -73,28 +78,30 @@ describe('AI Scheduler Agent', () => {
 
     it('should generate schedule successfully with valid input', async () => {
       mockIsConfigured.mockReturnValue(true);
-      mockCallClaude.mockResolvedValue(JSON.stringify({
-        shifts: [
-          {
-            date: '2025-11-01',
-            start_time: '08:00',
-            end_time: '16:00',
-            bureau: 'Milan',
-            assigned_to: 'Marco Rossi',
-            role_level: 'senior',
-            shift_type: 'Morning',
-            reasoning: 'Test assignment',
+      mockCallClaude.mockResolvedValue(
+        JSON.stringify({
+          shifts: [
+            {
+              date: '2025-11-01',
+              start_time: '08:00',
+              end_time: '16:00',
+              bureau: 'Milan',
+              assigned_to: 'Marco Rossi',
+              role_level: 'senior',
+              shift_type: 'Morning',
+              reasoning: 'Test assignment',
+            },
+          ],
+          fairness_metrics: {
+            weekend_shifts_per_person: { 'Marco Rossi': 0 },
+            night_shifts_per_person: { 'Marco Rossi': 0 },
+            total_shifts_per_person: { 'Marco Rossi': 1 },
+            preference_satisfaction_rate: 100,
+            hard_constraint_violations: [],
           },
-        ],
-        fairness_metrics: {
-          weekend_shifts_per_person: { 'Marco Rossi': 0 },
-          night_shifts_per_person: { 'Marco Rossi': 0 },
-          total_shifts_per_person: { 'Marco Rossi': 1 },
-          preference_satisfaction_rate: 100,
-          hard_constraint_violations: [],
-        },
-        recommendations: ['Schedule looks good'],
-      }));
+          recommendations: ['Schedule looks good'],
+        })
+      );
 
       const result = await generateSchedule({
         period: {
@@ -159,17 +166,19 @@ describe('AI Scheduler Agent', () => {
 
     it('should support different period types', async () => {
       mockIsConfigured.mockReturnValue(true);
-      mockCallClaude.mockResolvedValue(JSON.stringify({
-        shifts: [],
-        fairness_metrics: {
-          weekend_shifts_per_person: {},
-          night_shifts_per_person: {},
-          total_shifts_per_person: {},
-          preference_satisfaction_rate: 100,
-          hard_constraint_violations: [],
-        },
-        recommendations: [],
-      }));
+      mockCallClaude.mockResolvedValue(
+        JSON.stringify({
+          shifts: [],
+          fairness_metrics: {
+            weekend_shifts_per_person: {},
+            night_shifts_per_person: {},
+            total_shifts_per_person: {},
+            preference_satisfaction_rate: 100,
+            hard_constraint_violations: [],
+          },
+          recommendations: [],
+        })
+      );
 
       const types: Array<'week' | 'month' | 'quarter'> = ['week', 'month', 'quarter'];
 
@@ -190,17 +199,19 @@ describe('AI Scheduler Agent', () => {
   describe('Italian Holidays', () => {
     it('should include Italian holidays in schedule generation', async () => {
       mockIsConfigured.mockReturnValue(true);
-      mockCallClaude.mockResolvedValue(JSON.stringify({
-        shifts: [],
-        fairness_metrics: {
-          weekend_shifts_per_person: {},
-          night_shifts_per_person: {},
-          total_shifts_per_person: {},
-          preference_satisfaction_rate: 100,
-          hard_constraint_violations: [],
-        },
-        recommendations: [],
-      }));
+      mockCallClaude.mockResolvedValue(
+        JSON.stringify({
+          shifts: [],
+          fairness_metrics: {
+            weekend_shifts_per_person: {},
+            night_shifts_per_person: {},
+            total_shifts_per_person: {},
+            preference_satisfaction_rate: 100,
+            hard_constraint_violations: [],
+          },
+          recommendations: [],
+        })
+      );
 
       // Test date range that includes Christmas
       await generateSchedule({
@@ -277,7 +288,7 @@ describe('AI Scheduler Agent', () => {
     it('should handle missing employee data gracefully', async () => {
       mockIsConfigured.mockReturnValue(true);
       // Mock will simulate no employees found
-      
+
       const result = await generateSchedule({
         period: {
           start_date: '2025-11-01',
@@ -452,4 +463,3 @@ describe('Schedule Saving', () => {
     });
   });
 });
-

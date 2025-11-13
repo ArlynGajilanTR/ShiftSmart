@@ -8,10 +8,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!email || !password || !full_name || !bureau || !title || !shift_role) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     // Validate password strength (minimum 8 characters)
@@ -32,10 +29,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'Email already registered' },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: 'Email already registered' }, { status: 409 });
     }
 
     // Get bureau ID
@@ -46,10 +40,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (bureauError || !bureauData) {
-      return NextResponse.json(
-        { error: 'Invalid bureau' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid bureau' }, { status: 400 });
     }
 
     // Hash password
@@ -80,22 +71,17 @@ export async function POST(request: NextRequest) {
 
     if (createError || !newUser) {
       console.error('User creation error:', createError);
-      return NextResponse.json(
-        { error: 'Failed to create account' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to create account' }, { status: 500 });
     }
 
     // Create default shift preferences
-    await supabase
-      .from('shift_preferences')
-      .insert({
-        user_id: newUser.id,
-        preferred_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        preferred_shifts: ['Morning', 'Afternoon'],
-        max_shifts_per_week: 5,
-        notes: '',
-      });
+    await supabase.from('shift_preferences').insert({
+      user_id: newUser.id,
+      preferred_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      preferred_shifts: ['Morning', 'Afternoon'],
+      max_shifts_per_week: 5,
+      notes: '',
+    });
 
     // Return user data and session token
     const response = {
@@ -121,10 +107,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
     console.error('Signup error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

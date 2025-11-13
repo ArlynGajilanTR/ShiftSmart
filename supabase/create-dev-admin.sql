@@ -9,20 +9,20 @@ DECLARE
 BEGIN
   -- Get Milan bureau ID (or any bureau if Milan doesn't exist)
   SELECT id INTO milan_bureau_id FROM bureaus WHERE code = 'ITA-MILAN' LIMIT 1;
-  
+
   IF milan_bureau_id IS NULL THEN
     SELECT id INTO milan_bureau_id FROM bureaus LIMIT 1;
   END IF;
 
   -- Insert or update dev user with admin access
   INSERT INTO users (
-    email, 
-    full_name, 
-    title, 
-    shift_role, 
-    bureau_id, 
-    team, 
-    status, 
+    email,
+    full_name,
+    title,
+    shift_role,
+    bureau_id,
+    team,
+    status,
     role,
     password_hash
   ) VALUES (
@@ -52,15 +52,14 @@ BEGIN
 END $$;
 
 -- Verify the user was created
-SELECT 
-  u.email,
-  u.full_name,
-  u.role,
-  u.shift_role,
-  u.status,
-  b.name as bureau,
-  u.team
-FROM users u
-LEFT JOIN bureaus b ON u.bureau_id = b.id
+SELECT
+    u.email,
+    u.full_name,
+    u.role,
+    u.shift_role,
+    u.status,
+    b.name AS bureau,
+    u.team
+FROM users AS u
+LEFT JOIN bureaus AS b ON u.bureau_id = b.id
 WHERE u.email = 'arlyn.gajilan@thomsonreuters';
-

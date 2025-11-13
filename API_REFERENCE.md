@@ -29,6 +29,7 @@ All endpoints (except auth endpoints) require a Bearer token in the Authorizatio
 Authenticate a user and receive a session token.
 
 **Request:**
+
 ```http
 POST /api/auth/login
 Content-Type: application/json
@@ -40,6 +41,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "token": "abc123...",
@@ -55,6 +57,7 @@ Content-Type: application/json
 ```
 
 **Errors:**
+
 - `400` - Missing email or password
 - `401` - Invalid credentials
 
@@ -65,6 +68,7 @@ Content-Type: application/json
 Register a new user (internal staff only).
 
 **Request:**
+
 ```http
 POST /api/auth/signup
 Content-Type: application/json
@@ -82,6 +86,7 @@ Content-Type: application/json
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "user": {
@@ -99,12 +104,14 @@ Content-Type: application/json
 Invalidate the current session token.
 
 **Request:**
+
 ```http
 POST /api/auth/logout
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Logged out successfully"
@@ -118,12 +125,14 @@ Authorization: Bearer YOUR_TOKEN
 Get the current authenticated user's details.
 
 **Request:**
+
 ```http
 GET /api/auth/session
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "user": {
@@ -147,18 +156,21 @@ Manage Breaking News team members.
 List all employees with optional filtering.
 
 **Request:**
+
 ```http
 GET /api/employees?bureau=Milan&role=senior&status=active&search=rossi
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Query Parameters:**
+
 - `bureau` (string) - Filter by bureau name
 - `role` (string) - Filter by shift role (editor, senior, correspondent)
 - `status` (string) - Filter by status (active, on-leave, inactive)
 - `search` (string) - Search by name or email
 
 **Response (200 OK):**
+
 ```json
 {
   "employees": [
@@ -187,6 +199,7 @@ Authorization: Bearer YOUR_TOKEN
 Create a new employee.
 
 **Request:**
+
 ```http
 POST /api/employees
 Authorization: Bearer YOUR_TOKEN
@@ -206,6 +219,7 @@ Content-Type: application/json
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "employee": {
@@ -225,12 +239,14 @@ Content-Type: application/json
 Get a specific employee's details.
 
 **Request:**
+
 ```http
 GET /api/employees/uuid-here
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "employee": {
@@ -258,6 +274,7 @@ Authorization: Bearer YOUR_TOKEN
 Update an employee's details.
 
 **Request:**
+
 ```http
 PUT /api/employees/uuid-here
 Authorization: Bearer YOUR_TOKEN
@@ -270,6 +287,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "employee": {
@@ -287,12 +305,14 @@ Content-Type: application/json
 Delete an employee (soft delete recommended).
 
 **Request:**
+
 ```http
 DELETE /api/employees/uuid-here
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Employee deleted successfully"
@@ -306,12 +326,14 @@ Authorization: Bearer YOUR_TOKEN
 Get an employee's shift preferences.
 
 **Request:**
+
 ```http
 GET /api/employees/uuid-here/preferences
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "preferences": {
@@ -332,6 +354,7 @@ Authorization: Bearer YOUR_TOKEN
 Update an employee's shift preferences.
 
 **Request:**
+
 ```http
 PUT /api/employees/uuid-here/preferences
 Authorization: Bearer YOUR_TOKEN
@@ -346,6 +369,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "preferences": {
@@ -367,18 +391,21 @@ Manage shift scheduling and assignments.
 List shifts with optional filtering.
 
 **Request:**
+
 ```http
 GET /api/shifts?start_date=2025-11-01&end_date=2025-11-30&bureau_id=uuid&employee_id=uuid
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Query Parameters:**
+
 - `start_date` (string, ISO date) - Filter shifts starting from this date
 - `end_date` (string, ISO date) - Filter shifts up to this date
 - `bureau_id` (string, UUID) - Filter by bureau
 - `employee_id` (string, UUID) - Filter by assigned employee
 
 **Response (200 OK):**
+
 ```json
 {
   "shifts": [
@@ -405,6 +432,7 @@ Authorization: Bearer YOUR_TOKEN
 Create a new shift with optional employee assignment.
 
 **Request:**
+
 ```http
 POST /api/shifts
 Authorization: Bearer YOUR_TOKEN
@@ -421,6 +449,7 @@ Content-Type: application/json
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "shift": {
@@ -440,15 +469,18 @@ Content-Type: application/json
 Get upcoming shifts for the dashboard (next 7 days by default).
 
 **Request:**
+
 ```http
 GET /api/shifts/upcoming?days=14
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Query Parameters:**
+
 - `days` (number, default: 7) - Number of days to look ahead
 
 **Response (200 OK):**
+
 ```json
 {
   "shifts": [
@@ -471,6 +503,7 @@ Authorization: Bearer YOUR_TOKEN
 Update an existing shift.
 
 **Request:**
+
 ```http
 PUT /api/shifts/uuid-here
 Authorization: Bearer YOUR_TOKEN
@@ -484,6 +517,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "shift": {
@@ -501,6 +535,7 @@ Content-Type: application/json
 Move a shift (drag-and-drop support).
 
 **Request:**
+
 ```http
 PATCH /api/shifts/uuid-here
 Authorization: Bearer YOUR_TOKEN
@@ -514,6 +549,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "shift": {
@@ -531,12 +567,14 @@ Content-Type: application/json
 Delete a shift.
 
 **Request:**
+
 ```http
 DELETE /api/shifts/uuid-here
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Shift deleted successfully"
@@ -554,17 +592,20 @@ Manage scheduling conflicts and warnings.
 List conflicts with optional filtering.
 
 **Request:**
+
 ```http
 GET /api/conflicts?status=unresolved&severity=high&limit=50
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Query Parameters:**
+
 - `status` (string) - Filter by status (unresolved, acknowledged, resolved)
 - `severity` (string) - Filter by severity (high, medium, low)
 - `limit` (number, default: 100) - Maximum number of results
 
 **Response (200 OK):**
+
 ```json
 {
   "conflicts": [
@@ -594,6 +635,7 @@ Authorization: Bearer YOUR_TOKEN
 Acknowledge or resolve a conflict.
 
 **Request:**
+
 ```http
 PATCH /api/conflicts/uuid-here
 Authorization: Bearer YOUR_TOKEN
@@ -605,9 +647,11 @@ Content-Type: application/json
 ```
 
 **Body Parameters:**
+
 - `action` (string, required) - Either "acknowledge" or "resolve"
 
 **Response (200 OK):**
+
 ```json
 {
   "conflict": {
@@ -626,12 +670,14 @@ Content-Type: application/json
 Dismiss a conflict (false positive).
 
 **Request:**
+
 ```http
 DELETE /api/conflicts/uuid-here
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Conflict dismissed successfully"
@@ -649,12 +695,14 @@ Aggregated statistics for the dashboard.
 Get dashboard statistics.
 
 **Request:**
+
 ```http
 GET /api/dashboard/stats
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "stats": {
@@ -691,6 +739,7 @@ AI-powered scheduling using Claude Sonnet 4.5.
 Generate an optimized schedule using AI.
 
 **Request:**
+
 ```http
 POST /api/ai/generate-schedule
 Authorization: Bearer YOUR_TOKEN
@@ -724,6 +773,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "schedule": {
@@ -752,6 +802,7 @@ Content-Type: application/json
 ```
 
 **Errors:**
+
 - `400` - Invalid date range or constraints
 - `402` - AI service unavailable (check ANTHROPIC_API_KEY)
 - `500` - AI generation failed
@@ -763,6 +814,7 @@ Content-Type: application/json
 Get AI suggestions for resolving a conflict.
 
 **Request:**
+
 ```http
 POST /api/ai/resolve-conflict
 Authorization: Bearer YOUR_TOKEN
@@ -774,6 +826,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "suggestions": [
@@ -802,12 +855,14 @@ Content-Type: application/json
 Check AI service health and configuration.
 
 **Request:**
+
 ```http
 GET /api/ai/status
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "operational",
@@ -867,6 +922,7 @@ All errors follow this format:
 - **Bulk operations:** 20 requests/minute per user
 
 Rate limit headers included in responses:
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -882,6 +938,7 @@ ShiftSmart API uses **semantic versioning** (MAJOR.MINOR.PATCH).
 ### Current Version: 1.0.0
 
 **Breaking changes** will increment the MAJOR version. The API version is included in:
+
 - Response headers: `X-API-Version: 1.0.0`
 - Package version: `package.json`
 - This documentation
@@ -902,7 +959,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed version history.
 
 For issues, questions, or feature requests:
 
-- **GitHub Issues:** https://github.com/ArlynGajilanTR/ShiftSmart/issues
+- **GitHub Issues:** <https://github.com/ArlynGajilanTR/ShiftSmart/issues>
 - **Documentation:** See project README.md
 - **Deployment:** See DEPLOYMENT.md
 
@@ -911,4 +968,3 @@ For issues, questions, or feature requests:
 **Last Updated:** October 30, 2025  
 **API Version:** 1.0.0  
 **Maintained by:** Reuters Breaking News Team
-

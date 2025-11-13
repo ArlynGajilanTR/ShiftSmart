@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.1] - 2025-11-11
 
 ### Fixed
+
 - **Generate Preview Button:** Fixed non-functional Generate Preview button in Schedule Management
   - Added pre-flight AI configuration check before generation attempts
   - Implemented proper error handling with specific, actionable error messages
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Checks Supabase configuration completeness
 
 ### Added
+
 - **AI Status Validation:** Real-time AI configuration check when opening Generate Schedule dialog
   - Prevents silent failures
   - Shows clear feedback about AI availability
@@ -48,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `GENERATE_PREVIEW_FIX.md`: Complete fix documentation
 
 ### Changed
+
 - **Development Scripts:**
   - `npm run dev`: Now runs without SSL verification disabled (secure by default)
   - `npm run dev:unsafe`: New script for development with self-signed certificates
@@ -66,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - No more silent failures
 
 ### Security
+
 - **SSL Verification:** Re-enabled SSL certificate verification in development
   - Removed insecure `NODE_TLS_REJECT_UNAUTHORIZED=0` from default script
   - Maintains secure HTTPS connections
@@ -74,6 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2025-11-06
 
 ### Added - Comprehensive Automated Testing Infrastructure
+
 - **300+ Automated Tests:**
   - 150+ unit tests covering utilities, auth, AI integration
   - 100+ API endpoint tests (standard + enhanced)
@@ -81,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 100+ E2E UI workflow tests
   - 20+ accessibility tests (WCAG 2.1 AA)
   - Performance and load testing suite
-  
+
 - **Unit Testing Framework:**
   - Jest configuration with TypeScript support
   - Password utilities testing (hashing, validation, security)
@@ -128,6 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive Supabase mocking
 
 ### Fixed
+
 - **Password Security:**
   - Added empty password validation (security improvement)
   - Added `comparePassword()` function for test compatibility
@@ -145,6 +151,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed className deduplication test expectations
 
 ### Documentation
+
 - **Comprehensive Testing Guides:**
   - `COMPREHENSIVE_TESTING_PLAN.md` - Complete testing strategy (50+ pages)
   - `TESTING_QUICKSTART.md` - Quick reference guide
@@ -158,6 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated API_REFERENCE.md with test coverage
 
 ### Changed
+
 - **Package Scripts:**
   - Added `test:unit` - Run unit tests with Jest
   - Added `test:unit:watch` - Watch mode for unit tests
@@ -175,12 +183,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `jest-environment-node` for test environment
 
 ### Test Coverage
+
 - **Unit Tests:** 59/59 passing (100%)
 - **API Tests:** 20/20 passing (100%)
 - **TypeScript:** 0 errors (100% clean)
 - **Total:** 79+ tests passing (100%)
 
 ### Migration Notes
+
 - All existing functionality maintained
 - No breaking changes
 - Test suite runs independently of application
@@ -191,6 +201,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.1] - 2025-11-05
 
 ### Added
+
 - **Dev Admin Setup Script:**
   - Created `supabase/create-dev-admin.sql` for quick admin account setup
   - Pre-configured admin credentials for testing/demo purposes
@@ -198,6 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Idempotent script (safe to run multiple times)
 
 ### Documentation
+
 - Updated SETUP_INSTRUCTIONS.md with dev admin setup option
 - Updated QUICKSTART.md with dev admin quick start path
 - Updated SETUP.md with dev admin configuration step
@@ -208,6 +220,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2025-10-30
 
 ### Added - Phase 4: Frontend-Backend Integration & Testing
+
 - **Unified Fullstack Application:**
   - Merged V0 frontend into backend codebase
   - Single repository for both frontend and backend
@@ -242,6 +255,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive testing guide (`tests/TESTING_GUIDE.md`)
 
 ### Fixed
+
 - **SSL Certificate Issues:**
   - Added `NODE_TLS_REJECT_UNAUTHORIZED=0` for local development
   - Resolved "unable to get local issuer certificate" errors
@@ -264,6 +278,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Excluded Playwright test files from Next.js build
 
 ### Changed
+
 - **Development Environment:**
   - Updated `package.json` dev script with SSL workaround
   - Merged frontend and backend dependencies
@@ -278,6 +293,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All tests running successfully with real database
 
 ### Documentation
+
 - Updated README with unified app structure
 - Enhanced DEPLOYMENT guide with troubleshooting
 - Added DATABASE_RESEED_NEEDED.md for seed updates
@@ -288,6 +304,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-10-30
 
 ### Added - Phase 3: AI Scheduling Integration
+
 - **AI-Powered Scheduling:** Integrated Claude Sonnet 4.5 for intelligent schedule generation
   - Prompt engineering for context-aware scheduling
   - Employee preferences consideration
@@ -307,6 +324,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Prompt engineering best practices
 
 ### Changed
+
 - Updated README with AI endpoint documentation
 - Enhanced DEPLOYMENT.md with AI configuration steps
 
@@ -315,6 +333,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.0] - 2025-10-30
 
 ### Added - Phase 1C: API-Only Backend Conversion
+
 - Converted Next.js app to API-only architecture
 - Removed all frontend components and pages
 - Streamlined dependencies (removed `@dnd-kit`, `zustand`, `lucide-react`, Tailwind)
@@ -322,6 +341,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplified app layout for API-only usage
 
 ### Removed
+
 - All authentication pages (`login`, `signup`, `welcome`)
 - All dashboard pages and components
 - Calendar components (drag-and-drop, scheduling UI)
@@ -330,6 +350,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Middleware for route protection
 
 ### Changed
+
 - Updated README to reflect API-only nature
 - Simplified package.json dependencies
 - Modified app/page.tsx as API documentation landing page
@@ -340,6 +361,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0] - 2025-10-30
 
 ### Added - Phase 1B: Core API Endpoints
+
 - **Authentication API:**
   - `POST /api/auth/login` - User login with session tokens
   - `POST /api/auth/signup` - New user registration
@@ -372,6 +394,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Business logic validation (`lib/validation/conflicts.ts`)
 
 ### Changed
+
 - Enhanced README with complete API endpoint documentation
 - Updated DEPLOYMENT.md with API deployment instructions
 
@@ -380,6 +403,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2025-10-30
 
 ### Added - Phase 1A: Real Data & Minimal Auth
+
 - **Database Schema Updates:**
   - Enhanced `users` table with `phone`, `worker_id`, `title`, `team`, `status`, `shift_role`
   - Added `password_hash`, `session_token`, `session_expires_at` for minimal auth
@@ -401,6 +425,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `supabase/seed-breaking-news-team.sql` - Real Breaking News team data
 
 ### Changed
+
 - Updated package.json with bcryptjs dependency
 - Enhanced README with setup instructions for real data
 - Updated DEPLOYMENT.md with auth configuration
@@ -410,6 +435,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2025-10-30
 
 ### Added - Phase 0: Frontend Analysis & Planning
+
 - **Frontend Analysis:**
   - Detailed audit of V0 frontend (50+ components)
   - Identified required backend APIs
@@ -429,6 +455,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Planned AI integration architecture
 
 ### Changed
+
 - Initial project setup with Next.js 16
 - Configured Supabase client
 - Set up TypeScript configuration
@@ -484,4 +511,3 @@ ShiftSmart follows [Semantic Versioning](https://semver.org/):
 [0.3.0]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ArlynGajilanTR/ShiftSmart/releases/tag/v0.1.0
-

@@ -13,10 +13,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -31,7 +28,8 @@ export async function GET(request: NextRequest) {
     // Query shifts
     const { data: shifts, error } = await supabase
       .from('shifts')
-      .select(`
+      .select(
+        `
         *,
         bureaus(name, code),
         shift_assignments(
@@ -39,17 +37,15 @@ export async function GET(request: NextRequest) {
           status,
           user:users!user_id(id, full_name, title, shift_role)
         )
-      `)
+      `
+      )
       .gte('start_time', now.toISOString())
       .lte('start_time', endDate.toISOString())
       .order('start_time');
 
     if (error) {
       console.error('Error fetching upcoming shifts:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch upcoming shifts' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to fetch upcoming shifts' }, { status: 500 });
     }
 
     // Format response
@@ -76,10 +72,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(formattedShifts, { status: 200 });
   } catch (error) {
     console.error('Upcoming shifts error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

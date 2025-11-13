@@ -11,16 +11,13 @@ export async function POST(request: NextRequest) {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { 
-      start_date, 
-      end_date, 
+    const {
+      start_date,
+      end_date,
       type = 'week',
       bureau = 'both',
       preserve_existing = false,
@@ -29,10 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!start_date || !end_date) {
-      return NextResponse.json(
-        { error: 'start_date and end_date are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'start_date and end_date are required' }, { status: 400 });
     }
 
     // Validate type
@@ -73,7 +67,7 @@ export async function POST(request: NextRequest) {
     let saveResult = null;
     if (save_to_database) {
       saveResult = await saveSchedule(result.data, user.id);
-      
+
       if (!saveResult.success) {
         return NextResponse.json(
           {
@@ -98,10 +92,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('Generate schedule API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

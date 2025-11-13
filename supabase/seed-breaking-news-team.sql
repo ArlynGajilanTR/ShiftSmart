@@ -4,10 +4,10 @@
 
 -- Insert Milan Bureau
 INSERT INTO bureaus (name, code, timezone, settings) VALUES (
-  'Milan',
-  'ITA-MILAN',
-  'Europe/Rome',
-  '{
+    'Milan',
+    'ITA-MILAN',
+    'Europe/Rome',
+    '{
     "min_senior_per_shift": 1,
     "max_junior_per_shift": 3,
     "require_lead": false,
@@ -17,10 +17,10 @@ INSERT INTO bureaus (name, code, timezone, settings) VALUES (
 
 -- Insert Rome Bureau
 INSERT INTO bureaus (name, code, timezone, settings) VALUES (
-  'Rome',
-  'ITA-ROME',
-  'Europe/Rome',
-  '{
+    'Rome',
+    'ITA-ROME',
+    'Europe/Rome',
+    '{
     "min_senior_per_shift": 1,
     "max_junior_per_shift": 3,
     "require_lead": false,
@@ -300,15 +300,14 @@ BEGIN
 END $$;
 
 -- Verify data
-SELECT 
-  b.name AS bureau,
-  u.full_name,
-  u.title,
-  u.shift_role,
-  sp.notes AS availability_notes
-FROM users u
-LEFT JOIN bureaus b ON u.bureau_id = b.id
-LEFT JOIN shift_preferences sp ON sp.user_id = u.id
+SELECT
+    b.name AS bureau,
+    u.full_name,
+    u.title,
+    u.shift_role,
+    sp.notes AS availability_notes
+FROM users AS u
+LEFT JOIN bureaus AS b ON u.bureau_id = b.id
+LEFT JOIN shift_preferences AS sp ON u.id = sp.user_id
 WHERE u.team = 'Breaking News'
-ORDER BY b.name, u.shift_role DESC, u.full_name;
-
+ORDER BY b.name ASC, u.shift_role DESC, u.full_name ASC;

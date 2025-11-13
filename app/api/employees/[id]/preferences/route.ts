@@ -6,35 +6,22 @@ import { verifyAuth } from '@/lib/auth/verify';
  * GET /api/employees/:id/preferences
  * Get employee shift preferences
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const supabase = await createClient();
     const { id } = await params;
 
     // Check if employee exists
-    const { data: employee } = await supabase
-      .from('users')
-      .select('id')
-      .eq('id', id)
-      .single();
+    const { data: employee } = await supabase.from('users').select('id').eq('id', id).single();
 
     if (!employee) {
-      return NextResponse.json(
-        { error: 'Employee not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
     }
 
     // Get preferences
@@ -44,12 +31,10 @@ export async function GET(
       .eq('user_id', id)
       .single();
 
-    if (error && error.code !== 'PGRST116') { // Not found is ok
+    if (error && error.code !== 'PGRST116') {
+      // Not found is ok
       console.error('Error fetching preferences:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch preferences' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to fetch preferences' }, { status: 500 });
     }
 
     // Format response
@@ -64,10 +49,7 @@ export async function GET(
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Get preferences error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -75,18 +57,12 @@ export async function GET(
  * PUT /api/employees/:id/preferences
  * Update employee shift preferences
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -96,17 +72,10 @@ export async function PUT(
     const { id } = await params;
 
     // Check if employee exists
-    const { data: employee } = await supabase
-      .from('users')
-      .select('id')
-      .eq('id', id)
-      .single();
+    const { data: employee } = await supabase.from('users').select('id').eq('id', id).single();
 
     if (!employee) {
-      return NextResponse.json(
-        { error: 'Employee not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
     }
 
     // Check if preferences exist
@@ -138,10 +107,7 @@ export async function PUT(
 
       if (updateError) {
         console.error('Error updating preferences:', updateError);
-        return NextResponse.json(
-          { error: 'Failed to update preferences' },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to update preferences' }, { status: 500 });
       }
       updatedPrefs = data;
     } else {
@@ -154,10 +120,7 @@ export async function PUT(
 
       if (insertError) {
         console.error('Error creating preferences:', insertError);
-        return NextResponse.json(
-          { error: 'Failed to create preferences' },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to create preferences' }, { status: 500 });
       }
       updatedPrefs = data;
     }
@@ -174,10 +137,6 @@ export async function PUT(
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Update preferences error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

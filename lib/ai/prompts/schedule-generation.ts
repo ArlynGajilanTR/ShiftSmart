@@ -137,7 +137,9 @@ export function buildUserPrompt(scheduleRequest: {
 
 ## TEAM ROSTER (${scheduleRequest.employees.length} employees)
 
-${scheduleRequest.employees.map((emp) => `
+${scheduleRequest.employees
+  .map(
+    (emp) => `
 ### ${emp.full_name} - ${emp.title}
 - Bureau: ${emp.bureau}
 - Role Level: ${emp.shift_role}
@@ -150,29 +152,44 @@ ${scheduleRequest.employees.map((emp) => `
 - Max Shifts/Week: ${emp.preferences.max_shifts_per_week}
 ${emp.preferences.notes ? `- Notes: ${emp.preferences.notes}` : ''}
 
-${emp.recent_history ? `**Recent History (Last Month):**
+${
+  emp.recent_history
+    ? `**Recent History (Last Month):**
 - Weekend Shifts: ${emp.recent_history.weekend_shifts_last_month}
 - Night Shifts: ${emp.recent_history.night_shifts_last_month}
 - Total Shifts: ${emp.recent_history.total_shifts_last_month}
 ${emp.recent_history.last_holiday_worked ? `- Last Holiday Worked: ${emp.recent_history.last_holiday_worked}` : ''}
-` : ''}
-`).join('\n')}
+`
+    : ''
+}
+`
+  )
+  .join('\n')}
 
 ## ITALIAN HOLIDAYS IN PERIOD
-${scheduleRequest.italian_holidays.length > 0 
-  ? scheduleRequest.italian_holidays.map(date => `- ${date}`).join('\n')
-  : 'None in this period'
+${
+  scheduleRequest.italian_holidays.length > 0
+    ? scheduleRequest.italian_holidays.map((date) => `- ${date}`).join('\n')
+    : 'None in this period'
 }
 
-${scheduleRequest.existing_shifts && scheduleRequest.existing_shifts.length > 0 ? `
+${
+  scheduleRequest.existing_shifts && scheduleRequest.existing_shifts.length > 0
+    ? `
 ## EXISTING SHIFTS (DO NOT MODIFY)
-${scheduleRequest.existing_shifts.map(s => `- ${s.date}: ${s.employee_name} (${s.shift_type})`).join('\n')}
-` : ''}
+${scheduleRequest.existing_shifts.map((s) => `- ${s.date}: ${s.employee_name} (${s.shift_type})`).join('\n')}
+`
+    : ''
+}
 
-${scheduleRequest.special_requirements && scheduleRequest.special_requirements.length > 0 ? `
+${
+  scheduleRequest.special_requirements && scheduleRequest.special_requirements.length > 0
+    ? `
 ## SPECIAL REQUIREMENTS
-${scheduleRequest.special_requirements.map(req => `- ${req}`).join('\n')}
-` : ''}
+${scheduleRequest.special_requirements.map((req) => `- ${req}`).join('\n')}
+`
+    : ''
+}
 
 ---
 
@@ -186,4 +203,3 @@ Generate a complete, fair, and compliant schedule for this period. Ensure:
 
 Return your response as valid JSON following the specified format.`;
 }
-

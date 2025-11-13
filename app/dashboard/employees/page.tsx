@@ -1,14 +1,21 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Plus, Search, Edit, Trash2, Mail, Phone, MapPin } from "lucide-react"
-import Link from "next/link"
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Plus, Search, Edit, Trash2, Mail, Phone, MapPin } from 'lucide-react';
+import Link from 'next/link';
 import {
   Dialog,
   DialogContent,
@@ -16,165 +23,176 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { api } from "@/lib/api-client"
-import { useToast } from "@/hooks/use-toast"
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { api } from '@/lib/api-client';
+import { useToast } from '@/hooks/use-toast';
 
 // Mock employee data as fallback
 const mockEmployees = [
   {
     id: 1,
-    name: "Marco Rossi",
-    email: "marco.rossi@reuters.com",
-    phone: "+39 02 1234 5678",
-    role: "Senior Editor",
-    bureau: "Milan",
-    status: "active",
+    name: 'Marco Rossi',
+    email: 'marco.rossi@reuters.com',
+    phone: '+39 02 1234 5678',
+    role: 'Senior Editor',
+    bureau: 'Milan',
+    status: 'active',
     shiftsThisMonth: 18,
-    initials: "MR",
+    initials: 'MR',
   },
   {
     id: 2,
-    name: "Sofia Romano",
-    email: "sofia.romano@reuters.com",
-    phone: "+39 06 9876 5432",
-    role: "Junior Editor",
-    bureau: "Rome",
-    status: "active",
+    name: 'Sofia Romano',
+    email: 'sofia.romano@reuters.com',
+    phone: '+39 06 9876 5432',
+    role: 'Junior Editor',
+    bureau: 'Rome',
+    status: 'active',
     shiftsThisMonth: 16,
-    initials: "SR",
+    initials: 'SR',
   },
   {
     id: 3,
-    name: "Luca Ferrari",
-    email: "luca.ferrari@reuters.com",
-    phone: "+39 02 5555 1234",
-    role: "Lead Editor",
-    bureau: "Milan",
-    status: "active",
+    name: 'Luca Ferrari',
+    email: 'luca.ferrari@reuters.com',
+    phone: '+39 02 5555 1234',
+    role: 'Lead Editor',
+    bureau: 'Milan',
+    status: 'active',
     shiftsThisMonth: 20,
-    initials: "LF",
+    initials: 'LF',
   },
   {
     id: 4,
-    name: "Giulia Bianchi",
-    email: "giulia.bianchi@reuters.com",
-    phone: "+39 06 4444 5678",
-    role: "Senior Editor",
-    bureau: "Rome",
-    status: "active",
+    name: 'Giulia Bianchi',
+    email: 'giulia.bianchi@reuters.com',
+    phone: '+39 06 4444 5678',
+    role: 'Senior Editor',
+    bureau: 'Rome',
+    status: 'active',
     shiftsThisMonth: 17,
-    initials: "GB",
+    initials: 'GB',
   },
   {
     id: 5,
-    name: "Alessandro Conti",
-    email: "alessandro.conti@reuters.com",
-    phone: "+39 02 7777 8888",
-    role: "Junior Editor",
-    bureau: "Milan",
-    status: "active",
+    name: 'Alessandro Conti',
+    email: 'alessandro.conti@reuters.com',
+    phone: '+39 02 7777 8888',
+    role: 'Junior Editor',
+    bureau: 'Milan',
+    status: 'active',
     shiftsThisMonth: 15,
-    initials: "AC",
+    initials: 'AC',
   },
   {
     id: 6,
-    name: "Francesca Marino",
-    email: "francesca.marino@reuters.com",
-    phone: "+39 06 3333 2222",
-    role: "Senior Editor",
-    bureau: "Rome",
-    status: "active",
+    name: 'Francesca Marino',
+    email: 'francesca.marino@reuters.com',
+    phone: '+39 06 3333 2222',
+    role: 'Senior Editor',
+    bureau: 'Rome',
+    status: 'active',
     shiftsThisMonth: 19,
-    initials: "FM",
+    initials: 'FM',
   },
   {
     id: 7,
-    name: "Matteo Ricci",
-    email: "matteo.ricci@reuters.com",
-    phone: "+39 02 9999 0000",
-    role: "Junior Editor",
-    bureau: "Milan",
-    status: "on-leave",
+    name: 'Matteo Ricci',
+    email: 'matteo.ricci@reuters.com',
+    phone: '+39 02 9999 0000',
+    role: 'Junior Editor',
+    bureau: 'Milan',
+    status: 'on-leave',
     shiftsThisMonth: 8,
-    initials: "MR",
+    initials: 'MR',
   },
   {
     id: 8,
-    name: "Elena Greco",
-    email: "elena.greco@reuters.com",
-    phone: "+39 06 1111 2222",
-    role: "Lead Editor",
-    bureau: "Rome",
-    status: "active",
+    name: 'Elena Greco',
+    email: 'elena.greco@reuters.com',
+    phone: '+39 06 1111 2222',
+    role: 'Lead Editor',
+    bureau: 'Rome',
+    status: 'active',
     shiftsThisMonth: 21,
-    initials: "EG",
+    initials: 'EG',
   },
-]
+];
 
 export default function EmployeesPage() {
-  const { toast } = useToast()
-  const [employees, setEmployees] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filterBureau, setFilterBureau] = useState("all")
-  const [filterRole, setFilterRole] = useState("all")
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const { toast } = useToast();
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterBureau, setFilterBureau] = useState('all');
+  const [filterRole, setFilterRole] = useState('all');
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   // Fetch employees from API
   useEffect(() => {
     async function fetchEmployees() {
       try {
-        const response = await api.employees.list()
+        const response = await api.employees.list();
         const employeeData = response.employees.map((emp: any) => ({
           id: emp.id,
           name: emp.full_name,
           email: emp.email,
-          phone: emp.phone || "+39 02 0000 0000",
+          phone: emp.phone || '+39 02 0000 0000',
           role: emp.title || emp.shift_role,
-          bureau: emp.bureaus?.name || emp.bureau || "Milan",
-          status: emp.status || "active",
+          bureau: emp.bureaus?.name || emp.bureau || 'Milan',
+          status: emp.status || 'active',
           shiftsThisMonth: 0, // TODO: Calculate from shifts
-          initials: emp.full_name?.split(" ").map((n: string) => n[0]).join("").toUpperCase() || "??",
-        }))
-        setEmployees(employeeData)
+          initials:
+            emp.full_name
+              ?.split(' ')
+              .map((n: string) => n[0])
+              .join('')
+              .toUpperCase() || '??',
+        }));
+        setEmployees(employeeData);
       } catch (error: any) {
-        console.error("Failed to fetch employees:", error)
+        console.error('Failed to fetch employees:', error);
         toast({
-          title: "Failed to load employees",
-          description: error.message || "Using cached data",
-          variant: "destructive",
-        })
+          title: 'Failed to load employees',
+          description: error.message || 'Using cached data',
+          variant: 'destructive',
+        });
         // Fallback to mock data
-        setEmployees(mockEmployees)
+        setEmployees(mockEmployees);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
 
-    fetchEmployees()
-  }, [toast])
+    fetchEmployees();
+  }, [toast]);
 
   // Filter employees based on search and filters
   const filteredEmployees = employees.filter((emp) => {
     const matchesSearch =
       emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      emp.email.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesBureau = filterBureau === "all" || emp.bureau === filterBureau
-    const matchesRole = filterRole === "all" || emp.role === filterRole
-    return matchesSearch && matchesBureau && matchesRole
-  })
+      emp.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesBureau = filterBureau === 'all' || emp.bureau === filterBureau;
+    const matchesRole = filterRole === 'all' || emp.role === filterRole;
+    return matchesSearch && matchesBureau && matchesRole;
+  });
 
   // Calculate stats
   const stats = {
     total: employees.length,
-    active: employees.filter((e) => e.status === "active").length,
-    milan: employees.filter((e) => e.bureau === "Milan").length,
-    rome: employees.filter((e) => e.bureau === "Rome").length,
-  }
+    active: employees.filter((e) => e.status === 'active').length,
+    milan: employees.filter((e) => e.bureau === 'Milan').length,
+    rome: employees.filter((e) => e.bureau === 'Rome').length,
+  };
 
   if (isLoading) {
     return (
@@ -184,7 +202,7 @@ export default function EmployeesPage() {
           <p className="text-muted-foreground">Loading employees...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -315,7 +333,9 @@ export default function EmployeesPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar>
-                            <AvatarFallback className="bg-primary/10 text-primary">{employee.initials}</AvatarFallback>
+                            <AvatarFallback className="bg-primary/10 text-primary">
+                              {employee.initials}
+                            </AvatarFallback>
                           </Avatar>
                           <div>
                             <div className="font-medium">{employee.name}</div>
@@ -338,7 +358,7 @@ export default function EmployeesPage() {
                       </TableCell>
                       <TableCell>{employee.shiftsThisMonth}</TableCell>
                       <TableCell>
-                        <Badge variant={employee.status === "active" ? "default" : "secondary"}>
+                        <Badge variant={employee.status === 'active' ? 'default' : 'secondary'}>
                           {employee.status}
                         </Badge>
                       </TableCell>
@@ -388,7 +408,9 @@ export default function EmployeesPage() {
                         <CardDescription>{employee.role}</CardDescription>
                       </div>
                     </div>
-                    <Badge variant={employee.status === "active" ? "default" : "secondary"}>{employee.status}</Badge>
+                    <Badge variant={employee.status === 'active' ? 'default' : 'secondary'}>
+                      {employee.status}
+                    </Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -434,7 +456,7 @@ export default function EmployeesPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
 
 function EmployeeForm({ onClose }: { onClose: () => void }) {
@@ -502,5 +524,5 @@ function EmployeeForm({ onClose }: { onClose: () => void }) {
         <Button type="submit">Add Employee</Button>
       </div>
     </form>
-  )
+  );
 }

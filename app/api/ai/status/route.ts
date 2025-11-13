@@ -11,10 +11,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const configured = isConfigured();
@@ -28,7 +25,7 @@ export async function GET(request: NextRequest) {
           conflict_resolution: configured,
           fairness_analysis: configured,
         },
-        configuration_status: configured 
+        configuration_status: configured
           ? 'AI features are enabled and ready to use'
           : 'AI features are disabled. Set ANTHROPIC_API_KEY environment variable to enable.',
       },
@@ -36,10 +33,6 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     console.error('AI status check error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

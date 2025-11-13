@@ -89,12 +89,12 @@ describe('Helper Functions', () => {
     const formatPhoneNumber = (phone: string): string => {
       // Remove all non-numeric characters
       const cleaned = phone.replace(/\D/g, '');
-      
+
       // Format based on length
       if (cleaned.length === 10) {
         return `(${cleaned.substring(0, 3)}) ${cleaned.substring(3, 6)}-${cleaned.substring(6)}`;
       }
-      
+
       return phone;
     };
 
@@ -186,4 +186,3 @@ describe('Helper Functions', () => {
     });
   });
 });
-

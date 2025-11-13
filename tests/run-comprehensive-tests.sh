@@ -39,18 +39,18 @@ run_test_suite() {
     local suite_name="$1"
     local command="$2"
     local description="$3"
-    
+
     TOTAL_SUITES=$((TOTAL_SUITES + 1))
-    
+
     echo "═══════════════════════════════════════════════════════════════"
     echo -e "${BLUE}TEST SUITE $TOTAL_SUITES: $suite_name${NC}"
     echo -e "${CYAN}$description${NC}"
     echo "═══════════════════════════════════════════════════════════════"
     echo ""
-    
+
     local start_time=$(date +%s)
     local output_file="$OUTPUT_DIR/${suite_name// /_}.log"
-    
+
     if eval "$command" > "$output_file" 2>&1; then
         local end_time=$(date +%s)
         local duration=$((end_time - start_time))
@@ -65,7 +65,7 @@ run_test_suite() {
         TEST_RESULTS[$suite_name]="FAILED"
         FAILED_SUITES=$((FAILED_SUITES + 1))
     fi
-    
+
     echo ""
 }
 
@@ -220,4 +220,3 @@ else
     echo "╚════════════════════════════════════════════════════════════════╝"
     exit 1
 fi
-

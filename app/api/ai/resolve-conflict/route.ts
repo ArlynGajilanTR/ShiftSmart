@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { callClaude, isConfigured } from '@/lib/ai/client';
-import { 
-  CONFLICT_RESOLUTION_SYSTEM_PROMPT, 
-  buildConflictPrompt 
+import {
+  CONFLICT_RESOLUTION_SYSTEM_PROMPT,
+  buildConflictPrompt,
 } from '@/lib/ai/prompts/conflict-resolution';
 import { createClient } from '@/lib/supabase/server';
 
@@ -16,28 +16,19 @@ export async function POST(request: NextRequest) {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     // Check if AI is configured
     if (!isConfigured()) {
-      return NextResponse.json(
-        { error: 'AI conflict resolution not configured' },
-        { status: 503 }
-      );
+      return NextResponse.json({ error: 'AI conflict resolution not configured' }, { status: 503 });
     }
 
     const body = await request.json();
     const { conflict_id } = body;
 
     if (!conflict_id) {
-      return NextResponse.json(
-        { error: 'conflict_id is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'conflict_id is required' }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -50,10 +41,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (conflictError || !conflict) {
-      return NextResponse.json(
-        { error: 'Conflict not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Conflict not found' }, { status: 404 });
     }
 
     // Get team size
@@ -72,24 +60,24 @@ export async function POST(request: NextRequest) {
       .neq('id', conflict.user_id);
 
     // Calculate current weekly hours for each alternative
-    const alternativesData = alternatives?.map((alt: any) => {
-      const weeklyHours = alt.shift_assignments
-        ?.filter((a: any) => {
-          const shiftDate = new Date(a.shifts.start_time);
-          const weekAgo = new Date();
-          weekAgo.setDate(weekAgo.getDate() - 7);
-          return shiftDate >= weekAgo;
-        })
-        .length * 8 || 0; // Assume 8-hour shifts
+    const alternativesData =
+      alternatives?.map((alt: any) => {
+        const weeklyHours =
+          alt.shift_assignments?.filter((a: any) => {
+            const shiftDate = new Date(a.shifts.start_time);
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            return shiftDate >= weekAgo;
+          }).length * 8 || 0; // Assume 8-hour shifts
 
-      return {
-        employee_name: alt.full_name,
-        shift_role: alt.shift_role,
-        current_weekly_hours: weeklyHours,
-        can_cover: weeklyHours < 40, // Under 40 hours can cover
-        reason: weeklyHours >= 40 ? 'Approaching maximum hours' : undefined,
-      };
-    }) || [];
+        return {
+          employee_name: alt.full_name,
+          shift_role: alt.shift_role,
+          current_weekly_hours: weeklyHours,
+          can_cover: weeklyHours < 40, // Under 40 hours can cover
+          reason: weeklyHours >= 40 ? 'Approaching maximum hours' : undefined,
+        };
+      }) || [];
 
     // Build context
     const promptContext = {
@@ -114,19 +102,12 @@ export async function POST(request: NextRequest) {
 
     // Call Claude
     console.log('Calling Claude for conflict resolution...');
-    const response = await callClaude(
-      CONFLICT_RESOLUTION_SYSTEM_PROMPT,
-      userPrompt,
-      4096
-    );
+    const response = await callClaude(CONFLICT_RESOLUTION_SYSTEM_PROMPT, userPrompt, 4096);
 
     // Parse response
     const jsonMatch = response.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      return NextResponse.json(
-        { error: 'Failed to parse AI response' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500 });
     }
 
     const resolution = JSON.parse(jsonMatch[0]);
@@ -141,10 +122,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('Resolve conflict API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

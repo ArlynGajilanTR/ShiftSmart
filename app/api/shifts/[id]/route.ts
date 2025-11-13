@@ -7,18 +7,12 @@ import { format } from 'date-fns';
  * PUT /api/shifts/:id
  * Update a shift
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -28,17 +22,10 @@ export async function PUT(
     const { id } = await params;
 
     // Check if shift exists
-    const { data: existingShift } = await supabase
-      .from('shifts')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data: existingShift } = await supabase.from('shifts').select('*').eq('id', id).single();
 
     if (!existingShift) {
-      return NextResponse.json(
-        { error: 'Shift not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Shift not found' }, { status: 404 });
     }
 
     // Build update object
@@ -52,10 +39,7 @@ export async function PUT(
         .single();
 
       if (!bureauData) {
-        return NextResponse.json(
-          { error: 'Invalid bureau' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid bureau' }, { status: 400 });
       }
       updates.bureau_id = bureauData.id;
     }
@@ -82,10 +66,7 @@ export async function PUT(
 
     if (updateError) {
       console.error('Error updating shift:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update shift' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to update shift' }, { status: 500 });
     }
 
     // Handle assignment updates
@@ -99,20 +80,15 @@ export async function PUT(
 
       if (employee_id === null && existingAssignment) {
         // Remove assignment
-        await supabase
-          .from('shift_assignments')
-          .delete()
-          .eq('id', existingAssignment.id);
+        await supabase.from('shift_assignments').delete().eq('id', existingAssignment.id);
       } else if (employee_id && !existingAssignment) {
         // Create new assignment
-        await supabase
-          .from('shift_assignments')
-          .insert({
-            shift_id: id,
-            user_id: employee_id,
-            status: status === 'confirmed' ? 'confirmed' : 'assigned',
-            assigned_by: user.id,
-          });
+        await supabase.from('shift_assignments').insert({
+          shift_id: id,
+          user_id: employee_id,
+          status: status === 'confirmed' ? 'confirmed' : 'assigned',
+          assigned_by: user.id,
+        });
       } else if (employee_id && existingAssignment && existingAssignment.user_id !== employee_id) {
         // Update existing assignment to new employee
         await supabase
@@ -150,10 +126,7 @@ export async function PUT(
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Update shift error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -169,10 +142,7 @@ export async function DELETE(
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const supabase = await createClient();
@@ -186,36 +156,21 @@ export async function DELETE(
       .single();
 
     if (!existingShift) {
-      return NextResponse.json(
-        { error: 'Shift not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Shift not found' }, { status: 404 });
     }
 
     // Delete shift (cascade will handle assignments)
-    const { error: deleteError } = await supabase
-      .from('shifts')
-      .delete()
-      .eq('id', id);
+    const { error: deleteError } = await supabase.from('shifts').delete().eq('id', id);
 
     if (deleteError) {
       console.error('Error deleting shift:', deleteError);
-      return NextResponse.json(
-        { error: 'Failed to delete shift' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to delete shift' }, { status: 500 });
     }
 
-    return NextResponse.json(
-      { message: 'Shift deleted successfully' },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: 'Shift deleted successfully' }, { status: 200 });
   } catch (error) {
     console.error('Delete shift error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -223,28 +178,19 @@ export async function DELETE(
  * PATCH /api/shifts/:id
  * Move a shift (drag-and-drop) - updates date/time only
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
     const { date, start_time, end_time } = body;
 
     if (!date) {
-      return NextResponse.json(
-        { error: 'Date is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Date is required' }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -258,10 +204,7 @@ export async function PATCH(
       .single();
 
     if (!existingShift) {
-      return NextResponse.json(
-        { error: 'Shift not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Shift not found' }, { status: 404 });
     }
 
     // Use existing times if not provided
@@ -284,10 +227,7 @@ export async function PATCH(
 
     if (updateError) {
       console.error('Error moving shift:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to move shift' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to move shift' }, { status: 500 });
     }
 
     // TODO: Run conflict detection here and return any conflicts
@@ -319,10 +259,6 @@ export async function PATCH(
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Move shift error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

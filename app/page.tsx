@@ -1,6 +1,6 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Calendar, Users, AlertCircle, Clock } from "lucide-react"
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Calendar, Users, AlertCircle, Clock } from 'lucide-react';
 
 export default function WelcomePage() {
   return (
@@ -32,7 +32,7 @@ export default function WelcomePage() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
-              "url(https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RTX3Q276.png-APo5PcMsvnggNPUIfd20lvje0XM1GS.jpeg)",
+              'url(https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RTX3Q276.png-APo5PcMsvnggNPUIfd20lvje0XM1GS.jpeg)',
           }}
         />
         {/* Overlay for text readability */}
@@ -54,7 +54,8 @@ export default function WelcomePage() {
               <div>
                 <h3 className="text-lg font-bold mb-1">Multi-View Scheduling</h3>
                 <p className="text-sm text-muted-foreground font-medium leading-relaxed">
-                  Plan shifts across week, month, quarter, or custom date ranges with intuitive calendar views.
+                  Plan shifts across week, month, quarter, or custom date ranges with intuitive
+                  calendar views.
                 </p>
               </div>
             </div>
@@ -64,7 +65,8 @@ export default function WelcomePage() {
               <div>
                 <h3 className="text-lg font-bold mb-1">Role-Based Balancing</h3>
                 <p className="text-sm text-muted-foreground font-medium leading-relaxed">
-                  Ensure proper skill mix with automated validation of senior, junior, and lead editor coverage.
+                  Ensure proper skill mix with automated validation of senior, junior, and lead
+                  editor coverage.
                 </p>
               </div>
             </div>
@@ -74,7 +76,8 @@ export default function WelcomePage() {
               <div>
                 <h3 className="text-lg font-bold mb-1">Smart Conflict Detection</h3>
                 <p className="text-sm text-muted-foreground font-medium leading-relaxed">
-                  Prevent double bookings, rest period violations, and skill gaps with real-time validation.
+                  Prevent double bookings, rest period violations, and skill gaps with real-time
+                  validation.
                 </p>
               </div>
             </div>
@@ -95,9 +98,11 @@ export default function WelcomePage() {
       {/* Footer */}
       <footer className="border-t border-border bg-white py-6 shadow-sm">
         <div className="container mx-auto px-6 text-sm text-muted-foreground">
-          <p className="font-medium">ShiftSmart v1 - Internal Reuters Tool for Breaking News Team</p>
+          <p className="font-medium">
+            ShiftSmart v1 - Internal Reuters Tool for Breaking News Team
+          </p>
         </div>
       </footer>
     </div>
-  )
+  );
 }

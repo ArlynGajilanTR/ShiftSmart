@@ -42,13 +42,13 @@ interface ScheduleResponse {
  */
 function getItalianHolidays(startDate: string, endDate: string): string[] {
   const holidays: Record<string, string> = {
-    '01-01': 'New Year\'s Day',
+    '01-01': "New Year's Day",
     '01-06': 'Epiphany',
     '04-25': 'Liberation Day',
     '05-01': 'Labour Day',
     '06-02': 'Republic Day',
     '08-15': 'Ferragosto',
-    '11-01': 'All Saints\' Day',
+    '11-01': "All Saints' Day",
     '12-08': 'Immaculate Conception',
     '12-25': 'Christmas',
     '12-26': 'Santo Stefano',
@@ -57,16 +57,16 @@ function getItalianHolidays(startDate: string, endDate: string): string[] {
   const start = parseISO(startDate);
   const end = parseISO(endDate);
   const year = start.getFullYear();
-  
+
   const holidaysInRange: string[] = [];
-  
+
   Object.keys(holidays).forEach((monthDay) => {
     const holidayDate = parseISO(`${year}-${monthDay}`);
     if (holidayDate >= start && holidayDate <= end) {
       holidaysInRange.push(format(holidayDate, 'yyyy-MM-dd'));
     }
   });
-  
+
   return holidaysInRange;
 }
 
@@ -107,12 +107,12 @@ async function calculateRecentHistory(
   shifts.forEach((assignment: any) => {
     const startTime = parseISO(assignment.shifts.start_time);
     const hour = startTime.getHours();
-    
+
     // Check if weekend
     if (isWeekend(startTime)) {
       weekendCount++;
     }
-    
+
     // Check if night shift (00:00 - 08:00)
     if (hour >= 0 && hour < 8) {
       nightCount++;
@@ -158,7 +158,7 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
         .select('id')
         .eq('name', request.bureau)
         .single();
-      
+
       if (bureauData) {
         employeeQuery = employeeQuery.eq('bureau_id', bureauData.id);
       }
@@ -197,7 +197,7 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
     const employeeData = await Promise.all(
       employees.map(async (emp: any) => {
         const history = await calculateRecentHistory(emp.id, supabase);
-        
+
         // Parse unavailable days from notes if present
         const unavailableDays: string[] = [];
         if (emp.shift_preferences?.notes) {
@@ -229,10 +229,7 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
     );
 
     // 4. Get Italian holidays
-    const holidays = getItalianHolidays(
-      request.period.start_date,
-      request.period.end_date
-    );
+    const holidays = getItalianHolidays(request.period.start_date, request.period.end_date);
 
     // 5. Build prompts
     const userPrompt = buildUserPrompt({
@@ -292,7 +289,7 @@ function parseScheduleResponse(response: string): ScheduleResponse | null {
     }
 
     const parsed = JSON.parse(jsonMatch[0]);
-    
+
     // Validate structure
     if (!parsed.shifts || !Array.isArray(parsed.shifts)) {
       console.error('Invalid schedule structure');
@@ -353,15 +350,13 @@ export async function saveSchedule(
       }
 
       // Create assignment
-      await supabase
-        .from('shift_assignments')
-        .insert({
-          shift_id: newShift.id,
-          user_id: employee.id,
-          status: 'assigned',
-          assigned_by: userId,
-          notes: shift.reasoning,
-        });
+      await supabase.from('shift_assignments').insert({
+        shift_id: newShift.id,
+        user_id: employee.id,
+        status: 'assigned',
+        assigned_by: userId,
+        notes: shift.reasoning,
+      });
 
       createdShiftIds.push(newShift.id);
     }
@@ -378,4 +373,3 @@ export async function saveSchedule(
     };
   }
 }
-

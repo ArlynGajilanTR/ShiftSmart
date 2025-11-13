@@ -39,34 +39,40 @@ Thank you for your interest in contributing to ShiftSmart! This document provide
 ### Setup
 
 1. **Clone the repository:**
+
 ```bash
 git clone https://github.com/ArlynGajilanTR/ShiftSmart.git
 cd ShiftSmart
 ```
 
 2. **Install dependencies:**
+
 ```bash
 npm install
 ```
 
 3. **Configure environment:**
+
 ```bash
 cp .env.example .env.local
 # Edit .env.local with your credentials
 ```
 
 4. **Install pre-commit hooks (recommended):**
+
 ```bash
 pip install pre-commit
 pre-commit install
 ```
 
 5. **Run database migrations:**
+
 - Open Supabase SQL Editor
 - Run `supabase/schema.sql`
 - Run `supabase/seed-breaking-news-team.sql`
 
 6. **Start development server:**
+
 ```bash
 npm run dev
 ```
@@ -81,6 +87,7 @@ Before contributing, please familiarize yourself with our [Engineering Build Rul
 - **No hardcoded values or tech debt**
 
 **Key Resources:**
+
 - [Engineering Build Rules](./ENGINEERING_BUILD_RULES.md) - Complete guidelines
 - [Project Field Gotchas](./docs/PROJECT_FIELD_GOTCHAS.md) - Naming conventions
 - [Database Schema](./supabase/schema.sql) - Schema reference
@@ -126,6 +133,7 @@ git rebase main
 - Use interfaces for object shapes
 
 **Example:**
+
 ```typescript
 // Good
 interface Employee {
@@ -170,6 +178,7 @@ lib/[feature]/
 - **Imports:** Organized (standard library → external → internal)
 
 **Example:**
+
 ```typescript
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
@@ -252,6 +261,7 @@ BREAKING CHANGE: Employee API now returns 'shift_role' instead of 'level'"
    - Verify `API_REFERENCE.md` for API contracts
 
 3. **Test your changes:**
+
 ```bash
 npm run build              # Build check
 npm run lint               # Linting
@@ -261,6 +271,7 @@ npm run test:api          # API tests
 ```
 
 4. **Update documentation:**
+
 - Update `API_REFERENCE.md` for API changes
 - Update `CHANGELOG.md` with your changes
 - Update `README.md` if needed
@@ -271,6 +282,7 @@ npm run test:api          # API tests
    - Never commit production IDs or PII
 
 6. **Write descriptive PR title:**
+
 ```
 feat(shifts): Add drag-and-drop API endpoint
 fix(auth): Resolve token refresh bug
@@ -282,6 +294,7 @@ docs(api): Document AI scheduling endpoints
 **Use the provided PR template** (automatically loaded from `.github/pull_request_template.md`).
 
 Key sections include:
+
 - Surgical Change Checklist
 - Risk Assessment & Rollback Plan
 - Pre-Work Verification
@@ -348,6 +361,7 @@ When adding new features, test:
    - Error responses
 
 2. **Code Comments** - For complex logic
+
    ```typescript
    // Calculate shift distribution ensuring senior staff coverage
    // Algorithm prioritizes preference compliance while maintaining role balance
@@ -355,19 +369,21 @@ When adding new features, test:
    ```
 
 3. **Type Definitions** - Document interfaces
+
    ```typescript
    /**
     * Represents an employee in the Breaking News team
     */
    interface Employee {
-     id: string;           // UUID
-     full_name: string;    // Full name as in Reuters directory
+     id: string; // UUID
+     full_name: string; // Full name as in Reuters directory
      shift_role: 'editor' | 'senior' | 'correspondent';
-     bureau_id: string;    // References bureaus.id
+     bureau_id: string; // References bureaus.id
    }
    ```
 
 4. **Environment Variables** - Add to .env.local.example
+
    ```bash
    # Anthropic AI Configuration (required for AI scheduling)
    ANTHROPIC_API_KEY=sk-ant-...
@@ -376,6 +392,7 @@ When adding new features, test:
 ### Documentation Updates
 
 Always update when:
+
 - Adding new API endpoints
 - Changing request/response formats
 - Adding environment variables
@@ -412,7 +429,7 @@ If you have questions or need help:
    - DEPLOYMENT.md
 
 2. **Search existing issues:**
-   - https://github.com/ArlynGajilanTR/ShiftSmart/issues
+   - <https://github.com/ArlynGajilanTR/ShiftSmart/issues>
 
 3. **Open a new issue:**
    - Use issue templates
@@ -429,6 +446,5 @@ By contributing to ShiftSmart, you agree that your contributions will be license
 
 **Thank you for contributing to ShiftSmart!** 🚀
 
-*Last Updated: November 13, 2025*
-*Version: 1.1.0*
-
+_Last Updated: November 13, 2025_
+_Version: 1.1.0_

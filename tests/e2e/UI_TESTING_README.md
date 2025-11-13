@@ -4,9 +4,10 @@ Comprehensive Playwright test suite that systematically tests all 88+ clickable 
 
 ## 📋 Test Coverage
 
-### Pages Tested:
+### Pages Tested
+
 1. ✅ **Welcome Page** - Navigation and landing
-2. ✅ **Login Page** - Authentication flow  
+2. ✅ **Login Page** - Authentication flow
 3. ✅ **Signup Page** - User registration
 4. ✅ **Dashboard Page** - Stats, calendar, navigation
 5. ✅ **Employees Page** - List, search, filter, CRUD
@@ -20,6 +21,7 @@ Comprehensive Playwright test suite that systematically tests all 88+ clickable 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 20+
 - Application running on `http://localhost:3000`
 - Backend API accessible
@@ -94,29 +96,35 @@ For each button/test, we verify:
 ## 📊 API Endpoints Verified
 
 ### Authentication
+
 - `POST /api/auth/login`
 - `POST /api/auth/signup`
 - `POST /api/auth/logout`
 
 ### Employees
+
 - `GET /api/employees`
 - `GET /api/employees/{id}`
 - `PUT /api/employees/{id}`
 
 ### Shifts
+
 - `GET /api/shifts`
 - `GET /api/shifts/upcoming`
 - `PATCH /api/shifts/{id}` (drag-drop)
 
 ### Conflicts
+
 - `GET /api/conflicts`
 - `PATCH /api/conflicts/{id}` (resolve/acknowledge)
 - `DELETE /api/conflicts/{id}`
 
 ### Dashboard
+
 - `GET /api/dashboard/stats`
 
 ### AI Scheduling
+
 - `POST /api/ai/generate-schedule`
 
 ## 🛠️ Configuration
@@ -124,6 +132,7 @@ For each button/test, we verify:
 ### Environment Variables
 
 Ensure your environment has:
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 ```
@@ -131,6 +140,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000
 ### Test Credentials
 
 Default test credentials (from `tests/e2e/helpers/auth.ts`):
+
 - Email: `gianluca.semeraro@thomsonreuters.com`
 - Password: `changeme`
 
@@ -170,16 +180,19 @@ test.describe('My Page', () => {
 ## 🔧 Troubleshooting
 
 ### Tests fail with "Application not accessible"
+
 - Ensure dev server is running: `npm run dev`
 - Check port 3000 is available
 - Verify backend is running
 
 ### API calls not intercepted
+
 - Verify backend is running
 - Check API URL configuration
 - Ensure auth token is present
 
 ### Timeout errors
+
 - Increase timeout in `playwright.config.ts`
 - Check network latency
 - Verify backend response times
@@ -188,4 +201,3 @@ test.describe('My Page', () => {
 
 **Created:** October 30, 2025  
 **Location:** `~/shiftsmart-v1/tests/e2e/`
-

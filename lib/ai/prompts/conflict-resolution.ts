@@ -94,10 +94,14 @@ export function buildConflictPrompt(conflict: {
 - **Date**: ${conflict.date}
 ${conflict.employee ? `- **Affected Employee**: ${conflict.employee}` : ''}
 
-${conflict.shifts && conflict.shifts.length > 0 ? `
+${
+  conflict.shifts && conflict.shifts.length > 0
+    ? `
 ## CONFLICTING SHIFTS
-${conflict.shifts.map(s => `- ${s.date ? `${s.date} ` : ''}${s.time} at ${s.bureau}`).join('\n')}
-` : ''}
+${conflict.shifts.map((s) => `- ${s.date ? `${s.date} ` : ''}${s.time} at ${s.bureau}`).join('\n')}
+`
+    : ''
+}
 
 ## TEAM CONTEXT
 - Team Size: ${conflict.context.team_size} employees
@@ -105,16 +109,19 @@ ${conflict.shifts.map(s => `- ${s.date ? `${s.date} ` : ''}${s.time} at ${s.bure
 ${conflict.context.current_schedule_state.coverage_gaps.length > 0 ? `- Coverage Gaps: ${conflict.context.current_schedule_state.coverage_gaps.join(', ')}` : ''}
 
 ## AVAILABLE ALTERNATIVES
-${conflict.context.available_alternatives.map((alt, i) => `
+${conflict.context.available_alternatives
+  .map(
+    (alt, i) => `
 ${i + 1}. **${alt.employee_name}** (${alt.shift_role})
    - Current Weekly Hours: ${alt.current_weekly_hours}
    - Can Cover: ${alt.can_cover ? 'Yes' : 'No'}
    ${alt.reason ? `- Note: ${alt.reason}` : ''}
-`).join('\n')}
+`
+  )
+  .join('\n')}
 
 ---
 
 **YOUR TASK:**
 Provide a detailed conflict analysis and suggest 2-3 practical solutions ranked by effectiveness. Consider minimal disruption, fairness, and compliance with scheduling rules.`;
 }
-

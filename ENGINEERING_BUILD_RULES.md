@@ -6,22 +6,21 @@
 
 ## Core Principle: **SURGICAL CHANGES ONLY**
 
-* Targeted, minimal fixes (**1–3 files** preferred; justify if more).
-* No opportunistic refactors inside bug‑fix PRs.
-* **No hacks, no tech debt, no hardcoded values.**
+- Targeted, minimal fixes (**1–3 files** preferred; justify if more).
+- No opportunistic refactors inside bug‑fix PRs.
+- **No hacks, no tech debt, no hardcoded values.**
 
 ## Production Data Protection
 
-* **Use test data only.**
-* Required env vars (set in repo or shared CI):
+- **Use test data only.**
+- Required env vars (set in repo or shared CI):
+  - `TEST_TENANT_ID` (or `SHIFTSMART_TEST_TENANT_ID`)
+  - `TEST_ACCOUNT_ID` (for end‑to‑end fixtures)
+  - `TEST_USER_ID` (for user-related tests)
+  - `TEST_SHIFT_ID` (for shift-related tests)
 
-  * `TEST_TENANT_ID` (or `SHIFTSMART_TEST_TENANT_ID`)
-  * `TEST_ACCOUNT_ID` (for end‑to‑end fixtures)
-  * `TEST_USER_ID` (for user-related tests)
-  * `TEST_SHIFT_ID` (for shift-related tests)
-
-* **Never** read/write production identifiers or PII in local/dev/test workflows.
-* Any tool or script that can touch prod **must** prompt for explicit confirmation and require a `--prod` flag.
+- **Never** read/write production identifiers or PII in local/dev/test workflows.
+- Any tool or script that can touch prod **must** prompt for explicit confirmation and require a `--prod` flag.
 
 ## Mandatory Pre‑Work Verification
 
@@ -47,16 +46,16 @@ API_REF_PATH=API_REFERENCE.md
 
 ## Schema & Naming Guarantees
 
-* Code **must** match the database schema and API contracts.
-* If a mismatch is discovered, **pause the change** and open a schema/contract PR first (separate from the bug fix), or update the docs/contracts. Link that PR in your fix.
-* **Always consult** `docs/PROJECT_FIELD_GOTCHAS.md` before using field names - some deviations are intentional.
+- Code **must** match the database schema and API contracts.
+- If a mismatch is discovered, **pause the change** and open a schema/contract PR first (separate from the bug fix), or update the docs/contracts. Link that PR in your fix.
+- **Always consult** `docs/PROJECT_FIELD_GOTCHAS.md` before using field names - some deviations are intentional.
 
 ## Testing Requirements
 
-* Use `TEST_TENANT_ID`/`TEST_ACCOUNT_ID`/`TEST_USER_ID` or approved fixtures.
-* You may modify **test code** and **test data** as needed.
-* **Do not** alter application code solely to appease tests.
-* All linters, type checks, and tests must pass locally and in CI.
+- Use `TEST_TENANT_ID`/`TEST_ACCOUNT_ID`/`TEST_USER_ID` or approved fixtures.
+- You may modify **test code** and **test data** as needed.
+- **Do not** alter application code solely to appease tests.
+- All linters, type checks, and tests must pass locally and in CI.
 
 ## Workflow for Any Change
 
@@ -67,12 +66,12 @@ API_REF_PATH=API_REFERENCE.md
 
 ## Success Criteria (all must be true)
 
-* ✅ Surgical scope (≈1–3 files, or explicit justification).
-* ✅ No hardcoded values / temporary workarounds.
-* ✅ Field names & types verified against `${DB_SCHEMA_PATH}`.
-* ✅ No breaking changes or contract drift.
-* ✅ CI green: tests + linters + types.
-* ✅ Reviewer approval.
+- ✅ Surgical scope (≈1–3 files, or explicit justification).
+- ✅ No hardcoded values / temporary workarounds.
+- ✅ Field names & types verified against `${DB_SCHEMA_PATH}`.
+- ✅ No breaking changes or contract drift.
+- ✅ CI green: tests + linters + types.
+- ✅ Reviewer approval.
 
 ---
 
@@ -94,10 +93,12 @@ API_REF_PATH=API_REFERENCE.md
 ### Test Data
 
 **Seeded users:**
+
 - Password: `changeme`
 - 15 Breaking News team members (8 Milan, 7 Rome)
 
 **Dev admin:**
+
 - Email: `arlyn.gajilan@thomsonreuters.com`
 - Password: `testtest`
 
@@ -133,12 +134,14 @@ API_REF_PATH=API_REFERENCE.md
 ## Pre-Commit Hooks
 
 **Setup:**
+
 ```bash
 pip install pre-commit
 pre-commit install
 ```
 
 **What it checks:**
+
 - Trailing whitespace, file endings
 - YAML/JSON syntax
 - JavaScript/TypeScript formatting (Prettier)
@@ -149,6 +152,7 @@ pre-commit install
 - Test data validation (no production IDs)
 
 **Run manually:**
+
 ```bash
 pre-commit run --all-files
 ```
@@ -201,6 +205,7 @@ FEATURE_CSV_IMPORT=true
 ```
 
 Benefits:
+
 - Test features in production with limited rollout
 - Quick rollback without code deploy
 - A/B testing capabilities
@@ -213,18 +218,21 @@ Benefits:
 ### Risk Assessment
 
 **Low Risk:**
+
 - UI-only changes
 - Documentation updates
 - Test improvements
 - Non-breaking feature additions
 
 **Medium Risk:**
+
 - API changes (non-breaking)
 - New database columns (nullable)
 - Feature flag-protected features
 - Performance optimizations
 
 **High Risk:**
+
 - Database schema changes (breaking)
 - API contract changes (breaking)
 - Authentication/authorization changes
@@ -310,10 +318,12 @@ psql -h <host> -d <db> -f supabase/seed-breaking-news-team.sql
 **Title:** Fix double booking validation in shift assignments
 
 **Files Changed:** 2
+
 - `app/api/shifts/route.ts` (added validation)
 - `lib/validation/conflicts.ts` (updated logic)
 
 **Checklist:**
+
 - ✅ 2 files changed
 - ✅ No hardcoded values
 - ✅ Verified field names against schema
@@ -331,17 +341,20 @@ psql -h <host> -d <db> -f supabase/seed-breaking-news-team.sql
 **Title:** Fix bug and refactor authentication system
 
 **Files Changed:** 12
+
 - Authentication refactor (8 files)
 - Bug fix (2 files)
 - Formatting changes (2 files)
 
 **Issues:**
+
 - ❌ Too many files (not surgical)
 - ❌ Mixing bug fix with refactor
 - ❌ Opportunistic formatting changes
 - ❌ No clear rollback plan
 
 **Fix:** Split into 3 PRs:
+
 1. Bug fix only (2 files)
 2. Authentication refactor (separate PR with ADR)
 3. Formatting (automated tool, separate PR)
@@ -372,4 +385,3 @@ If you're unsure about whether your change follows these rules:
 **Last Updated:** November 13, 2025  
 **Maintained by:** Reuters Breaking News Engineering Team  
 **Version:** 1.0.0
-

@@ -12,10 +12,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -27,9 +24,7 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
 
     // Build query
-    let query = supabase
-      .from('users')
-      .select('*, bureaus(name, code)');
+    let query = supabase.from('users').select('*, bureaus(name, code)');
 
     // Apply filters
     if (bureau && bureau !== 'all') {
@@ -38,7 +33,7 @@ export async function GET(request: NextRequest) {
         .select('id')
         .eq('name', bureau)
         .single();
-      
+
       if (bureauData) {
         query = query.eq('bureau_id', bureauData.id);
       }
@@ -64,10 +59,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching employees:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch employees' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to fetch employees' }, { status: 500 });
     }
 
     // Calculate shifts this month for each employee
@@ -95,9 +87,10 @@ export async function GET(request: NextRequest) {
     // Format response to match frontend expectations
     const formattedEmployees = employees.map((emp: any) => {
       const nameParts = emp.full_name.split(' ');
-      const initials = nameParts.length >= 2 
-        ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
-        : emp.full_name.substring(0, 2).toUpperCase();
+      const initials =
+        nameParts.length >= 2
+          ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+          : emp.full_name.substring(0, 2).toUpperCase();
 
       return {
         id: emp.id,
@@ -115,10 +108,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(formattedEmployees, { status: 200 });
   } catch (error) {
     console.error('Employees API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -131,10 +121,7 @@ export async function POST(request: NextRequest) {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -142,10 +129,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!name || !email || !role || !bureau) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -158,10 +142,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'Email already exists' },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: 'Email already exists' }, { status: 409 });
     }
 
     // Get bureau ID
@@ -172,10 +153,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (!bureauData) {
-      return NextResponse.json(
-        { error: 'Invalid bureau' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid bureau' }, { status: 400 });
     }
 
     // Determine shift_role from title
@@ -205,27 +183,23 @@ export async function POST(request: NextRequest) {
 
     if (createError) {
       console.error('Error creating employee:', createError);
-      return NextResponse.json(
-        { error: 'Failed to create employee' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to create employee' }, { status: 500 });
     }
 
     // Create default preferences
-    await supabase
-      .from('shift_preferences')
-      .insert({
-        user_id: newEmployee.id,
-        preferred_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        preferred_shifts: ['Morning', 'Afternoon'],
-        max_shifts_per_week: 5,
-      });
+    await supabase.from('shift_preferences').insert({
+      user_id: newEmployee.id,
+      preferred_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      preferred_shifts: ['Morning', 'Afternoon'],
+      max_shifts_per_week: 5,
+    });
 
     // Format response
     const nameParts = newEmployee.full_name.split(' ');
-    const initials = nameParts.length >= 2 
-      ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
-      : newEmployee.full_name.substring(0, 2).toUpperCase();
+    const initials =
+      nameParts.length >= 2
+        ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+        : newEmployee.full_name.substring(0, 2).toUpperCase();
 
     const response = {
       id: newEmployee.id,
@@ -242,10 +216,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
     console.error('Create employee error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

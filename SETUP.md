@@ -10,6 +10,7 @@
 ## Step 1: Environment Setup
 
 1. Copy the example environment file:
+
    ```bash
    cp .env.local.example .env.local
    ```
@@ -30,12 +31,14 @@
 ### Optional: Seed Sample Data
 
 **For Breaking News team setup:**
+
 1. Copy contents from `supabase/seed-breaking-news-team.sql`
 2. Run in SQL Editor
 3. This creates Milan and Rome bureaus with 15 real team members
 4. Default password for all seeded users: `changeme`
 
 **For development/testing:**
+
 1. Copy contents from `supabase/create-dev-admin.sql`
 2. Run in SQL Editor
 3. This creates an admin account:
@@ -107,12 +110,14 @@ shiftsmart-v1/
 ## Features
 
 ### Multi-View Scheduling
+
 - **Week View**: Plan shifts for a single week
 - **Month View**: Overview of the entire month
 - **Quarter View**: Long-term planning (3 months)
 - **Special Events**: Custom date ranges for events
 
 ### Role-Based Balancing
+
 - Automatically validates skill mix
 - Prevents all-junior shifts
 - Ensures minimum senior/lead coverage
@@ -121,17 +126,20 @@ shiftsmart-v1/
 ### Conflict Detection
 
 **Hard Conflicts** (Must fix):
+
 - Double booking
 - Rest period violations
 - Skill gaps (all-junior shifts)
 - Insufficient coverage
 
 **Soft Warnings** (Review recommended):
+
 - Preference violations
 - Overtime risk
 - Role imbalance
 
 ### Drag & Drop Interface
+
 - Drag users from sidebar onto shifts
 - Visual feedback on hover
 - Color-coded status (empty/partial/full)
@@ -164,16 +172,19 @@ User preferences:
 ## Troubleshooting
 
 ### Database Connection Issues
+
 - Verify your Supabase URL and keys in `.env.local`
 - Check if the tables were created successfully
 - Ensure Row Level Security policies are configured
 
 ### Import Errors
+
 - Verify CSV format matches the template
 - Check bureau ID exists in database
 - Review error messages in the import results
 
 ### Conflicts Not Showing
+
 - Refresh the page to reload data
 - Check if conflicts table has RLS policies enabled
 - Verify conflict detection logic is running
@@ -181,8 +192,8 @@ User preferences:
 ## Support
 
 For issues or questions:
+
 1. Check the documentation
 2. Review the database schema
 3. Check browser console for errors
 4. Contact your development team
-

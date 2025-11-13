@@ -1,9 +1,11 @@
 # ShiftSmart v1 - Product Requirements Document
 
 ## Executive Summary
+
 ShiftSmart is an internal Reuters tool for intelligent shift scheduling designed specifically for the Breaking News editorial team. The application manages staff assignments across Milan and Rome bureaus with automated conflict detection and role-based validation to ensure proper editorial coverage at all times.
 
 ## Target Users
+
 - **Primary**: Reuters Breaking News editors and schedulers in Milan and Rome
 - **User Types**: Senior Editors, Junior Editors, Lead Editors, Support Staff
 - **Administrators**: Scheduling managers who create and publish shift schedules
@@ -11,12 +13,14 @@ ShiftSmart is an internal Reuters tool for intelligent shift scheduling designed
 ## MVP Scope (Breaking News Team)
 
 ### Team Structure
+
 - **Team**: Breaking News
 - **Bureaus**: Milan and Rome
 - **Timezone**: Europe/Rome (CET/CEST)
 - **Staff Import**: CSV-based bulk import of existing staff
 
 ### Initial Implementation
+
 - Single team focus (Breaking News only)
 - Two bureaus (Milan and Rome)
 - Staff members distributed across both locations
@@ -25,7 +29,9 @@ ShiftSmart is an internal Reuters tool for intelligent shift scheduling designed
 ## Core Features
 
 ### 1. Multi-View Scheduling ✅
+
 Support for multiple planning horizons:
+
 - **Week View**: 7-day planning with detailed daily breakdown
 - **Month View**: 30-day overview for medium-term planning
 - **Quarter View**: 90-day strategic planning
@@ -34,20 +40,25 @@ Support for multiple planning horizons:
 Users can switch between views seamlessly and navigate forward/backward through time periods.
 
 ### 2. Role-Based Shift Balancing ✅
+
 Intelligent validation of staff skill mix:
+
 - Define minimum/maximum role requirements per shift
 - Prevent all-junior coverage (critical safety feature)
 - Ensure appropriate senior/lead presence
 - Configurable rules per bureau/department
 
 **Example Rules**:
+
 - Minimum 1 senior per shift
 - Maximum 3 juniors per shift
 - Must have 1 lead on night shifts
 - Support staff as needed
 
 ### 3. Supabase Backend ✅
+
 PostgreSQL database with:
+
 - User management with roles
 - Bureau/department organization
 - Shifts and assignments
@@ -56,13 +67,16 @@ PostgreSQL database with:
 - Row-level security
 
 **CSV Import Support**:
+
 - Bulk import from existing schedules
 - Template download
 - Validation and error reporting
 - Upsert logic (update existing, create new)
 
 ### 4. Smart Welcome & Authentication ✅
+
 User onboarding flow:
+
 - Login page with email/password
 - Welcome screen with feature overview
 - Bureau selection with visual cards
@@ -70,7 +84,9 @@ User onboarding flow:
 - Bureau toggle in main interface
 
 ### 5. Drag-and-Drop Calendar ✅
+
 Intuitive scheduling interface:
+
 - Drag staff from sidebar to shifts
 - Visual feedback on drag
 - Color-coded shift status:
@@ -85,17 +101,20 @@ Intuitive scheduling interface:
 ### 6. Conflict Detection & Warnings ✅
 
 **Hard Conflicts** (Block publishing):
+
 - **Double Booking**: User assigned to overlapping shifts
 - **Rest Period Violation**: Less than 11 hours between shifts
 - **Skill Gap**: No senior/lead on shift with juniors
 - **Insufficient Coverage**: Not enough staff assigned
 
 **Soft Warnings** (Review recommended):
+
 - **Preference Violation**: User marked date as unavailable or non-preferred day
 - **Overtime Risk**: Weekly hours exceed limit
 - **Role Imbalance**: Too many of one role type
 
 **Conflict Panel**:
+
 - Real-time conflict display
 - Summary counts (hard vs soft)
 - Detailed messages with context
@@ -105,18 +124,21 @@ Intuitive scheduling interface:
 ## User Roles
 
 ### System Roles (Access Control)
+
 1. **Admin**: Full system access, bureau management
-2. **Manager**: Bureau-level scheduling and reporting  
+2. **Manager**: Bureau-level scheduling and reporting
 3. **Scheduler**: Create and modify schedules
 4. **Staff**: View own schedule, set preferences
 
 ### Editorial Roles (Shift Validation)
+
 1. **Lead Editor**: Senior oversight, required for certain shifts
 2. **Senior Editor**: Experienced staff, minimum 1 per shift
 3. **Junior Editor**: Developing staff, maximum 3 per shift
 4. **Support Staff**: Administrative and technical support
 
 ### Role Requirements (Breaking News Team)
+
 - **Minimum per shift**: 1 Senior or Lead Editor
 - **Maximum juniors**: 3 Junior Editors per shift
 - **Lead requirement**: Required for night shifts
@@ -125,6 +147,7 @@ Intuitive scheduling interface:
 ## Design & Branding
 
 ### Reuters Brand Standards
+
 - **Primary Color**: Reuters Orange (#FF6600)
 - **Typography**: Knowledge2017 (Regular, Medium, Bold)
 - **Background**: White with gray accents
@@ -132,6 +155,7 @@ Intuitive scheduling interface:
 - **Tone**: Internal tool, not commercial/consumer
 
 ### Visual Identity
+
 - Professional editorial environment
 - Clean, modern interface suitable for newsroom
 - Focus on functionality over decoration
@@ -140,6 +164,7 @@ Intuitive scheduling interface:
 ## Technical Architecture
 
 ### Frontend
+
 - **Framework**: Next.js 15 with App Router
 - **UI**: React 19 + Tailwind CSS
 - **Styling**: Tailwind with custom Reuters theme
@@ -149,12 +174,14 @@ Intuitive scheduling interface:
 - **Icons**: Lucide React (professional icons only)
 
 ### Backend
+
 - **Database**: Supabase (PostgreSQL)
 - **Auth**: Supabase Auth with email/password
 - **Storage**: Supabase Storage (for exports/reports)
 - **Real-time**: Supabase Realtime (future enhancement)
 
 ### Data Model
+
 ```
 bureaus (Milan, Rome)
   ├── users (Breaking News staff members)
@@ -169,6 +196,7 @@ bureaus (Milan, Rome)
 ```
 
 ### User Profile Structure
+
 ```javascript
 {
   id: UUID,
@@ -189,6 +217,7 @@ bureaus (Milan, Rome)
 ## Validation Rules
 
 ### Shift Assignment Validation
+
 1. Check for time conflicts
 2. Verify rest period compliance
 3. Validate role requirements
@@ -197,6 +226,7 @@ bureaus (Milan, Rome)
 6. Assess skill mix
 
 ### Role Balance Validation
+
 1. Count staff by role
 2. Compare against requirements
 3. Flag skill gaps
@@ -205,6 +235,7 @@ bureaus (Milan, Rome)
 ## Import/Export
 
 ### CSV Import (Critical for MVP)
+
 - **Purpose**: Bulk import Breaking News team members
 - **Source**: Existing staff roster from Milan and Rome
 - **Fields Required**:
@@ -221,6 +252,7 @@ bureaus (Milan, Rome)
   - Transaction-based processing
 
 ### Export Options (Future)
+
 - Current schedule to CSV
 - Conflict reports
 - Workload distribution
@@ -229,12 +261,14 @@ bureaus (Milan, Rome)
 ## Security
 
 ### Row-Level Security (RLS)
+
 - Users see only their bureau data
 - Managers can modify schedules
 - Staff can view only
 - Admins have full access
 
 ### Audit Trail
+
 - All schedule changes logged
 - User ID, action, timestamp
 - Before/after state
@@ -283,16 +317,19 @@ bureaus (Milan, Rome)
 ## Success Metrics
 
 ### Efficiency
+
 - Time to create schedule: < 30 minutes for monthly schedule
 - Conflict detection rate: 100% of conflicts caught
 - Schedule changes after publish: < 10%
 
 ### Reliability
+
 - System uptime: 99.9%
 - Data accuracy: Zero scheduling conflicts published
 - CSV import success rate: > 95%
 
 ### Adoption (Breaking News Team)
+
 - User satisfaction: > 4/5 rating
 - Milan bureau adoption: 100% within 2 weeks
 - Rome bureau adoption: 100% within 2 weeks
@@ -308,6 +345,7 @@ bureaus (Milan, Rome)
 ## Authentication & Onboarding
 
 ### Signup Flow
+
 1. User provides:
    - Full name
    - Reuters email address
@@ -320,6 +358,7 @@ bureaus (Milan, Rome)
 4. Direct redirect to dashboard (no bureau selection screen)
 
 ### Login Flow
+
 1. Email/password authentication
 2. Check user's assigned bureau
 3. Auto-load bureau in session
@@ -333,4 +372,3 @@ bureaus (Milan, Rome)
 - **Environment**: Node.js 18+
 - **Monitoring**: Sentry/LogRocket (future)
 - **Region**: Europe (for Milan/Rome users)
-

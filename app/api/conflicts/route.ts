@@ -12,10 +12,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -50,10 +47,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching conflicts:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch conflicts' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to fetch conflicts' }, { status: 500 });
     }
 
     // Format response to match frontend expectations
@@ -81,10 +75,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(formattedConflicts, { status: 200 });
   } catch (error) {
     console.error('Conflicts API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

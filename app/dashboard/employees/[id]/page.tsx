@@ -1,52 +1,58 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { ArrowLeft, Save, Mail, Phone, MapPin, Calendar, Clock } from "lucide-react"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Textarea } from "@/components/ui/textarea"
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ArrowLeft, Save, Mail, Phone, MapPin, Calendar, Clock } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
 
 // Mock employee data - in real app, fetch based on params.id
 const mockEmployee = {
   id: 1,
-  name: "Marco Rossi",
-  email: "marco.rossi@reuters.com",
-  phone: "+39 02 1234 5678",
-  role: "Senior Editor",
-  bureau: "Milan",
-  status: "active",
+  name: 'Marco Rossi',
+  email: 'marco.rossi@reuters.com',
+  phone: '+39 02 1234 5678',
+  role: 'Senior Editor',
+  bureau: 'Milan',
+  status: 'active',
   shiftsThisMonth: 18,
-  initials: "MR",
+  initials: 'MR',
   preferences: {
-    preferredDays: ["Monday", "Tuesday", "Wednesday", "Thursday"],
-    preferredShifts: ["Morning", "Afternoon"],
+    preferredDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+    preferredShifts: ['Morning', 'Afternoon'],
     maxShiftsPerWeek: 5,
-    notes: "Prefers morning shifts. Available for weekend coverage in emergencies.",
+    notes: 'Prefers morning shifts. Available for weekend coverage in emergencies.',
   },
-}
+};
 
 export default function EmployeeDetailPage({ params: _params }: { params: { id: string } }) {
-  const router = useRouter()
-  const [employee, setEmployee] = useState(mockEmployee)
-  const [isEditing, setIsEditing] = useState(false)
+  const router = useRouter();
+  const [employee, setEmployee] = useState(mockEmployee);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-  const shiftTypes = ["Morning", "Afternoon", "Evening", "Night"]
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const shiftTypes = ['Morning', 'Afternoon', 'Evening', 'Night'];
 
   const handleSave = () => {
     // In real app, save to backend
-    console.log("[v0] Saving employee data:", employee)
-    setIsEditing(false)
+    console.log('[v0] Saving employee data:', employee);
+    setIsEditing(false);
     // Show success message
-  }
+  };
 
   const togglePreferredDay = (day: string) => {
     setEmployee({
@@ -57,8 +63,8 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
           ? employee.preferences.preferredDays.filter((d) => d !== day)
           : [...employee.preferences.preferredDays, day],
       },
-    })
-  }
+    });
+  };
 
   const togglePreferredShift = (shift: string) => {
     setEmployee({
@@ -69,8 +75,8 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
           ? employee.preferences.preferredShifts.filter((s) => s !== shift)
           : [...employee.preferences.preferredShifts, shift],
       },
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -117,14 +123,19 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
             <CardTitle className="text-sm font-medium text-muted-foreground">Status</CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge variant={employee.status === "active" ? "default" : "secondary"} className="text-sm">
+            <Badge
+              variant={employee.status === 'active' ? 'default' : 'secondary'}
+              className="text-sm"
+            >
               {employee.status}
             </Badge>
           </CardContent>
         </Card>
         <Card className="transition-all hover:shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Shifts This Month</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Shifts This Month
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{employee.shiftsThisMonth}</div>
@@ -132,7 +143,9 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
         </Card>
         <Card className="transition-all hover:shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Preferred Days</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Preferred Days
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{employee.preferences.preferredDays.length}</div>
@@ -140,7 +153,9 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
         </Card>
         <Card className="transition-all hover:shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Max Shifts/Week</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Max Shifts/Week
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{employee.preferences.maxShiftsPerWeek}</div>
@@ -206,7 +221,10 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
                     value={employee.status}
                     onValueChange={(value) => setEmployee({ ...employee, status: value })}
                   >
-                    <SelectTrigger id="status" className="transition-all focus:ring-2 focus:ring-primary">
+                    <SelectTrigger
+                      id="status"
+                      className="transition-all focus:ring-2 focus:ring-primary"
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -229,8 +247,14 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="role">Role / Title</Label>
-                  <Select value={employee.role} onValueChange={(value) => setEmployee({ ...employee, role: value })}>
-                    <SelectTrigger id="role" className="transition-all focus:ring-2 focus:ring-primary">
+                  <Select
+                    value={employee.role}
+                    onValueChange={(value) => setEmployee({ ...employee, role: value })}
+                  >
+                    <SelectTrigger
+                      id="role"
+                      className="transition-all focus:ring-2 focus:ring-primary"
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -249,7 +273,10 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
                       value={employee.bureau}
                       onValueChange={(value) => setEmployee({ ...employee, bureau: value })}
                     >
-                      <SelectTrigger id="bureau" className="pl-9 transition-all focus:ring-2 focus:ring-primary">
+                      <SelectTrigger
+                        id="bureau"
+                        className="pl-9 transition-all focus:ring-2 focus:ring-primary"
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -339,11 +366,17 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
                   onValueChange={(value) =>
                     setEmployee({
                       ...employee,
-                      preferences: { ...employee.preferences, maxShiftsPerWeek: Number.parseInt(value) },
+                      preferences: {
+                        ...employee.preferences,
+                        maxShiftsPerWeek: Number.parseInt(value),
+                      },
                     })
                   }
                 >
-                  <SelectTrigger id="maxShifts" className="transition-all focus:ring-2 focus:ring-primary">
+                  <SelectTrigger
+                    id="maxShifts"
+                    className="transition-all focus:ring-2 focus:ring-primary"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -385,11 +418,16 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
             <CardContent>
               <div className="space-y-3">
                 {[
-                  { date: "Oct 28, 2025", shift: "Morning", bureau: "Milan", status: "Completed" },
-                  { date: "Oct 27, 2025", shift: "Afternoon", bureau: "Milan", status: "Completed" },
-                  { date: "Oct 25, 2025", shift: "Morning", bureau: "Milan", status: "Completed" },
-                  { date: "Oct 24, 2025", shift: "Evening", bureau: "Milan", status: "Completed" },
-                  { date: "Oct 22, 2025", shift: "Morning", bureau: "Milan", status: "Completed" },
+                  { date: 'Oct 28, 2025', shift: 'Morning', bureau: 'Milan', status: 'Completed' },
+                  {
+                    date: 'Oct 27, 2025',
+                    shift: 'Afternoon',
+                    bureau: 'Milan',
+                    status: 'Completed',
+                  },
+                  { date: 'Oct 25, 2025', shift: 'Morning', bureau: 'Milan', status: 'Completed' },
+                  { date: 'Oct 24, 2025', shift: 'Evening', bureau: 'Milan', status: 'Completed' },
+                  { date: 'Oct 22, 2025', shift: 'Morning', bureau: 'Milan', status: 'Completed' },
                 ].map((shift, index) => (
                   <div
                     key={index}
@@ -414,5 +452,5 @@ export default function EmployeeDetailPage({ params: _params }: { params: { id: 
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

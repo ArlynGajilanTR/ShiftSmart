@@ -13,15 +13,12 @@ interface ApiOptions extends RequestInit {
 /**
  * Base API call function with authentication
  */
-export async function apiCall<T>(
-  endpoint: string,
-  options: ApiOptions = {}
-): Promise<T> {
+export async function apiCall<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
   const { requireAuth = true, ...fetchOptions } = options;
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(fetchOptions.headers as Record<string, string> || {}),
+    ...((fetchOptions.headers as Record<string, string>) || {}),
   };
 
   // Add auth token if required
@@ -122,10 +119,8 @@ export const api = {
         Object.entries(filters || {}).filter(([_, v]) => v != null) as [string, string][]
       );
       const query = params.toString();
-      
-      return apiCall<{ employees: any[] }>(
-        `/api/employees${query ? `?${query}` : ''}`
-      );
+
+      return apiCall<{ employees: any[] }>(`/api/employees${query ? `?${query}` : ''}`);
     },
 
     get: async (id: string) => {
@@ -179,10 +174,8 @@ export const api = {
         Object.entries(filters || {}).filter(([_, v]) => v != null) as [string, string][]
       );
       const query = params.toString();
-      
-      return apiCall<{ shifts: any[] }>(
-        `/api/shifts${query ? `?${query}` : ''}`
-      );
+
+      return apiCall<{ shifts: any[] }>(`/api/shifts${query ? `?${query}` : ''}`);
     },
 
     upcoming: async (days: number = 7) => {
@@ -239,13 +232,13 @@ export const api = {
       limit?: number;
     }) => {
       const params = new URLSearchParams(
-        Object.entries(filters || {}).filter(([_, v]) => v != null).map(([k, v]) => [k, String(v)])
+        Object.entries(filters || {})
+          .filter(([_, v]) => v != null)
+          .map(([k, v]) => [k, String(v)])
       );
       const query = params.toString();
-      
-      return apiCall<{ conflicts: any[] }>(
-        `/api/conflicts${query ? `?${query}` : ''}`
-      );
+
+      return apiCall<{ conflicts: any[] }>(`/api/conflicts${query ? `?${query}` : ''}`);
     },
 
     acknowledge: async (id: string) => {
@@ -316,10 +309,10 @@ export const api = {
  */
 export function getCurrentUser() {
   if (typeof window === 'undefined') return null;
-  
+
   const userStr = localStorage.getItem('user');
   if (!userStr) return null;
-  
+
   try {
     return JSON.parse(userStr);
   } catch {
@@ -345,4 +338,3 @@ export function logout() {
     window.location.href = '/login';
   }
 }
-

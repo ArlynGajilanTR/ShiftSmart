@@ -8,6 +8,7 @@
 ## 🚀 Quick Start for New Developers
 
 ### 1. Initial Setup (15 minutes)
+
 ```bash
 # Clone repository
 git clone https://github.com/ArlynGajilanTR/ShiftSmart.git
@@ -34,7 +35,7 @@ pre-commit install
 npm run dev
 ```
 
-Visit: http://localhost:3000
+Visit: <http://localhost:3000>
 
 ### 2. Read Engineering Build Rules
 
@@ -46,6 +47,7 @@ Before making any changes, familiarize yourself with our [Engineering Build Rule
 - ✅ **No hardcoded values or tech debt**
 
 **Essential Reading:**
+
 - [Engineering Build Rules](./ENGINEERING_BUILD_RULES.md)
 - [Project Field Gotchas](./docs/PROJECT_FIELD_GOTCHAS.md)
 - [API Reference](./API_REFERENCE.md)
@@ -94,6 +96,7 @@ shiftsmart-v1/
 ## 🔄 Development Workflow
 
 ### Daily Development (Following Build Rules)
+
 ```bash
 # 1. Pull latest changes
 git pull origin main
@@ -136,6 +139,7 @@ git push origin feature/your-feature-name
 ### Build Rules Checklist
 
 Before every commit:
+
 - [ ] ≤3 files changed (or justification provided)
 - [ ] No hardcoded values or temporary workarounds
 - [ ] Field names verified against `supabase/schema.sql`
@@ -161,14 +165,15 @@ Before every commit:
 
 ### When to Run What
 
-| Situation | Tests to Run | Duration |
-|-----------|--------------|----------|
-| **During development** | `npm run test:unit:watch` | Real-time |
-| **Before commit** | `npm run test:unit` | 3 seconds |
-| **Before PR** | `npm run test:all` | 5 minutes |
-| **Before deploy** | Full E2E suite | 10 minutes |
+| Situation              | Tests to Run              | Duration   |
+| ---------------------- | ------------------------- | ---------- |
+| **During development** | `npm run test:unit:watch` | Real-time  |
+| **Before commit**      | `npm run test:unit`       | 3 seconds  |
+| **Before PR**          | `npm run test:all`        | 5 minutes  |
+| **Before deploy**      | Full E2E suite            | 10 minutes |
 
 ### Test Commands
+
 ```bash
 # Unit tests (fastest)
 npm run test:unit              # Run once
@@ -198,6 +203,7 @@ cd tests && ./run-comprehensive-tests.sh
 ### Adding a New API Endpoint
 
 1. **Create route handler**
+
 ```typescript
 // app/api/your-feature/route.ts
 import { NextRequest, NextResponse } from 'next/server';
@@ -206,13 +212,14 @@ import { verifyAuth } from '@/lib/auth/verify';
 export async function GET(request: NextRequest) {
   const { user, error } = await verifyAuth(request);
   if (error) return NextResponse.json({ error }, { status: 401 });
-  
+
   // Your logic here
   return NextResponse.json({ data: 'success' });
 }
 ```
 
 2. **Add to API client**
+
 ```typescript
 // lib/api-client.ts
 export const api = {
@@ -223,18 +230,21 @@ export const api = {
 ```
 
 3. **Write tests**
+
 ```bash
 # Add to tests/test-api-endpoints.sh
 run_test "Your feature test" "GET" "/api/your-feature" "" "200" "true"
 ```
 
 4. **Update documentation**
+
 - Add to `API_REFERENCE.md`
 - Update `CHANGELOG.md`
 
 ### Adding a New UI Page
 
 1. **Create page component**
+
 ```typescript
 // app/dashboard/your-page/page.tsx
 "use client"
@@ -244,22 +254,24 @@ import { api } from "@/lib/api-client"
 
 export default function YourPage() {
   const [data, setData] = useState([])
-  
+
   useEffect(() => {
     api.yourFeature.list().then(setData)
   }, [])
-  
+
   return <div>Your content</div>
 }
 ```
 
 2. **Add navigation**
+
 ```typescript
 // app/dashboard/layout.tsx
 // Add to sidebar navigation
 ```
 
 3. **Write E2E tests**
+
 ```typescript
 // tests/e2e/tests/your-page.spec.ts
 import { test, expect } from '@playwright/test';
@@ -284,6 +296,7 @@ test.describe('Your Page', () => {
 ### Adding a New Table
 
 1. **Update schema**
+
 ```sql
 -- supabase/schema.sql
 CREATE TABLE your_table (
@@ -301,12 +314,14 @@ CREATE POLICY "Allow authenticated access" ON your_table FOR ALL USING (true);
 ```
 
 2. **Create migration**
+
 ```bash
 # Run in Supabase SQL editor
 # Test in dev environment first
 ```
 
 3. **Add TypeScript types**
+
 ```typescript
 // types/index.ts
 export interface YourTable {
@@ -317,6 +332,7 @@ export interface YourTable {
 ```
 
 4. **Write database tests**
+
 ```typescript
 // tests/database/your-table.test.ts
 describe('Your Table', () => {
@@ -366,7 +382,7 @@ import { verifyAuth } from '@/lib/auth/verify';
 export async function GET(request: NextRequest) {
   const { user, error } = await verifyAuth(request);
   if (error) return NextResponse.json({ error }, { status: 401 });
-  
+
   // Protected logic
 }
 ```
@@ -380,12 +396,12 @@ import { useRouter } from 'next/navigation';
 
 export default function ProtectedPage() {
   const router = useRouter();
-  
+
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     if (!token) router.push('/login');
   }, [router]);
-  
+
   return <div>Protected content</div>;
 }
 ```
@@ -395,6 +411,7 @@ export default function ProtectedPage() {
 ## 📊 Monitoring & Debugging
 
 ### Checking Test Status
+
 ```bash
 # Quick health check
 npm run test:unit          # Should show 59/59 passing
@@ -405,6 +422,7 @@ npx tsc --noEmit          # Should show 0 errors
 ### Common Issues
 
 #### Port Already in Use
+
 ```bash
 # Kill process on port 3000
 lsof -ti:3000 | xargs kill -9
@@ -414,6 +432,7 @@ PORT=3001 npm run dev
 ```
 
 #### Database Connection Issues
+
 ```bash
 # Check environment variables
 cat .env.local | grep SUPABASE
@@ -424,6 +443,7 @@ curl "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/" \
 ```
 
 #### Test Failures
+
 ```bash
 # Run specific test
 npx jest tests/unit/lib/utils.test.ts
@@ -440,6 +460,7 @@ npm run test:unit -- --clearCache
 ## 📦 Dependencies Management
 
 ### Adding Dependencies
+
 ```bash
 # Production dependency
 npm install package-name
@@ -452,6 +473,7 @@ npm run test:unit
 ```
 
 ### Updating Dependencies
+
 ```bash
 # Check for updates
 npm outdated
@@ -471,6 +493,7 @@ cd tests && ./run-comprehensive-tests.sh
 ## 🚢 Deployment Checklist
 
 ### Pre-Deployment
+
 - [ ] All tests passing: `cd tests && ./run-comprehensive-tests.sh`
 - [ ] No TypeScript errors: `npx tsc --noEmit`
 - [ ] No linting errors: `npm run lint`
@@ -479,6 +502,7 @@ cd tests && ./run-comprehensive-tests.sh
 - [ ] Environment variables configured
 
 ### Deployment Steps
+
 ```bash
 # 1. Merge to main
 git checkout main
@@ -497,6 +521,7 @@ curl https://your-domain.com/api/dashboard/stats
 ```
 
 ### Post-Deployment
+
 - [ ] Smoke test production
 - [ ] Check error logs
 - [ ] Monitor performance
@@ -507,24 +532,28 @@ curl https://your-domain.com/api/dashboard/stats
 ## 🎨 Code Style Guidelines
 
 ### TypeScript
+
 - Use strict typing (no `any` unless necessary)
 - Prefer interfaces over types for object shapes
 - Use async/await over promises
 - Add JSDoc comments for public functions
 
 ### React
+
 - Use functional components with hooks
 - Keep components small and focused
 - Use TypeScript for props
 - Follow "use client" directive when needed
 
 ### File Naming
+
 - Components: `PascalCase.tsx`
 - Utilities: `kebab-case.ts`
 - Tests: `*.test.ts` or `*.spec.ts`
 - API routes: `route.ts`
 
 ### Git Commits
+
 ```bash
 # Format: type(scope): message
 feat(api): add employee export endpoint
@@ -539,6 +568,7 @@ refactor(auth): improve token validation
 ## 📚 Key Documentation
 
 ### Essential Reading (Start Here)
+
 1. [README.md](./README.md) - Project overview
 2. [ENGINEERING_BUILD_RULES.md](./ENGINEERING_BUILD_RULES.md) - **Development guidelines**
 3. [PROJECT_FIELD_GOTCHAS.md](./docs/PROJECT_FIELD_GOTCHAS.md) - **Field naming conventions**
@@ -546,6 +576,7 @@ refactor(auth): improve token validation
 5. [TESTING_QUICKSTART.md](./tests/TESTING_QUICKSTART.md) - Testing basics
 
 ### Reference Guides
+
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
 - [COMPREHENSIVE_TESTING_PLAN.md](./tests/COMPREHENSIVE_TESTING_PLAN.md) - Full testing strategy
 - [TEST_EXECUTION_GUIDE.md](./TEST_EXECUTION_GUIDE.md) - Test commands
@@ -559,6 +590,7 @@ refactor(auth): improve token validation
 ## 🆘 Getting Help
 
 ### Resources
+
 1. **Documentation**: Check `/docs` directory
 2. **Tests**: Look at test files for examples
 3. **API Reference**: See `API_REFERENCE.md`
@@ -567,20 +599,24 @@ refactor(auth): improve token validation
 ### Common Questions
 
 **Q: How do I run a single test?**
+
 ```bash
 npx jest tests/unit/lib/utils.test.ts
 ```
 
 **Q: How do I debug a test?**
+
 ```bash
 npm run test:debug
 ```
 
 **Q: Where are the test credentials?**
+
 - See README.md "Test Credentials" section
 - Default password: `changeme`
 
 **Q: How do I add a new test?**
+
 - See "Feature Development Guide" above
 - Follow existing test patterns
 
@@ -589,33 +625,35 @@ npm run test:debug
 ## 🎯 Best Practices
 
 ### DO
+
 ✅ Write tests for new features  
 ✅ Run tests before committing  
 ✅ Use TypeScript strictly  
 ✅ Document complex logic  
 ✅ Keep commits atomic  
 ✅ Update CHANGELOG.md  
-✅ Review code before PR  
+✅ Review code before PR
 
 ### DON'T
+
 ❌ Commit without testing  
 ❌ Use `any` type unnecessarily  
 ❌ Skip TypeScript checks  
 ❌ Push directly to main  
 ❌ Hardcode credentials  
 ❌ Ignore linting errors  
-❌ Leave console.logs  
+❌ Leave console.logs
 
 ---
 
 ## 📈 Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.2.0 | 2025-11-06 | Comprehensive testing infrastructure |
-| 1.1.1 | 2025-11-05 | Dev admin setup script |
-| 1.1.0 | 2025-10-30 | Frontend-backend integration |
-| 1.0.0 | 2025-10-25 | Initial production release |
+| Version | Date       | Changes                              |
+| ------- | ---------- | ------------------------------------ |
+| 1.2.0   | 2025-11-06 | Comprehensive testing infrastructure |
+| 1.1.1   | 2025-11-05 | Dev admin setup script               |
+| 1.1.0   | 2025-10-30 | Frontend-backend integration         |
+| 1.0.0   | 2025-10-25 | Initial production release           |
 
 ---
 
@@ -628,4 +666,3 @@ For questions or issues, see documentation in `/docs` or check test examples.
 **Last Updated:** November 13, 2025  
 **Version:** 1.3.0  
 **Maintained by:** Reuters Breaking News Team
-

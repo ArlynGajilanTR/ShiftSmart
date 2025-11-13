@@ -1,38 +1,44 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { User, Lock, Mail, Phone, Briefcase, MapPin } from "lucide-react"
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { User, Lock, Mail, Phone, Briefcase, MapPin } from 'lucide-react';
 
 export default function SettingsPage() {
   const [formData, setFormData] = useState({
-    name: "John Smith",
-    email: "john.smith@reuters.com",
-    phone: "+39 02 1234 5678",
-    title: "senior-editor",
-    bureau: "milan",
-  })
+    name: 'John Smith',
+    email: 'john.smith@reuters.com',
+    phone: '+39 02 1234 5678',
+    title: 'senior-editor',
+    bureau: 'milan',
+  });
 
   const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  })
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
 
   const handleSave = () => {
     // Handle save logic here
-    console.log("Saving settings:", formData)
-  }
+    console.log('Saving settings:', formData);
+  };
 
   const handlePasswordChange = () => {
     // Handle password change logic here
-    console.log("Changing password")
-  }
+    console.log('Changing password');
+  };
 
   return (
     <div className="space-y-6">
@@ -97,7 +103,10 @@ export default function SettingsPage() {
                 <Briefcase className="h-4 w-4 text-muted-foreground" />
                 Title / Role
               </Label>
-              <Select value={formData.title} onValueChange={(value) => setFormData({ ...formData, title: value })}>
+              <Select
+                value={formData.title}
+                onValueChange={(value) => setFormData({ ...formData, title: value })}
+              >
                 <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary">
                   <SelectValue />
                 </SelectTrigger>
@@ -115,7 +124,10 @@ export default function SettingsPage() {
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 Bureau Location
               </Label>
-              <Select value={formData.bureau} onValueChange={(value) => setFormData({ ...formData, bureau: value })}>
+              <Select
+                value={formData.bureau}
+                onValueChange={(value) => setFormData({ ...formData, bureau: value })}
+              >
                 <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary">
                   <SelectValue />
                 </SelectTrigger>
@@ -138,12 +150,12 @@ export default function SettingsPage() {
                 onClick={() => {
                   // Reset form
                   setFormData({
-                    name: "John Smith",
-                    email: "john.smith@reuters.com",
-                    phone: "+39 02 1234 5678",
-                    title: "senior-editor",
-                    bureau: "milan",
-                  })
+                    name: 'John Smith',
+                    email: 'john.smith@reuters.com',
+                    phone: '+39 02 1234 5678',
+                    title: 'senior-editor',
+                    bureau: 'milan',
+                  });
                 }}
               >
                 Cancel
@@ -170,7 +182,9 @@ export default function SettingsPage() {
                 id="current-password"
                 type="password"
                 value={passwordData.currentPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                onChange={(e) =>
+                  setPasswordData({ ...passwordData, currentPassword: e.target.value })
+                }
                 className="transition-all focus:ring-2 focus:ring-primary"
               />
             </div>
@@ -197,7 +211,9 @@ export default function SettingsPage() {
                 id="confirm-password"
                 type="password"
                 value={passwordData.confirmPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                onChange={(e) =>
+                  setPasswordData({ ...passwordData, confirmPassword: e.target.value })
+                }
                 className="transition-all focus:ring-2 focus:ring-primary"
               />
             </div>
@@ -216,10 +232,10 @@ export default function SettingsPage() {
                 className="flex-1 hover:bg-gray-100 transition-colors bg-transparent"
                 onClick={() => {
                   setPasswordData({
-                    currentPassword: "",
-                    newPassword: "",
-                    confirmPassword: "",
-                  })
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmPassword: '',
+                  });
                 }}
               >
                 Cancel
@@ -239,9 +255,15 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-semibold">Email Notifications</p>
-              <p className="text-sm text-muted-foreground">Receive email alerts for schedule changes and conflicts</p>
+              <p className="text-sm text-muted-foreground">
+                Receive email alerts for schedule changes and conflicts
+              </p>
             </div>
-            <Button variant="outline" size="sm" className="hover:bg-gray-100 transition-colors bg-transparent">
+            <Button
+              variant="outline"
+              size="sm"
+              className="hover:bg-gray-100 transition-colors bg-transparent"
+            >
               Configure
             </Button>
           </div>
@@ -249,7 +271,9 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-semibold">Default Calendar View</p>
-              <p className="text-sm text-muted-foreground">Choose your preferred calendar view on dashboard</p>
+              <p className="text-sm text-muted-foreground">
+                Choose your preferred calendar view on dashboard
+              </p>
             </div>
             <Select defaultValue="week">
               <SelectTrigger className="w-32">
@@ -265,5 +289,5 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

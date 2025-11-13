@@ -2,7 +2,7 @@
 
 /**
  * AI Configuration Checker
- * 
+ *
  * Run this script to verify your AI setup is correct:
  * node scripts/check-ai-config.js
  */
@@ -21,11 +21,11 @@ function loadEnvFile() {
   if (!fs.existsSync(envPath)) {
     return {};
   }
-  
+
   const envContent = fs.readFileSync(envPath, 'utf-8');
   const envVars = {};
-  
-  envContent.split('\n').forEach(line => {
+
+  envContent.split('\n').forEach((line) => {
     line = line.trim();
     if (line && !line.startsWith('#')) {
       const [key, ...valueParts] = line.split('=');
@@ -34,7 +34,7 @@ function loadEnvFile() {
       }
     }
   });
-  
+
   return envVars;
 }
 
@@ -58,7 +58,7 @@ if (!apiKey) {
   hasErrors = true;
 } else {
   console.log('✅ ANTHROPIC_API_KEY is set');
-  
+
   // Check 3: API key format
   if (!apiKey.startsWith('sk-ant-')) {
     console.log('⚠️  API key format may be incorrect (should start with sk-ant-)');
@@ -66,7 +66,7 @@ if (!apiKey) {
   } else {
     console.log('✅ API key format looks correct');
   }
-  
+
   // Check 4: API key length
   if (apiKey.length < 50) {
     console.log('⚠️  API key seems too short');
@@ -78,7 +78,8 @@ if (!apiKey) {
 
 // Check 5: Supabase configuration
 const supabaseUrl = envVars.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = envVars.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseKey =
+  envVars.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl) {
   console.log('⚠️  NEXT_PUBLIC_SUPABASE_URL not set');
@@ -115,4 +116,3 @@ if (hasErrors) {
   console.log('4. Click "Generate Schedule" to test AI features\n');
   process.exit(0);
 }
-

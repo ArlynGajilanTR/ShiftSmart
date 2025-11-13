@@ -29,7 +29,7 @@ export interface AuthResult {
  */
 export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
   const authHeader = request.headers.get('authorization');
-  
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return {
       user: null,
@@ -111,4 +111,3 @@ export function hasRole(user: AuthUser, roles: string[]): boolean {
 export function isAdminOrManager(user: AuthUser): boolean {
   return hasRole(user, ['admin', 'manager']);
 }
-

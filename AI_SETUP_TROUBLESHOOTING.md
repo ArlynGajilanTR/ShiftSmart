@@ -46,6 +46,7 @@ curl http://localhost:3000/api/ai/status \
 ```
 
 **Expected Response (Working):**
+
 ```json
 {
   "ai_enabled": true,
@@ -60,6 +61,7 @@ curl http://localhost:3000/api/ai/status \
 ```
 
 **Expected Response (Not Configured):**
+
 ```json
 {
   "ai_enabled": false,
@@ -89,11 +91,13 @@ curl http://localhost:3000/api/ai/status \
 ### Issue 1: "AI Not Configured" Error
 
 **Symptoms:**
+
 - Red alert in the Generate Schedule dialog
 - Button shows "AI Not Available"
 - Console shows: `AI scheduling not configured`
 
 **Solution:**
+
 1. Verify `.env.local` file exists in project root
 2. Check that `ANTHROPIC_API_KEY` is set correctly
 3. Ensure the key starts with `sk-ant-`
@@ -103,10 +107,12 @@ curl http://localhost:3000/api/ai/status \
 ### Issue 2: "No authentication token found" Error
 
 **Symptoms:**
+
 - Error message about authentication
 - Button click seems to do nothing
 
 **Solution:**
+
 1. Make sure you're logged in
 2. Check browser console for errors
 3. Try logging out and logging back in
@@ -115,10 +121,12 @@ curl http://localhost:3000/api/ai/status \
 ### Issue 3: Button is Disabled
 
 **Symptoms:**
+
 - "Generate Preview" button is grayed out
 - Shows "Checking AI..." indefinitely
 
 **Solution:**
+
 1. Check browser console for errors (F12)
 2. Verify API endpoint is running: `http://localhost:3000/api/ai/status`
 3. Check network tab for failed requests
@@ -127,27 +135,32 @@ curl http://localhost:3000/api/ai/status \
 ### Issue 4: "Failed to generate schedule" Error
 
 **Symptoms:**
+
 - Button works but generation fails
 - Error toast appears after clicking
 
 **Possible Causes & Solutions:**
 
 **A. Invalid API Key**
+
 - Verify the API key is correct
 - Check Anthropic console for key status
 - Regenerate the API key if needed
 
 **B. No Employees in Database**
+
 - Run the database seed: `npm run db:seed`
 - Verify employees exist in the Breaking News team
 - Check Supabase dashboard
 
 **C. API Rate Limit**
+
 - Wait a few minutes
 - Check Anthropic console for usage
 - Upgrade API plan if needed
 
 **D. Network/Connection Issues**
+
 - Check internet connection
 - Verify Anthropic API is accessible
 - Check firewall/proxy settings
@@ -170,14 +183,14 @@ The schedule page now includes comprehensive logging. Open browser console (F12)
 
 ### Understanding Console Messages
 
-| Message | Meaning |
-|---------|---------|
-| `Generate button clicked` | Button handler triggered successfully |
-| `Checking AI configuration status` | Calling AI status API |
-| `AI Status Response` | Shows if AI is enabled |
-| `Calling AI generate schedule` | Starting schedule generation |
-| `AI Response` | Schedule generated successfully |
-| `Failed to generate schedule` | Error occurred (check details) |
+| Message                            | Meaning                               |
+| ---------------------------------- | ------------------------------------- |
+| `Generate button clicked`          | Button handler triggered successfully |
+| `Checking AI configuration status` | Calling AI status API                 |
+| `AI Status Response`               | Shows if AI is enabled                |
+| `Calling AI generate schedule`     | Starting schedule generation          |
+| `AI Response`                      | Schedule generated successfully       |
+| `Failed to generate schedule`      | Error occurred (check details)        |
 
 ---
 
@@ -199,7 +212,7 @@ The schedule page now includes comprehensive logging. Open browser console (F12)
 4. Click "Generate Schedule"
 5. Fill in the form (dates, bureau, etc.)
 6. Click "Generate Preview"
-7. **Expected**: 
+7. **Expected**:
    - Loading spinner appears
    - Schedule generates successfully
    - Preview shows shifts with fairness metrics
@@ -233,6 +246,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 **Endpoint:** `POST /api/ai/generate-schedule`
 
 **Request Body:**
+
 ```json
 {
   "start_date": "2025-01-01",
@@ -245,6 +259,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
 **Response (Success):**
+
 ```json
 {
   "success": true,
@@ -259,6 +274,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
 **Response (Error):**
+
 ```json
 {
   "error": "AI scheduling not configured. Please set ANTHROPIC_API_KEY environment variable."
@@ -270,21 +286,25 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ## Improvements Made
 
 ### 1. Enhanced Error Handling
+
 - Pre-flight AI configuration check
 - Specific error messages for different failure modes
 - Console logging at each step
 
 ### 2. Better User Feedback
+
 - Visual alert when AI is not configured
 - Button state changes based on AI availability
 - Loading state during configuration check
 
 ### 3. Debugging Support
+
 - Comprehensive console logging
 - Clear error messages with solutions
 - Status endpoint for quick checks
 
 ### 4. Graceful Degradation
+
 - Button automatically disables when AI unavailable
 - Clear instructions on how to fix configuration
 - No silent failures
@@ -329,4 +349,3 @@ set ANTHROPIC
 
 **Last Updated:** 2025-01-11  
 **Version:** 1.2.0
-

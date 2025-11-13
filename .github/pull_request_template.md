@@ -37,6 +37,7 @@
 **Number of files changed:** <!-- e.g., 2 -->
 
 **Justification (if > 3 files):**
+
 <!-- Explain why this change requires more than 3 files -->
 
 ## Testing
@@ -50,6 +51,7 @@
 - [ ] Tested with `TEST_TENANT_ID` and `TEST_ACCOUNT_ID`
 
 **Test Results:**
+
 ```bash
 # Paste relevant test output here
 ```
@@ -74,6 +76,7 @@
 **Feature Flags Used:** <!-- If any, list them -->
 
 **Rollback Plan:**
+
 <!-- Describe how to revert this change if something goes wrong -->
 
 ## Pre-Work Verification
@@ -126,6 +129,7 @@
 ---
 
 **By submitting this PR, I confirm that:**
+
 - I have followed the [Engineering Build Rules](./ENGINEERING_BUILD_RULES.md)
 - I have used test data only (no production IDs or PII)
 - I have verified field names against the database schema

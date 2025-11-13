@@ -13,10 +13,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -28,9 +25,7 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
 
     // Build query for shifts with assignments
-    let query = supabase
-      .from('shifts')
-      .select(`
+    let query = supabase.from('shifts').select(`
         *,
         bureaus(name, code),
         shift_assignments(
@@ -55,7 +50,7 @@ export async function GET(request: NextRequest) {
         .select('id')
         .eq('name', bureau)
         .single();
-      
+
       if (bureauData) {
         query = query.eq('bureau_id', bureauData.id);
       }
@@ -124,10 +119,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(formattedShifts, { status: 200 });
   } catch (error) {
     console.error('Shifts API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -140,10 +132,7 @@ export async function POST(request: NextRequest) {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -151,10 +140,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!bureau || !date || !start_time || !end_time) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -167,10 +153,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (!bureauData) {
-      return NextResponse.json(
-        { error: 'Invalid bureau' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid bureau' }, { status: 400 });
     }
 
     // Build timestamps
@@ -192,10 +175,7 @@ export async function POST(request: NextRequest) {
 
     if (createError) {
       console.error('Error creating shift:', createError);
-      return NextResponse.json(
-        { error: 'Failed to create shift' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to create shift' }, { status: 500 });
     }
 
     // If employee specified, create assignment
@@ -241,10 +221,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
     console.error('Create shift error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

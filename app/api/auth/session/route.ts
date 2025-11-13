@@ -5,12 +5,9 @@ import { isSessionExpired } from '@/lib/auth/password';
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { error: 'No authentication token provided' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'No authentication token provided' }, { status: 401 });
     }
 
     const token = authHeader.substring(7);
@@ -24,10 +21,7 @@ export async function GET(request: NextRequest) {
       .single();
 
     if (userError || !user) {
-      return NextResponse.json(
-        { error: 'Invalid or expired session' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Invalid or expired session' }, { status: 401 });
     }
 
     // Check if session is expired
@@ -41,18 +35,12 @@ export async function GET(request: NextRequest) {
         })
         .eq('id', user.id);
 
-      return NextResponse.json(
-        { error: 'Session expired. Please login again.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Session expired. Please login again.' }, { status: 401 });
     }
 
     // Check if user is active
     if (user.status !== 'active') {
-      return NextResponse.json(
-        { error: 'Account is not active' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Account is not active' }, { status: 403 });
     }
 
     // Return user data
@@ -79,10 +67,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Session check error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

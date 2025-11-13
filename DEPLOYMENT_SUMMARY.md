@@ -8,15 +8,18 @@
 ## ✅ What We Completed
 
 ### 1. **New Supabase Database Setup** ✅
+
 - **Project URL:** `https://lxjybduwccqurazhibau.supabase.co`
 - **Schema:** Created all 8 tables (bureaus, users, shifts, conflicts, etc.)
 - **Seeded Data:** 15 Breaking News staff + 1 admin user
 - **RLS Policies:** Configured and permissive for internal use
 
 ### 2. **Staff Seeded** ✅
+
 **Milan Bureau (8 staff):**
+
 - Gianluca Semeraro (Senior)
-- Sabina Suzzi (Senior) 
+- Sabina Suzzi (Senior)
 - Sara Rossi (Senior)
 - Alessia Pe' (Correspondent)
 - Andrea Mandala' (Correspondent)
@@ -25,6 +28,7 @@
 - Giancarlo Navach (Correspondent)
 
 **Rome Bureau (7 staff):**
+
 - Alvise Armellini (Senior)
 - Giulia Segreti (Senior)
 - Stefano Bernabei (Senior)
@@ -34,6 +38,7 @@
 - Valentina Consiglio (Correspondent)
 
 **Admin User:**
+
 - Email: `arlyn.gajilan@thomsonreuters`
 - Password: `testtest`
 - Role: admin
@@ -41,6 +46,7 @@
 **Default Password for all staff:** `changeme`
 
 ### 3. **Local Testing** ⚠️
+
 - ✅ Unit tests: 59/59 passing
 - ✅ Production build: Successful
 - ✅ Environment variables: Configured
@@ -68,8 +74,8 @@ ANTHROPIC_API_KEY=(your existing key from .env.local)
 
 ### Option A: Via Dashboard (Recommended) ⭐
 
-1. **Go to:** https://vercel.com/new
-2. **Import your Git repository** 
+1. **Go to:** <https://vercel.com/new>
+2. **Import your Git repository**
 3. **Add Environment Variables** (see above)
 4. **Click "Deploy"**
 
@@ -90,18 +96,21 @@ vercel --prod
 Once deployed, test with these credentials:
 
 **Admin User:**
+
 ```
 Email: arlyn.gajilan@thomsonreuters
 Password: testtest
 ```
 
 **Staff User:**
+
 ```
 Email: gianluca.semeraro@thomsonreuters.com
 Password: changeme
 ```
 
 **What to verify:**
+
 1. ✅ Login works
 2. ✅ Dashboard loads
 3. ✅ Employee list shows 15 staff
@@ -113,6 +122,7 @@ Password: changeme
 ## 🔒 Security Note
 
 **After deployment, rotate your Supabase keys** (optional but recommended):
+
 - Go to: Supabase Project Settings → API
 - Click "Reset" to generate new keys
 - Update Vercel environment variables
@@ -135,11 +145,13 @@ Password: changeme
 ## 🆘 Troubleshooting
 
 **If login fails in production:**
+
 1. Check environment variables are set
 2. Verify database has users (run SQL query in Supabase)
 3. Check browser console for errors
 
 **Need help?**
+
 - Check `DEPLOYMENT.md` for detailed guide
 - Review `TESTING_SUMMARY.md` for test results
 
@@ -148,4 +160,3 @@ Password: changeme
 **Version:** 1.2.1  
 **Status:** ✅ Ready to Deploy  
 **Next Step:** Deploy to Vercel!
-

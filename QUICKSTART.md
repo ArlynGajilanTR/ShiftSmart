@@ -13,6 +13,7 @@ Welcome to ShiftSmart! This guide will get you up and running in under 10 minute
 ### Step 1: Environment Variables (2 min)
 
 1. Create a `.env.local` file in the project root:
+
    ```bash
    cp .env.local.example .env.local
    ```
@@ -24,6 +25,7 @@ Welcome to ShiftSmart! This guide will get you up and running in under 10 minute
    - Copy the URL and `anon` key
 
 4. Paste into `.env.local`:
+
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhb...
@@ -38,11 +40,13 @@ Welcome to ShiftSmart! This guide will get you up and running in under 10 minute
 5. ✅ You should see "Success" messages
 
 **Optional: Seed with Breaking News team data**
+
 1. Copy contents from `supabase/seed-breaking-news-team.sql`
 2. Run in SQL Editor
 3. This creates 15 real Breaking News team members
 
 **Optional: Create dev admin account for testing**
+
 1. Copy contents from `supabase/create-dev-admin.sql`
 2. Run in SQL Editor
 3. Login with: arlyn.gajilan@thomsonreuters / testtest
@@ -89,16 +93,19 @@ Open [http://localhost:3000](http://localhost:3000) 🎉
 ## Using ShiftSmart
 
 ### 1. Welcome Screen
+
 - First visit goes to `/welcome`
 - Select your bureau
 - View feature overview
 
 ### 2. Dashboard
+
 - Main scheduling interface at `/dashboard`
 - Drag users from left sidebar onto shifts
 - Watch for conflicts in right panel
 
 ### 3. View Options
+
 - **Week**: Weekly planning
 - **Month**: Monthly overview
 - **Quarter**: Long-term planning
@@ -107,17 +114,20 @@ Open [http://localhost:3000](http://localhost:3000) 🎉
 ### 4. Conflict Management
 
 **🔴 Red = Hard Conflict** (Must fix):
+
 - Double booking
 - No rest period
 - All-junior shifts
 - Understaffed
 
 **🟡 Yellow = Soft Warning** (Review):
+
 - User unavailable
 - Overtime risk
 - Preference violation
 
 ### 5. Save
+
 - Click "Save" button (top right)
 - All assignments saved to database
 - Conflicts logged for review
@@ -131,6 +141,7 @@ Open [http://localhost:3000](http://localhost:3000) 🎉
 💡 **Navigation**: Use ← → arrows or "Today" button
 
 💡 **Role Colors**:
+
 - 🔵 Senior = Blue
 - 🟣 Lead = Purple
 - 🟢 Junior = Green
@@ -141,15 +152,19 @@ Open [http://localhost:3000](http://localhost:3000) 🎉
 ## Troubleshooting
 
 ### "Database connection error"
+
 → Check `.env.local` credentials
 
 ### "No tables found"
+
 → Run `supabase/schema.sql` in SQL Editor
 
 ### "Import failed"
+
 → Verify bureau ID and CSV format
 
 ### "Conflicts not showing"
+
 → Refresh page or check browser console
 
 ## Next Steps
@@ -162,15 +177,15 @@ Open [http://localhost:3000](http://localhost:3000) 🎉
 
 ## Features at a Glance
 
-| Feature | Status |
-|---------|--------|
-| 📅 Multi-view scheduling | ✅ |
-| 👥 Role-based balancing | ✅ |
-| 🖱️ Drag & drop | ✅ |
-| ⚠️ Conflict detection | ✅ |
-| 🏢 Bureau management | ✅ |
-| 📊 CSV import/export | ✅ |
-| 🔐 Secure auth | ✅ |
+| Feature                  | Status |
+| ------------------------ | ------ |
+| 📅 Multi-view scheduling | ✅     |
+| 👥 Role-based balancing  | ✅     |
+| 🖱️ Drag & drop           | ✅     |
+| ⚠️ Conflict detection    | ✅     |
+| 🏢 Bureau management     | ✅     |
+| 📊 CSV import/export     | ✅     |
+| 🔐 Secure auth           | ✅     |
 
 ## Resources
 
@@ -182,6 +197,7 @@ Open [http://localhost:3000](http://localhost:3000) 🎉
 ## Support
 
 Questions? Check:
+
 1. The documentation files
 2. Browser console for errors
 3. Supabase logs
@@ -190,4 +206,3 @@ Questions? Check:
 ---
 
 **Ready to schedule smarter?** Let's go! 🚀
-

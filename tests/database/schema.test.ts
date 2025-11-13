@@ -13,65 +13,44 @@ const supabase = createClient(
 describe('Database Schema Tests', () => {
   describe('Table Existence', () => {
     it('should have bureaus table', async () => {
-      const { data, error } = await supabase
-        .from('bureaus')
-        .select('*')
-        .limit(0);
-      
+      const { data, error } = await supabase.from('bureaus').select('*').limit(0);
+
       expect(error).toBeNull();
     });
 
     it('should have users table', async () => {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .limit(0);
-      
+      const { data, error } = await supabase.from('users').select('*').limit(0);
+
       expect(error).toBeNull();
     });
 
     it('should have shifts table', async () => {
-      const { data, error } = await supabase
-        .from('shifts')
-        .select('*')
-        .limit(0);
-      
+      const { data, error } = await supabase.from('shifts').select('*').limit(0);
+
       expect(error).toBeNull();
     });
 
     it('should have shift_assignments table', async () => {
-      const { data, error} = await supabase
-        .from('shift_assignments')
-        .select('*')
-        .limit(0);
-      
+      const { data, error } = await supabase.from('shift_assignments').select('*').limit(0);
+
       expect(error).toBeNull();
     });
 
     it('should have shift_preferences table', async () => {
-      const { data, error } = await supabase
-        .from('shift_preferences')
-        .select('*')
-        .limit(0);
-      
+      const { data, error } = await supabase.from('shift_preferences').select('*').limit(0);
+
       expect(error).toBeNull();
     });
 
     it('should have conflicts table', async () => {
-      const { data, error } = await supabase
-        .from('conflicts')
-        .select('*')
-        .limit(0);
-      
+      const { data, error } = await supabase.from('conflicts').select('*').limit(0);
+
       expect(error).toBeNull();
     });
 
     it('should have audit_logs table', async () => {
-      const { data, error } = await supabase
-        .from('audit_logs')
-        .select('*')
-        .limit(0);
-      
+      const { data, error } = await supabase.from('audit_logs').select('*').limit(0);
+
       expect(error).toBeNull();
     });
   });
@@ -87,11 +66,11 @@ describe('Database Schema Tests', () => {
         })
         .select()
         .single();
-      
+
       expect(error).toBeNull();
       expect(data?.id).toBeDefined();
       expect(data?.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
-      
+
       // Cleanup
       if (data?.id) {
         await supabase.from('bureaus').delete().eq('id', data.id);
@@ -102,7 +81,7 @@ describe('Database Schema Tests', () => {
   describe('Unique Constraints', () => {
     it('should enforce unique email in users table', async () => {
       const testEmail = `test_${Date.now()}@reuters.com`;
-      
+
       // Insert first user
       const { data: user1, error: error1 } = await supabase
         .from('users')
@@ -115,23 +94,21 @@ describe('Database Schema Tests', () => {
         })
         .select()
         .single();
-      
+
       expect(error1).toBeNull();
-      
+
       // Try to insert duplicate
-      const { error: error2 } = await supabase
-        .from('users')
-        .insert({
-          email: testEmail,
-          full_name: 'Test User 2',
-          title: 'Test',
-          shift_role: 'correspondent',
-          password_hash: 'hash',
-        });
-      
+      const { error: error2 } = await supabase.from('users').insert({
+        email: testEmail,
+        full_name: 'Test User 2',
+        title: 'Test',
+        shift_role: 'correspondent',
+        password_hash: 'hash',
+      });
+
       expect(error2).not.toBeNull();
       expect(error2?.message).toContain('duplicate');
-      
+
       // Cleanup
       if (user1?.id) {
         await supabase.from('users').delete().eq('id', user1.id);
@@ -140,7 +117,7 @@ describe('Database Schema Tests', () => {
 
     it('should enforce unique bureau code', async () => {
       const testCode = `CODE_${Date.now()}`;
-      
+
       // Insert first bureau
       const { data: bureau1, error: error1 } = await supabase
         .from('bureaus')
@@ -150,19 +127,17 @@ describe('Database Schema Tests', () => {
         })
         .select()
         .single();
-      
+
       expect(error1).toBeNull();
-      
+
       // Try to insert duplicate
-      const { error: error2 } = await supabase
-        .from('bureaus')
-        .insert({
-          name: 'Bureau 2',
-          code: testCode,
-        });
-      
+      const { error: error2 } = await supabase.from('bureaus').insert({
+        name: 'Bureau 2',
+        code: testCode,
+      });
+
       expect(error2).not.toBeNull();
-      
+
       // Cleanup
       if (bureau1?.id) {
         await supabase.from('bureaus').delete().eq('id', bureau1.id);
@@ -172,17 +147,15 @@ describe('Database Schema Tests', () => {
 
   describe('Foreign Key Constraints', () => {
     it('should enforce bureau_id foreign key in users', async () => {
-      const { error } = await supabase
-        .from('users')
-        .insert({
-          email: `test_${Date.now()}@reuters.com`,
-          full_name: 'Test User',
-          title: 'Test',
-          shift_role: 'correspondent',
-          bureau_id: '00000000-0000-0000-0000-000000000000', // Non-existent
-          password_hash: 'hash',
-        });
-      
+      const { error } = await supabase.from('users').insert({
+        email: `test_${Date.now()}@reuters.com`,
+        full_name: 'Test User',
+        title: 'Test',
+        shift_role: 'correspondent',
+        bureau_id: '00000000-0000-0000-0000-000000000000', // Non-existent
+        password_hash: 'hash',
+      });
+
       expect(error).not.toBeNull();
       expect(error?.message).toContain('foreign key');
     });
@@ -197,9 +170,9 @@ describe('Database Schema Tests', () => {
         })
         .select()
         .single();
-      
+
       expect(bureau).toBeDefined();
-      
+
       // Create user in bureau
       const { data: user } = await supabase
         .from('users')
@@ -213,104 +186,86 @@ describe('Database Schema Tests', () => {
         })
         .select()
         .single();
-      
+
       expect(user).toBeDefined();
-      
+
       // Delete bureau (should cascade)
       await supabase.from('bureaus').delete().eq('id', bureau!.id);
-      
+
       // Verify user was deleted
       const { data: deletedUser } = await supabase
         .from('users')
         .select()
         .eq('id', user!.id)
         .single();
-      
+
       expect(deletedUser).toBeNull();
     });
   });
 
   describe('Check Constraints', () => {
     it('should enforce valid role enum in users', async () => {
-      const { error } = await supabase
-        .from('users')
-        .insert({
-          email: `test_${Date.now()}@reuters.com`,
-          full_name: 'Test User',
-          title: 'Test',
-          shift_role: 'correspondent',
-          role: 'invalid_role', // Invalid
-          password_hash: 'hash',
-        });
-      
+      const { error } = await supabase.from('users').insert({
+        email: `test_${Date.now()}@reuters.com`,
+        full_name: 'Test User',
+        title: 'Test',
+        shift_role: 'correspondent',
+        role: 'invalid_role', // Invalid
+        password_hash: 'hash',
+      });
+
       expect(error).not.toBeNull();
     });
 
     it('should enforce valid shift_role enum', async () => {
-      const { error } = await supabase
-        .from('users')
-        .insert({
-          email: `test_${Date.now()}@reuters.com`,
-          full_name: 'Test User',
-          title: 'Test',
-          shift_role: 'invalid_shift_role', // Invalid
-          password_hash: 'hash',
-        });
-      
+      const { error } = await supabase.from('users').insert({
+        email: `test_${Date.now()}@reuters.com`,
+        full_name: 'Test User',
+        title: 'Test',
+        shift_role: 'invalid_shift_role', // Invalid
+        password_hash: 'hash',
+      });
+
       expect(error).not.toBeNull();
     });
 
     it('should enforce valid status enum', async () => {
-      const { data: bureau } = await supabase
-        .from('bureaus')
-        .select()
-        .limit(1)
-        .single();
-      
-      const { error } = await supabase
-        .from('users')
-        .insert({
-          email: `test_${Date.now()}@reuters.com`,
-          full_name: 'Test User',
-          title: 'Test',
-          shift_role: 'correspondent',
-          bureau_id: bureau?.id,
-          status: 'invalid_status', // Invalid
-          password_hash: 'hash',
-        });
-      
+      const { data: bureau } = await supabase.from('bureaus').select().limit(1).single();
+
+      const { error } = await supabase.from('users').insert({
+        email: `test_${Date.now()}@reuters.com`,
+        full_name: 'Test User',
+        title: 'Test',
+        shift_role: 'correspondent',
+        bureau_id: bureau?.id,
+        status: 'invalid_status', // Invalid
+        password_hash: 'hash',
+      });
+
       expect(error).not.toBeNull();
     });
 
     it('should enforce shift end_time > start_time', async () => {
-      const { data: bureau } = await supabase
-        .from('bureaus')
-        .select()
-        .limit(1)
-        .single();
-      
-      const { error } = await supabase
-        .from('shifts')
-        .insert({
-          bureau_id: bureau?.id,
-          start_time: '2025-11-01T16:00:00Z',
-          end_time: '2025-11-01T08:00:00Z', // Before start
-        });
-      
+      const { data: bureau } = await supabase.from('bureaus').select().limit(1).single();
+
+      const { error } = await supabase.from('shifts').insert({
+        bureau_id: bureau?.id,
+        start_time: '2025-11-01T16:00:00Z',
+        end_time: '2025-11-01T08:00:00Z', // Before start
+      });
+
       expect(error).not.toBeNull();
     });
 
     it('should enforce conflict severity enum', async () => {
-      const { error } = await supabase
-        .from('conflicts')
-        .insert({
-          type: 'Double Booking',
-          severity: 'invalid_severity', // Invalid
-          status: 'unresolved',
-          description: 'Test',
-          date: '2025-11-01',
-        });
-      
+      const { error } = await supabase.from('conflicts').insert({
+        type: 'Double Booking',
+        severity: 'invalid_severity', // Invalid
+        status: 'unresolved',
+        description: 'Test',
+        date: '2025-11-01',
+      });
+
       expect(error).not.toBeNull();
     });
   });
@@ -325,11 +280,11 @@ describe('Database Schema Tests', () => {
         })
         .select()
         .single();
-      
+
       expect(error).toBeNull();
       expect(data?.created_at).toBeDefined();
       expect(new Date(data!.created_at)).toBeInstanceOf(Date);
-      
+
       // Cleanup
       if (data?.id) {
         await supabase.from('bureaus').delete().eq('id', data.id);
@@ -346,12 +301,12 @@ describe('Database Schema Tests', () => {
         })
         .select()
         .single();
-      
+
       const originalUpdatedAt = bureau!.updated_at;
-      
+
       // Wait a moment
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Update bureau
       const { data: updated } = await supabase
         .from('bureaus')
@@ -359,10 +314,10 @@ describe('Database Schema Tests', () => {
         .eq('id', bureau!.id)
         .select()
         .single();
-      
+
       expect(updated?.updated_at).not.toBe(originalUpdatedAt);
       expect(new Date(updated!.updated_at) > new Date(originalUpdatedAt)).toBe(true);
-      
+
       // Cleanup
       await supabase.from('bureaus').delete().eq('id', bureau!.id);
     });
@@ -371,30 +326,26 @@ describe('Database Schema Tests', () => {
   describe('Indexes', () => {
     it('should have index on users.email for fast lookup', async () => {
       const startTime = Date.now();
-      
-      await supabase
-        .from('users')
-        .select()
-        .eq('email', 'test@reuters.com')
-        .single();
-      
+
+      await supabase.from('users').select().eq('email', 'test@reuters.com').single();
+
       const duration = Date.now() - startTime;
-      
+
       // Should be fast (< 100ms with index)
       expect(duration).toBeLessThan(100);
     });
 
     it('should have index on shifts time range', async () => {
       const startTime = Date.now();
-      
+
       await supabase
         .from('shifts')
         .select()
         .gte('start_time', '2025-11-01T00:00:00Z')
         .lte('start_time', '2025-11-30T23:59:59Z');
-      
+
       const duration = Date.now() - startTime;
-      
+
       // Should be fast with index
       expect(duration).toBeLessThan(200);
     });
@@ -428,4 +379,3 @@ describe('Row Level Security (RLS)', () => {
     });
   });
 });
-

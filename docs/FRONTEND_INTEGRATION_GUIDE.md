@@ -13,20 +13,23 @@ This guide shows how to connect your V0 frontend to the ShiftSmart API backend.
 ### 1. Get Your API URL
 
 From your Vercel deployment, your API is at:
+
 ```
 https://your-api-name.vercel.app
 ```
 
 ### 2. Add Environment Variable to V0 Frontend
 
-In your V0 frontend project (https://github.com/ArlynGajilanTR/v0-shift-smart-frontend-development):
+In your V0 frontend project (<https://github.com/ArlynGajilanTR/v0-shift-smart-frontend-development>):
 
 **Add to `.env.local`:**
+
 ```env
 NEXT_PUBLIC_API_URL=https://your-api-name.vercel.app
 ```
 
 **Add to Vercel (if deployed):**
+
 - Go to Vercel Dashboard → Your V0 Project → Settings → Environment Variables
 - Add: `NEXT_PUBLIC_API_URL` = `https://your-api-name.vercel.app`
 
@@ -47,10 +50,7 @@ interface ApiOptions extends RequestInit {
 /**
  * Base API call function with authentication
  */
-export async function apiCall<T>(
-  endpoint: string,
-  options: ApiOptions = {}
-): Promise<T> {
+export async function apiCall<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
   const { requireAuth = true, ...fetchOptions } = options;
 
   const headers: HeadersInit = {
@@ -145,10 +145,8 @@ export const api = {
         Object.entries(filters || {}).filter(([_, v]) => v != null) as [string, string][]
       );
       const query = params.toString();
-      
-      return apiCall<{ employees: any[] }>(
-        `/api/employees${query ? `?${query}` : ''}`
-      );
+
+      return apiCall<{ employees: any[] }>(`/api/employees${query ? `?${query}` : ''}`);
     },
 
     get: async (id: string) => {
@@ -202,10 +200,8 @@ export const api = {
         Object.entries(filters || {}).filter(([_, v]) => v != null) as [string, string][]
       );
       const query = params.toString();
-      
-      return apiCall<{ shifts: any[] }>(
-        `/api/shifts${query ? `?${query}` : ''}`
-      );
+
+      return apiCall<{ shifts: any[] }>(`/api/shifts${query ? `?${query}` : ''}`);
     },
 
     upcoming: async (days: number = 7) => {
@@ -255,13 +251,13 @@ export const api = {
       limit?: number;
     }) => {
       const params = new URLSearchParams(
-        Object.entries(filters || {}).filter(([_, v]) => v != null).map(([k, v]) => [k, String(v)])
+        Object.entries(filters || {})
+          .filter(([_, v]) => v != null)
+          .map(([k, v]) => [k, String(v)])
       );
       const query = params.toString();
-      
-      return apiCall<{ conflicts: any[] }>(
-        `/api/conflicts${query ? `?${query}` : ''}`
-      );
+
+      return apiCall<{ conflicts: any[] }>(`/api/conflicts${query ? `?${query}` : ''}`);
     },
 
     acknowledge: async (id: string) => {
@@ -332,10 +328,10 @@ export const api = {
  */
 export function getCurrentUser() {
   if (typeof window === 'undefined') return null;
-  
+
   const userStr = localStorage.getItem('user');
   if (!userStr) return null;
-  
+
   try {
     return JSON.parse(userStr);
   } catch {
@@ -381,7 +377,7 @@ export default function LoginPage() {
 
     try {
       const response = await api.auth.login(email, password);
-      
+
       // Redirect to dashboard
       router.push('/dashboard');
     } catch (err: any) {
@@ -394,7 +390,7 @@ export default function LoginPage() {
   return (
     <form onSubmit={handleSubmit}>
       {error && <div className="error">{error}</div>}
-      
+
       <input
         type="email"
         value={email}
@@ -402,7 +398,7 @@ export default function LoginPage() {
         placeholder="Email"
         required
       />
-      
+
       <input
         type="password"
         value={password}
@@ -410,7 +406,7 @@ export default function LoginPage() {
         placeholder="Password"
         required
       />
-      
+
       <button type="submit" disabled={isLoading}>
         {isLoading ? 'Logging in...' : 'Log In'}
       </button>
@@ -466,7 +462,7 @@ export default function DashboardPage() {
   return (
     <div>
       <h1>Dashboard</h1>
-      
+
       {/* Stats Cards */}
       <div className="stats-grid">
         <div className="stat-card">
@@ -645,7 +641,7 @@ export default function SchedulePage() {
   const handleShiftMove = async (shiftId: string, newDate: string) => {
     try {
       await api.shifts.move(shiftId, newDate);
-      
+
       // Refresh shifts
       // (Re-run the fetch logic or update state optimistically)
     } catch (error) {
@@ -668,6 +664,7 @@ export default function SchedulePage() {
 ## 🧪 Step 3: Test the Integration
 
 ### Test Authentication
+
 ```bash
 # In your V0 frontend
 npm run dev
@@ -678,6 +675,7 @@ npm run dev
 ```
 
 ### Test Data Loading
+
 1. Login should work
 2. Dashboard should show real stats
 3. Employee list should show 15 Breaking News staff
@@ -687,7 +685,7 @@ npm run dev
 
 ## 🔍 Debugging
 
-### If you see CORS errors:
+### If you see CORS errors
 
 Add this to your API backend's `next.config.ts`:
 
@@ -711,12 +709,13 @@ const nextConfig = {
 export default nextConfig;
 ```
 
-### If authentication fails:
+### If authentication fails
 
 Check browser console:
+
 ```javascript
 // Should see token in localStorage
-localStorage.getItem('auth_token')
+localStorage.getItem('auth_token');
 ```
 
 ---
@@ -735,5 +734,4 @@ localStorage.getItem('auth_token')
 **Need help with a specific component?** Let me know which page you want to wire up first!
 
 **Backend API URL:** (You'll get this from Vercel)  
-**Frontend Repo:** https://github.com/ArlynGajilanTR/v0-shift-smart-frontend-development
-
+**Frontend Repo:** <https://github.com/ArlynGajilanTR/v0-shift-smart-frontend-development>

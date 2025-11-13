@@ -12,10 +12,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const supabase = await createClient();
@@ -66,9 +63,10 @@ export async function GET(request: NextRequest) {
       .lte('shifts.start_time', thisWeekEnd.toISOString())
       .in('status', ['assigned', 'confirmed']);
 
-    const coverageRate = activeShiftsThisWeek && activeShiftsThisWeek > 0
-      ? Math.round((assignedShifts || 0) / activeShiftsThisWeek * 100)
-      : 0;
+    const coverageRate =
+      activeShiftsThisWeek && activeShiftsThisWeek > 0
+        ? Math.round(((assignedShifts || 0) / activeShiftsThisWeek) * 100)
+        : 0;
 
     // Calculate last week's coverage for comparison
     const { count: lastWeekAssignedShifts } = await supabase
@@ -78,14 +76,16 @@ export async function GET(request: NextRequest) {
       .lte('shifts.start_time', lastWeekEnd.toISOString())
       .in('status', ['assigned', 'confirmed']);
 
-    const lastWeekCoverageRate = activeShiftsLastWeek && activeShiftsLastWeek > 0
-      ? Math.round((lastWeekAssignedShifts || 0) / activeShiftsLastWeek * 100)
-      : 0;
+    const lastWeekCoverageRate =
+      activeShiftsLastWeek && activeShiftsLastWeek > 0
+        ? Math.round(((lastWeekAssignedShifts || 0) / activeShiftsLastWeek) * 100)
+        : 0;
 
     const coverageChange = coverageRate - lastWeekCoverageRate;
-    const coverageChangeText = coverageChange >= 0 
-      ? `+${coverageChange}% from last week`
-      : `${coverageChange}% from last week`;
+    const coverageChangeText =
+      coverageChange >= 0
+        ? `+${coverageChange}% from last week`
+        : `${coverageChange}% from last week`;
 
     // Format response
     const response = {
@@ -100,10 +100,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Dashboard stats error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

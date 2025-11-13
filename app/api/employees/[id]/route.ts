@@ -6,18 +6,12 @@ import { verifyAuth } from '@/lib/auth/verify';
  * GET /api/employees/:id
  * Get a single employee with full details
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const supabase = await createClient();
@@ -31,10 +25,7 @@ export async function GET(
       .single();
 
     if (error || !employee) {
-      return NextResponse.json(
-        { error: 'Employee not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
     }
 
     // Get shift preferences
@@ -59,9 +50,10 @@ export async function GET(
 
     // Format response
     const nameParts = employee.full_name.split(' ');
-    const initials = nameParts.length >= 2 
-      ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
-      : employee.full_name.substring(0, 2).toUpperCase();
+    const initials =
+      nameParts.length >= 2
+        ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+        : employee.full_name.substring(0, 2).toUpperCase();
 
     const response = {
       id: employee.id,
@@ -73,21 +65,20 @@ export async function GET(
       status: employee.status,
       shiftsThisMonth: shifts?.length || 0,
       initials,
-      preferences: preferences ? {
-        preferredDays: preferences.preferred_days || [],
-        preferredShifts: preferences.preferred_shifts || [],
-        maxShiftsPerWeek: preferences.max_shifts_per_week || 5,
-        notes: preferences.notes || '',
-      } : null,
+      preferences: preferences
+        ? {
+            preferredDays: preferences.preferred_days || [],
+            preferredShifts: preferences.preferred_shifts || [],
+            maxShiftsPerWeek: preferences.max_shifts_per_week || 5,
+            notes: preferences.notes || '',
+          }
+        : null,
     };
 
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Get employee error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -95,18 +86,12 @@ export async function GET(
  * PUT /api/employees/:id
  * Update an employee
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -123,10 +108,7 @@ export async function PUT(
       .single();
 
     if (!existingEmployee) {
-      return NextResponse.json(
-        { error: 'Employee not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
     }
 
     // If email is changing, check for conflicts
@@ -138,10 +120,7 @@ export async function PUT(
         .single();
 
       if (emailConflict) {
-        return NextResponse.json(
-          { error: 'Email already exists' },
-          { status: 409 }
-        );
+        return NextResponse.json({ error: 'Email already exists' }, { status: 409 });
       }
     }
 
@@ -155,10 +134,7 @@ export async function PUT(
         .single();
 
       if (!bureauData) {
-        return NextResponse.json(
-          { error: 'Invalid bureau' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid bureau' }, { status: 400 });
       }
       bureauId = bureauData.id;
     }
@@ -196,17 +172,15 @@ export async function PUT(
 
     if (updateError) {
       console.error('Error updating employee:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update employee' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to update employee' }, { status: 500 });
     }
 
     // Format response
     const nameParts = updatedEmployee.full_name.split(' ');
-    const initials = nameParts.length >= 2 
-      ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
-      : updatedEmployee.full_name.substring(0, 2).toUpperCase();
+    const initials =
+      nameParts.length >= 2
+        ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
+        : updatedEmployee.full_name.substring(0, 2).toUpperCase();
 
     const response = {
       id: updatedEmployee.id,
@@ -222,10 +196,7 @@ export async function PUT(
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Update employee error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -241,10 +212,7 @@ export async function DELETE(
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const supabase = await createClient();
@@ -258,36 +226,20 @@ export async function DELETE(
       .single();
 
     if (!existingEmployee) {
-      return NextResponse.json(
-        { error: 'Employee not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
     }
 
     // Delete employee (cascade will handle related records)
-    const { error: deleteError } = await supabase
-      .from('users')
-      .delete()
-      .eq('id', id);
+    const { error: deleteError } = await supabase.from('users').delete().eq('id', id);
 
     if (deleteError) {
       console.error('Error deleting employee:', deleteError);
-      return NextResponse.json(
-        { error: 'Failed to delete employee' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to delete employee' }, { status: 500 });
     }
 
-    return NextResponse.json(
-      { message: 'Employee deleted successfully' },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: 'Employee deleted successfully' }, { status: 200 });
   } catch (error) {
     console.error('Delete employee error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

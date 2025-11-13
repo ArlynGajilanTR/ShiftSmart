@@ -1,17 +1,20 @@
 # ShiftSmart MVP Requirements - Breaking News Team
 
 ## Overview
+
 Initial rollout for Reuters Breaking News editorial team with staff in Milan and Rome bureaus.
 
 ## In Scope for MVP
 
 ### Team & Structure
+
 - ✅ **Single Team**: Breaking News only
 - ✅ **Two Bureaus**: Milan and Rome
 - ✅ **Timezone**: Europe/Rome (CET/CEST)
 - ✅ **Staff Roles**: Senior, Junior, Lead, Support editors
 
 ### Core Functionality
+
 - ✅ **Multi-view scheduling**: Week, Month, Quarter, Special Events
 - ✅ **Drag-and-drop interface**: Intuitive shift assignment
 - ✅ **Role-based validation**: No all-junior shifts
@@ -20,12 +23,14 @@ Initial rollout for Reuters Breaking News editorial team with staff in Milan and
 - ✅ **Bureau management**: Milan and Rome operations
 
 ### User Management
+
 - ✅ **Signup with bureau selection**: Milan or Rome
 - ✅ **Team auto-assignment**: All users → Breaking News
 - ✅ **Role selection**: Senior/Junior/Lead/Support
 - ✅ **Direct dashboard access**: No unnecessary screens
 
 ### Scheduling Rules
+
 - ✅ Minimum 1 senior/lead per shift
 - ✅ Maximum 3 juniors per shift
 - ✅ Lead required for night shifts
@@ -36,6 +41,7 @@ Initial rollout for Reuters Breaking News editorial team with staff in Milan and
 ## Out of Scope for MVP
 
 ### Features (Future)
+
 - ❌ Multiple teams beyond Breaking News
 - ❌ Additional bureaus beyond Milan/Rome
 - ❌ Shift swap requests
@@ -47,6 +53,7 @@ Initial rollout for Reuters Breaking News editorial team with staff in Milan and
 - ❌ Staff availability calendar sync
 
 ### Technical (Future)
+
 - ❌ Real-time updates (WebSocket)
 - ❌ Push notifications
 - ❌ Advanced permissions beyond basic roles
@@ -59,6 +66,7 @@ Initial rollout for Reuters Breaking News editorial team with staff in Milan and
 ### Initial Setup Needed
 
 1. **Bureaus** (Manual setup in Supabase):
+
    ```
    Milan (MILAN) - Europe/Rome timezone
    Rome (ROME) - Europe/Rome timezone
@@ -86,6 +94,7 @@ date,start_time,end_time,staff_name,staff_email,role,bureau
 ## Success Criteria for MVP Launch
 
 ### Technical
+
 - ✅ All core features working
 - ✅ No critical bugs
 - ✅ Fast page load times (< 2s)
@@ -93,6 +102,7 @@ date,start_time,end_time,staff_name,staff_email,role,bureau
 - ✅ Data properly secured (RLS enabled)
 
 ### Business
+
 - ✅ Breaking News team onboarded (Milan)
 - ✅ Breaking News team onboarded (Rome)
 - ✅ Historical shifts imported
@@ -100,6 +110,7 @@ date,start_time,end_time,staff_name,staff_email,role,bureau
 - ✅ Zero published conflicts
 
 ### User Experience
+
 - ✅ Intuitive for schedulers (< 15 min training)
 - ✅ Clear conflict warnings
 - ✅ Fast shift assignment (drag & drop)
@@ -109,23 +120,27 @@ date,start_time,end_time,staff_name,staff_email,role,bureau
 ## Timeline
 
 ### Phase 1: Setup (Week 1)
+
 - Database schema deployed
 - Milan and Rome bureaus created
 - Administrator accounts created
 
 ### Phase 2: Data Import (Week 1-2)
+
 - Staff list received
 - CSV formatted correctly
 - Bulk import completed
 - Verification of all staff records
 
 ### Phase 3: Testing (Week 2)
+
 - Schedulers create test schedules
 - Conflict detection verified
 - Role validation tested
 - Bug fixes
 
 ### Phase 4: Launch (Week 3)
+
 - Breaking News team notified
 - Initial schedules published
 - Support available for questions
@@ -134,12 +149,14 @@ date,start_time,end_time,staff_name,staff_email,role,bureau
 ## Post-MVP Roadmap
 
 ### Phase 2 (Month 2-3)
+
 - Additional teams (if needed)
 - Additional bureaus (if needed)
 - Enhanced reporting
 - Shift swap functionality
 
 ### Phase 3 (Month 4-6)
+
 - Mobile app
 - Real-time collaboration
 - Integration with Reuters systems
@@ -148,12 +165,14 @@ date,start_time,end_time,staff_name,staff_email,role,bureau
 ## Support & Training
 
 ### Documentation Provided
+
 - ✅ Setup instructions
 - ✅ User guide for schedulers
 - ✅ CSV import guide
 - ✅ Troubleshooting guide
 
 ### Training Required
+
 - 15-minute demo for schedulers
 - 5-minute overview for staff
 - Office hours for first 2 weeks
@@ -161,28 +180,33 @@ date,start_time,end_time,staff_name,staff_email,role,bureau
 ## Risks & Mitigation
 
 ### Risk: Staff resistance to new system
+
 **Mitigation**: Simple interface, minimal training needed, clear benefits
 
 ### Risk: Data import errors
+
 **Mitigation**: CSV validation, error reporting, manual correction tools
 
 ### Risk: Timezone confusion (Milan/Rome)
+
 **Mitigation**: Single timezone (Europe/Rome), clear time displays
 
 ### Risk: Technical issues at launch
+
 **Mitigation**: Testing period, gradual rollout, support availability
 
 ## Appendix
 
 ### Key Stakeholders
+
 - Breaking News Editorial Manager (Milan)
 - Breaking News Editorial Manager (Rome)
 - IT/Systems Support
 - Development Team
 
 ### Communication Plan
+
 - Weekly updates during development
 - Launch announcement 1 week before
 - Daily check-ins during first week
 - Feedback collection after 2 weeks
-

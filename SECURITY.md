@@ -190,11 +190,11 @@ Before deploying to production:
 
 ShiftSmart relies on the following third-party services:
 
-| Service | Purpose | Security Measures |
-|---------|---------|------------------|
-| **Supabase** | Database & Auth | RLS, SSL, automatic backups |
-| **Anthropic** | AI Scheduling | API key authentication, rate limiting |
-| **Vercel** | Hosting | Edge functions, DDoS protection, SSL |
+| Service       | Purpose         | Security Measures                     |
+| ------------- | --------------- | ------------------------------------- |
+| **Supabase**  | Database & Auth | RLS, SSL, automatic backups           |
+| **Anthropic** | AI Scheduling   | API key authentication, rate limiting |
+| **Vercel**    | Hosting         | Edge functions, DDoS protection, SSL  |
 
 ### Dependency Security
 
@@ -215,6 +215,7 @@ ShiftSmart relies on the following third-party services:
 ### Audit Trail
 
 ShiftSmart maintains an audit log for:
+
 - User authentication events
 - Shift assignments/changes
 - Conflict resolutions
@@ -227,6 +228,7 @@ ShiftSmart maintains an audit log for:
 ## Updates and Patches
 
 Security updates will be released as:
+
 - **Patch versions** for minor security fixes (e.g., 1.0.1)
 - **Minor versions** for moderate security improvements (e.g., 1.1.0)
 - **Major versions** for significant security overhauls (e.g., 2.0.0)
@@ -248,4 +250,3 @@ For security questions or concerns:
 **Last Updated:** October 30, 2025  
 **Version:** 1.0.0  
 **Maintained by:** Reuters Breaking News Team
-

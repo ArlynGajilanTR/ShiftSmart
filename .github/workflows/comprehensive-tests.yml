@@ -2,9 +2,9 @@ name: Comprehensive Test Suite
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   schedule:
     # Run tests daily at 2 AM UTC
     - cron: '0 2 * * *'
@@ -21,7 +21,7 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -58,7 +58,7 @@ jobs:
   api-tests:
     name: API Endpoint Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -102,7 +102,7 @@ jobs:
   database-tests:
     name: Database Tests
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -143,7 +143,7 @@ jobs:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -197,7 +197,7 @@ jobs:
   accessibility-tests:
     name: Accessibility Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -239,7 +239,7 @@ jobs:
   performance-tests:
     name: Performance Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -286,7 +286,7 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -313,7 +313,7 @@ jobs:
   lint-and-typecheck:
     name: Lint and Type Check
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -337,9 +337,19 @@ jobs:
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    needs: [unit-tests, api-tests, database-tests, e2e-tests, accessibility-tests, performance-tests, security-scan, lint-and-typecheck]
+    needs:
+      [
+        unit-tests,
+        api-tests,
+        database-tests,
+        e2e-tests,
+        accessibility-tests,
+        performance-tests,
+        security-scan,
+        lint-and-typecheck,
+      ]
     if: always()
-    
+
     steps:
       - name: Check test results
         run: |
@@ -360,7 +370,7 @@ jobs:
           script: |
             const summary = `
             ## Test Results Summary
-            
+
             | Test Suite | Status |
             |------------|--------|
             | Unit Tests | ${{ needs.unit-tests.result }} |
@@ -372,11 +382,10 @@ jobs:
             | Security | ${{ needs.security-scan.result }} |
             | Lint & Type Check | ${{ needs.lint-and-typecheck.result }} |
             `;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.name,
               body: summary
             });
-

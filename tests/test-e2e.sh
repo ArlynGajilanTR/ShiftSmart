@@ -70,12 +70,12 @@ if npm test; then
     echo -e "${GREEN}║                                           ║${NC}"
     echo -e "${GREEN}╚═══════════════════════════════════════════╝${NC}"
     echo ""
-    
+
     # Show report
     echo "📊 View detailed report:"
     echo "   npx playwright show-report"
     echo ""
-    
+
     exit 0
 else
     echo ""
@@ -85,13 +85,12 @@ else
     echo -e "${RED}║                                           ║${NC}"
     echo -e "${RED}╚═══════════════════════════════════════════╝${NC}"
     echo ""
-    
+
     # Show report
     echo "📊 View detailed report with screenshots:"
     echo "   cd $SCRIPT_DIR/e2e"
     echo "   npx playwright show-report"
     echo ""
-    
+
     exit 1
 fi
-

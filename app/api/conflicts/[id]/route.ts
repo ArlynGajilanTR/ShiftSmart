@@ -7,18 +7,12 @@ import { verifyAuth } from '@/lib/auth/verify';
  * Update conflict status (resolve or acknowledge)
  * Body: { action: 'resolve' | 'acknowledge' }
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -42,10 +36,7 @@ export async function PATCH(
       .single();
 
     if (!existingConflict) {
-      return NextResponse.json(
-        { error: 'Conflict not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Conflict not found' }, { status: 404 });
     }
 
     const now = new Date().toISOString();
@@ -73,10 +64,7 @@ export async function PATCH(
 
     if (updateError) {
       console.error('Error updating conflict:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update conflict' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to update conflict' }, { status: 500 });
     }
 
     // Format response
@@ -98,10 +86,7 @@ export async function PATCH(
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Update conflict error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -117,10 +102,7 @@ export async function DELETE(
     // Verify authentication
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
-      return NextResponse.json(
-        { error: authError || 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
     const supabase = await createClient();
@@ -134,36 +116,20 @@ export async function DELETE(
       .single();
 
     if (!existingConflict) {
-      return NextResponse.json(
-        { error: 'Conflict not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Conflict not found' }, { status: 404 });
     }
 
     // Delete conflict
-    const { error: deleteError } = await supabase
-      .from('conflicts')
-      .delete()
-      .eq('id', id);
+    const { error: deleteError } = await supabase.from('conflicts').delete().eq('id', id);
 
     if (deleteError) {
       console.error('Error deleting conflict:', deleteError);
-      return NextResponse.json(
-        { error: 'Failed to delete conflict' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to delete conflict' }, { status: 500 });
     }
 
-    return NextResponse.json(
-      { message: 'Conflict dismissed successfully' },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: 'Conflict dismissed successfully' }, { status: 200 });
   } catch (error) {
     console.error('Delete conflict error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-

@@ -9,8 +9,10 @@ This comprehensive testing suite verifies that your frontend and backend are cor
 ## Test Suites
 
 ### 1. API Endpoint Tests (24 tests)
+
 **File:** `test-api-endpoints.sh`  
 **What it tests:**
+
 - All 24 backend API endpoints
 - Authentication flow (login, logout, session)
 - Employee CRUD operations (7 endpoints)
@@ -20,8 +22,10 @@ This comprehensive testing suite verifies that your frontend and backend are cor
 - AI endpoints (3 endpoints)
 
 ### 2. Integration Tests (7 tests)
+
 **File:** `test-integration.sh`  
 **What it tests:**
+
 - Backend API accessibility
 - Frontend accessibility
 - Authentication token flow
@@ -31,8 +35,10 @@ This comprehensive testing suite verifies that your frontend and backend are cor
 - CORS configuration
 
 ### 3. E2E Tests (15+ tests)
+
 **Files:** `test-e2e.sh` + Playwright specs  
 **What it tests:**
+
 - **Authentication (5 tests):**
   - Login page display
   - Invalid credentials rejection
@@ -63,6 +69,7 @@ This comprehensive testing suite verifies that your frontend and backend are cor
 ## 🚀 Running Tests
 
 ### Run All Tests
+
 ```bash
 cd ~/shiftsmart-v1/tests
 ./run-all-tests.sh
@@ -71,6 +78,7 @@ cd ~/shiftsmart-v1/tests
 ### Run Individual Test Suites
 
 #### API Endpoint Tests
+
 ```bash
 cd ~/shiftsmart-v1/tests
 export API_URL="https://your-api.vercel.app"  # Or http://localhost:3000
@@ -78,6 +86,7 @@ export API_URL="https://your-api.vercel.app"  # Or http://localhost:3000
 ```
 
 #### Integration Tests
+
 ```bash
 cd ~/shiftsmart-v1/tests
 export API_URL="http://localhost:3000"
@@ -86,6 +95,7 @@ export FRONTEND_URL="http://localhost:3001"
 ```
 
 #### E2E Tests (Browser Automation)
+
 ```bash
 # Start both frontend and backend first!
 cd ~/v0-frontend && npm run dev &
@@ -101,6 +111,7 @@ cd ~/shiftsmart-v1/tests
 ## 📊 Test Output
 
 ### Success Output
+
 ```
 ==========================================
 ShiftSmart Complete Test Suite
@@ -155,6 +166,7 @@ Failed: 0
 ```
 
 ### Failure Output
+
 ```
 ❌ FAIL: Login with valid credentials
    Expected: 200, Got: 401
@@ -174,11 +186,13 @@ Failed Tests:
 ## 🔧 Prerequisites
 
 ### For API & Integration Tests
+
 - Backend API running (locally or on Vercel)
 - `curl` installed (pre-installed on macOS)
 - Bash shell
 
 ### For E2E Tests
+
 - Backend API running
 - Frontend running
 - Node.js and npm installed
@@ -189,6 +203,7 @@ Failed Tests:
 ## 🎯 What Gets Tested
 
 ### Authentication ✅
+
 - [x] Login with valid credentials
 - [x] Login with invalid credentials
 - [x] Session retrieval
@@ -197,6 +212,7 @@ Failed Tests:
 - [x] Logout
 
 ### Data Flow ✅
+
 - [x] 15 Breaking News employees exist
 - [x] Milan bureau has 8 employees
 - [x] Rome bureau has 7 employees
@@ -204,12 +220,14 @@ Failed Tests:
 - [x] Dashboard stats are accurate
 
 ### API Integration ✅
+
 - [x] All 24 endpoints respond
 - [x] Token authentication works
 - [x] CORS configured correctly
 - [x] Error responses are handled
 
 ### UI/UX ✅
+
 - [x] Login page displays correctly
 - [x] Dashboard loads data
 - [x] Calendar views work
@@ -223,6 +241,7 @@ Failed Tests:
 ## 📝 Test Environment Setup
 
 ### Local Testing
+
 ```bash
 # Terminal 1: Backend
 cd ~/shiftsmart-v1
@@ -238,6 +257,7 @@ cd ~/shiftsmart-v1/tests
 ```
 
 ### Production Testing
+
 ```bash
 # Test deployed backend
 export API_URL="https://your-api.vercel.app"
@@ -250,18 +270,22 @@ cd ~/shiftsmart-v1/tests
 ## 🐛 Troubleshooting
 
 ### "Connection refused"
+
 **Problem:** Backend or frontend not running  
 **Solution:** Start the servers first
 
 ### "401 Unauthorized"
+
 **Problem:** Invalid credentials or expired token  
 **Solution:** Check test credentials match database
 
 ### "404 Not Found"
+
 **Problem:** Endpoint doesn't exist  
 **Solution:** Verify API is deployed correctly
 
 ### E2E tests fail to start
+
 **Problem:** Playwright not installed  
 **Solution:** `cd tests/e2e && npm install && npx playwright install`
 
@@ -277,6 +301,7 @@ npx playwright show-report
 ```
 
 This opens an HTML report with:
+
 - Test results
 - Screenshots of failures
 - Video recordings
@@ -334,4 +359,3 @@ cd ~/shiftsmart-v1/tests
 ---
 
 **Ready to test? Run `./run-all-tests.sh`!**
-

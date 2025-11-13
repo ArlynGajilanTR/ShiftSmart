@@ -8,6 +8,7 @@
 ---
 
 ## Table of Contents
+
 1. [Executive Summary](#executive-summary)
 2. [Current Coverage Analysis](#current-coverage-analysis)
 3. [Testing Categories](#testing-categories)
@@ -22,6 +23,7 @@
 ## Executive Summary
 
 This comprehensive testing plan covers all aspects of the ShiftSmart application:
+
 - **24 API endpoints** (100% coverage)
 - **6 UI pages** with all interactive elements
 - **Database operations** including constraints and transactions
@@ -38,11 +40,13 @@ This comprehensive testing plan covers all aspects of the ShiftSmart application
 ## Current Coverage Analysis
 
 ### ✅ Existing Tests
+
 - **E2E Tests:** 40+ tests across 6 UI pages (Playwright)
 - **API Tests:** 24 endpoint tests (bash scripts)
 - **Integration Tests:** 7 tests for frontend-backend integration
 
 ### ❌ Gaps Identified
+
 1. **Unit Tests:** No tests for individual utility functions
 2. **AI Testing:** No tests for AI prompts and response parsing
 3. **Database Tests:** Limited constraint and transaction testing
@@ -57,11 +61,13 @@ This comprehensive testing plan covers all aspects of the ShiftSmart application
 ## Testing Categories
 
 ### 1. Unit Tests
+
 **Coverage:** Individual functions and utilities  
 **Tool:** Jest / Vitest  
 **Location:** `tests/unit/`
 
-#### Targets:
+#### Targets
+
 - `lib/utils.ts` - Utility functions
 - `lib/auth/password.ts` - Password hashing and validation
 - `lib/auth/verify.ts` - Token verification
@@ -71,7 +77,8 @@ This comprehensive testing plan covers all aspects of the ShiftSmart application
 - Date formatting and manipulation functions
 - API client helper functions
 
-#### Test Cases (150+ tests):
+#### Test Cases (150+ tests)
+
 ```
 ✓ Password hashing and comparison
 ✓ Token generation and validation
@@ -93,11 +100,13 @@ This comprehensive testing plan covers all aspects of the ShiftSmart application
 ---
 
 ### 2. Integration Tests
+
 **Coverage:** Component interactions and data flow  
 **Tool:** Playwright + API  
 **Location:** `tests/integration/`
 
-#### Targets:
+#### Targets
+
 - Authentication flow (login → token → API calls)
 - Employee CRUD operations (create → read → update → delete)
 - Shift lifecycle (create → assign → move → complete)
@@ -105,7 +114,8 @@ This comprehensive testing plan covers all aspects of the ShiftSmart application
 - Dashboard data aggregation
 - AI schedule generation and saving
 
-#### Test Cases (50+ tests):
+#### Test Cases (50+ tests)
+
 ```
 ✓ Full employee onboarding workflow
 ✓ Shift creation and assignment flow
@@ -122,13 +132,15 @@ This comprehensive testing plan covers all aspects of the ShiftSmart application
 ---
 
 ### 3. API Endpoint Tests
+
 **Coverage:** All 24 REST API endpoints  
 **Tool:** Curl + bash / Supertest  
 **Location:** `tests/api/`
 
-#### Enhanced Coverage per Endpoint:
+#### Enhanced Coverage per Endpoint
 
 **Auth Endpoints (4):**
+
 ```bash
 POST /api/auth/login
   ✓ Valid credentials return token
@@ -161,6 +173,7 @@ POST /api/auth/logout
 ```
 
 **Employee Endpoints (7):**
+
 ```bash
 GET /api/employees
   ✓ Returns all active employees
@@ -210,6 +223,7 @@ PUT /api/employees/:id/preferences
 ```
 
 **Shift Endpoints (6):**
+
 ```bash
 GET /api/shifts
   ✓ Returns all shifts
@@ -254,6 +268,7 @@ DELETE /api/shifts/:id
 ```
 
 **Conflict Endpoints (3):**
+
 ```bash
 GET /api/conflicts
   ✓ Returns all conflicts
@@ -276,6 +291,7 @@ DELETE /api/conflicts/:id
 ```
 
 **Dashboard Endpoint (1):**
+
 ```bash
 GET /api/dashboard/stats
   ✓ Returns all stats
@@ -288,6 +304,7 @@ GET /api/dashboard/stats
 ```
 
 **AI Endpoints (3):**
+
 ```bash
 GET /api/ai/status
   ✓ Returns configuration status
@@ -318,11 +335,13 @@ POST /api/ai/resolve-conflict
 ---
 
 ### 4. Database Tests
+
 **Coverage:** Schema, constraints, and transactions  
 **Tool:** Supabase client + Jest  
 **Location:** `tests/database/`
 
-#### Test Cases (60+ tests):
+#### Test Cases (60+ tests)
+
 ```
 ✓ Schema validation
   - All tables exist
@@ -361,13 +380,15 @@ POST /api/ai/resolve-conflict
 ---
 
 ### 5. E2E UI Tests
+
 **Coverage:** Complete user workflows  
 **Tool:** Playwright  
 **Location:** `tests/e2e/tests/`
 
-#### Enhanced UI Coverage (100+ tests):
+#### Enhanced UI Coverage (100+ tests)
 
 **Welcome & Auth (15 tests):**
+
 ```typescript
 ✓ Welcome page loads correctly
 ✓ Login navigation works
@@ -387,6 +408,7 @@ POST /api/ai/resolve-conflict
 ```
 
 **Dashboard (25 tests):**
+
 ```typescript
 ✓ Dashboard loads with stats
 ✓ Stats cards display correctly
@@ -416,6 +438,7 @@ POST /api/ai/resolve-conflict
 ```
 
 **Employees (30 tests):**
+
 ```typescript
 ✓ Employee list loads
 ✓ Stats cards display
@@ -450,6 +473,7 @@ POST /api/ai/resolve-conflict
 ```
 
 **Schedule (35 tests):**
+
 ```typescript
 ✓ Schedule page loads
 ✓ Week view renders
@@ -489,6 +513,7 @@ POST /api/ai/resolve-conflict
 ```
 
 **Conflicts (20 tests):**
+
 ```typescript
 ✓ Conflicts page loads
 ✓ Stats cards display
@@ -513,6 +538,7 @@ POST /api/ai/resolve-conflict
 ```
 
 **Settings (15 tests):**
+
 ```typescript
 ✓ Settings page loads
 ✓ Profile section displays
@@ -534,11 +560,13 @@ POST /api/ai/resolve-conflict
 ---
 
 ### 6. AI & Prompt Tests
+
 **Coverage:** AI integration and prompts  
 **Tool:** Jest + Mock responses  
 **Location:** `tests/ai/`
 
-#### Test Cases (30+ tests):
+#### Test Cases (30+ tests)
+
 ```
 ✓ AI client configuration
   - API key loading
@@ -588,11 +616,13 @@ POST /api/ai/resolve-conflict
 ---
 
 ### 7. Performance Tests
+
 **Coverage:** Load and stress testing  
 **Tool:** k6 / Artillery  
 **Location:** `tests/performance/`
 
-#### Test Scenarios:
+#### Test Scenarios
+
 ```
 ✓ API endpoint latency
   - Average response time < 200ms
@@ -629,11 +659,13 @@ POST /api/ai/resolve-conflict
 ---
 
 ### 8. Accessibility Tests
+
 **Coverage:** WCAG 2.1 AA compliance  
 **Tool:** axe-core + Playwright  
 **Location:** `tests/a11y/`
 
-#### Test Coverage:
+#### Test Coverage
+
 ```
 ✓ Automated checks (axe-core)
   - Color contrast ratios
@@ -666,11 +698,13 @@ POST /api/ai/resolve-conflict
 ---
 
 ### 9. Visual Regression Tests
+
 **Coverage:** UI consistency  
 **Tool:** Playwright screenshots  
 **Location:** `tests/visual/`
 
-#### Screenshots:
+#### Screenshots
+
 ```
 ✓ Desktop (1920x1080)
   - Welcome page
@@ -706,11 +740,13 @@ POST /api/ai/resolve-conflict
 ---
 
 ### 10. Security Tests
+
 **Coverage:** Security vulnerabilities  
 **Tool:** OWASP ZAP / Custom scripts  
 **Location:** `tests/security/`
 
-#### Test Cases:
+#### Test Cases
+
 ```
 ✓ Authentication
   - Password hashing (bcrypt)
@@ -748,6 +784,7 @@ POST /api/ai/resolve-conflict
 ## Test Execution Plan
 
 ### Phase 1: Unit Tests (Week 1)
+
 **Duration:** 5 days  
 **Priority:** High  
 **Deliverables:** 150+ unit tests
@@ -759,6 +796,7 @@ POST /api/ai/resolve-conflict
 5. Write AI helper tests
 
 ### Phase 2: API Tests Enhancement (Week 1-2)
+
 **Duration:** 3 days  
 **Priority:** High  
 **Deliverables:** Enhanced API test suite
@@ -769,6 +807,7 @@ POST /api/ai/resolve-conflict
 4. Add performance benchmarks
 
 ### Phase 3: Database Tests (Week 2)
+
 **Duration:** 3 days  
 **Priority:** Medium  
 **Deliverables:** 60+ database tests
@@ -779,6 +818,7 @@ POST /api/ai/resolve-conflict
 4. RLS policy tests
 
 ### Phase 4: E2E Enhancement (Week 2-3)
+
 **Duration:** 5 days  
 **Priority:** High  
 **Deliverables:** 100+ E2E tests
@@ -789,6 +829,7 @@ POST /api/ai/resolve-conflict
 4. Add keyboard navigation tests
 
 ### Phase 5: AI Tests (Week 3)
+
 **Duration:** 3 days  
 **Priority:** Medium  
 **Deliverables:** 30+ AI tests
@@ -799,6 +840,7 @@ POST /api/ai/resolve-conflict
 4. Error handling tests
 
 ### Phase 6: Performance Tests (Week 3-4)
+
 **Duration:** 3 days  
 **Priority:** Medium  
 **Deliverables:** Performance test suite
@@ -809,6 +851,7 @@ POST /api/ai/resolve-conflict
 4. Document results
 
 ### Phase 7: Accessibility Tests (Week 4)
+
 **Duration:** 2 days  
 **Priority:** High  
 **Deliverables:** A11y test suite
@@ -819,6 +862,7 @@ POST /api/ai/resolve-conflict
 4. Document findings
 
 ### Phase 8: Visual Regression (Week 4)
+
 **Duration:** 2 days  
 **Priority:** Low  
 **Deliverables:** Visual test suite
@@ -828,6 +872,7 @@ POST /api/ai/resolve-conflict
 3. Document visual standards
 
 ### Phase 9: Security Tests (Week 4)
+
 **Duration:** 2 days  
 **Priority:** High  
 **Deliverables:** Security test suite
@@ -838,6 +883,7 @@ POST /api/ai/resolve-conflict
 4. Document findings
 
 ### Phase 10: CI/CD Integration (Week 5)
+
 **Duration:** 3 days  
 **Priority:** High  
 **Deliverables:** Automated test pipeline
@@ -919,6 +965,7 @@ jobs:
 ## Coverage Metrics
 
 ### Target Coverage
+
 - **Unit Tests:** 90% code coverage
 - **Integration Tests:** 100% critical paths
 - **API Tests:** 100% endpoints
@@ -927,6 +974,7 @@ jobs:
 - **Performance:** All benchmarks met
 
 ### Reporting
+
 - Jest coverage reports
 - Playwright test reports
 - Accessibility audit reports
@@ -939,6 +987,7 @@ jobs:
 ## Test Maintenance
 
 ### Regular Tasks
+
 1. **Weekly:**
    - Run full test suite
    - Review failing tests
@@ -956,6 +1005,7 @@ jobs:
    - Security scan
 
 ### Documentation
+
 - Keep test cases up to date
 - Document new features
 - Update testing guide
@@ -966,31 +1016,34 @@ jobs:
 ## Test Data Management
 
 ### Test Users
+
 ```
 Admin User:
   email: admin@reuters.com
   password: AdminTest123!
-  
+
 Manager User:
   email: manager@reuters.com
   password: ManagerTest123!
-  
+
 Scheduler User:
   email: scheduler@reuters.com
   password: SchedulerTest123!
-  
+
 Staff User:
   email: staff@reuters.com
   password: StaffTest123!
 ```
 
 ### Test Data Sets
+
 - **Employees:** 15 Breaking News team members (Milan & Rome)
 - **Shifts:** Sample shifts covering various scenarios
 - **Conflicts:** Sample conflicts (high, medium, low severity)
 - **Preferences:** Various preference combinations
 
 ### Data Reset Strategy
+
 1. Database seeding scripts
 2. Test fixtures
 3. Factory functions
@@ -1001,6 +1054,7 @@ Staff User:
 ## Success Criteria
 
 ### Definition of Done
+
 - [ ] 90%+ unit test coverage
 - [ ] 100% API endpoint coverage
 - [ ] 100% critical path E2E coverage
@@ -1011,6 +1065,7 @@ Staff User:
 - [ ] Documentation complete
 
 ### Quality Gates
+
 - All tests must pass before merge
 - Coverage cannot decrease
 - Performance cannot regress >10%
@@ -1022,6 +1077,7 @@ Staff User:
 ## Resources
 
 ### Tools & Libraries
+
 - **Testing:** Jest, Vitest, Playwright, Supertest
 - **Mocking:** MSW, jest-mock
 - **Accessibility:** axe-core, pa11y
@@ -1031,6 +1087,7 @@ Staff User:
 - **CI/CD:** GitHub Actions
 
 ### Documentation
+
 - [Testing Guide](./TESTING_GUIDE.md)
 - [E2E Testing README](./e2e/UI_TESTING_README.md)
 - [API Testing](./test-api-endpoints.sh)
@@ -1041,6 +1098,7 @@ Staff User:
 ## Appendix
 
 ### Test Naming Conventions
+
 ```typescript
 describe('[Component/Feature] - [Scenario]', () => {
   it('should [expected behavior] when [condition]', () => {
@@ -1050,6 +1108,7 @@ describe('[Component/Feature] - [Scenario]', () => {
 ```
 
 ### Example Test Structure
+
 ```typescript
 describe('Employee API - GET /api/employees', () => {
   beforeEach(async () => {
@@ -1062,16 +1121,16 @@ describe('Employee API - GET /api/employees', () => {
 
   it('should return all employees when no filters applied', async () => {
     const response = await api.get('/api/employees');
-    
+
     expect(response.status).toBe(200);
     expect(response.body.employees).toHaveLength(15);
   });
 
   it('should filter by bureau when bureau parameter provided', async () => {
     const response = await api.get('/api/employees?bureau=Milan');
-    
+
     expect(response.status).toBe(200);
-    expect(response.body.employees.every(e => e.bureau === 'Milan')).toBe(true);
+    expect(response.body.employees.every((e) => e.bureau === 'Milan')).toBe(true);
   });
 });
 ```
@@ -1081,4 +1140,3 @@ describe('Employee API - GET /api/employees', () => {
 **Last Updated:** November 5, 2025  
 **Version:** 2.0  
 **Status:** Ready for Implementation
-

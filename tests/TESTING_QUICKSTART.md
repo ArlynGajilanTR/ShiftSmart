@@ -8,6 +8,7 @@
 ## 🚀 Quick Start
 
 ### Run All Tests
+
 ```bash
 cd tests
 ./run-comprehensive-tests.sh
@@ -20,6 +21,7 @@ This runs all test suites in sequence and generates a detailed report.
 ## 📋 Individual Test Suites
 
 ### 1. Unit Tests
+
 ```bash
 # Run once
 npm run test:unit
@@ -32,6 +34,7 @@ npm run test:coverage
 ```
 
 **What it tests:**
+
 - Utility functions
 - Password hashing and validation
 - AI prompt generation
@@ -45,6 +48,7 @@ npm run test:coverage
 ### 2. API Endpoint Tests
 
 #### Standard API Tests
+
 ```bash
 npm run test:api
 ```
@@ -52,13 +56,15 @@ npm run test:api
 Tests all 24 API endpoints with standard scenarios.
 
 #### Enhanced API Tests
+
 ```bash
 npm run test:api:enhanced
 ```
 
 Tests edge cases, error handling, and security scenarios:
+
 - SQL injection prevention
-- XSS attack prevention  
+- XSS attack prevention
 - Invalid input handling
 - Rate limiting
 - Authentication edge cases
@@ -66,11 +72,13 @@ Tests edge cases, error handling, and security scenarios:
 ---
 
 ### 3. Database Tests
+
 ```bash
 npm run test:database
 ```
 
 **What it tests:**
+
 - Schema structure
 - Unique constraints
 - Foreign key constraints
@@ -83,6 +91,7 @@ npm run test:database
 ---
 
 ### 4. E2E UI Tests
+
 ```bash
 # Headless mode (CI)
 npm test
@@ -101,6 +110,7 @@ npm run test:report
 ```
 
 **What it tests:**
+
 - Complete user workflows
 - Login/logout flow
 - Dashboard interactions
@@ -114,11 +124,13 @@ npm run test:report
 ---
 
 ### 5. Accessibility Tests
+
 ```bash
 npm run test:a11y
 ```
 
 **What it tests:**
+
 - WCAG 2.1 AA compliance
 - Color contrast ratios
 - ARIA labels
@@ -131,14 +143,17 @@ npm run test:a11y
 ---
 
 ### 6. Performance Tests
+
 ```bash
 npm run test:performance
 ```
 
 **Prerequisites:**
+
 - Install k6: `brew install k6` (macOS) or see [k6.io](https://k6.io/)
 
 **What it tests:**
+
 - API response times under load
 - Concurrent user handling
 - Database query performance
@@ -146,6 +161,7 @@ npm run test:performance
 - CPU usage
 
 **Thresholds:**
+
 - 95th percentile < 500ms
 - 99th percentile < 1s
 - Error rate < 10%
@@ -153,6 +169,7 @@ npm run test:performance
 ---
 
 ### 7. Type Checking
+
 ```bash
 npx tsc --noEmit
 ```
@@ -162,6 +179,7 @@ Checks for TypeScript type errors across the codebase.
 ---
 
 ### 8. Linting
+
 ```bash
 npm run lint
 ```
@@ -173,11 +191,13 @@ Checks code quality and style consistency.
 ## 🔧 Prerequisites
 
 ### Required
-- **Node.js**: v18+ 
+
+- **Node.js**: v18+
 - **npm**: v9+
 - **Database**: Supabase instance with data seeded
 
 ### Optional (for specific tests)
+
 - **k6**: For performance tests
 - **Docker**: For isolated testing environment
 
@@ -205,6 +225,7 @@ API_URL=http://localhost:3000
 ## 📊 Test Coverage
 
 ### Current Coverage
+
 - **API Endpoints:** 100% (24/24 endpoints)
 - **Unit Tests:** Target 90%+
 - **E2E Tests:** All critical user paths
@@ -213,12 +234,14 @@ API_URL=http://localhost:3000
 ### View Coverage Reports
 
 **Unit test coverage:**
+
 ```bash
 npm run test:coverage
 open coverage/index.html
 ```
 
 **E2E test report:**
+
 ```bash
 npm run test:report
 ```
@@ -228,6 +251,7 @@ npm run test:report
 ## 🐛 Debugging Failed Tests
 
 ### Unit Tests
+
 ```bash
 # Run specific test file
 npx jest tests/unit/lib/utils.test.ts
@@ -240,6 +264,7 @@ npm run test:unit:watch -- --verbose
 ```
 
 ### API Tests
+
 ```bash
 # Run with debug output
 cd tests
@@ -247,6 +272,7 @@ DEBUG=1 bash test-api-endpoints.sh
 ```
 
 ### E2E Tests
+
 ```bash
 # Debug mode (step through test)
 npm run test:debug
@@ -259,6 +285,7 @@ npx playwright test tests/e2e/tests/ui-01-welcome-login.spec.ts
 ```
 
 ### Accessibility Tests
+
 ```bash
 # Run specific page
 npx playwright test --grep="Dashboard should be accessible"
@@ -273,6 +300,7 @@ npm run test:report
 ## 📝 Writing New Tests
 
 ### Unit Test Template
+
 ```typescript
 // tests/unit/lib/my-function.test.ts
 import { myFunction } from '@/lib/my-function';
@@ -290,6 +318,7 @@ describe('myFunction', () => {
 ```
 
 ### E2E Test Template
+
 ```typescript
 // tests/e2e/tests/my-feature.spec.ts
 import { test, expect } from '@playwright/test';
@@ -315,6 +344,7 @@ test.describe('My Feature', () => {
 ### GitHub Actions
 
 Tests run automatically on:
+
 - Every push to `main` or `develop`
 - Every pull request
 - Daily at 2 AM UTC
@@ -322,6 +352,7 @@ Tests run automatically on:
 View results: [Actions tab](https://github.com/your-repo/actions)
 
 ### Manual Trigger
+
 ```bash
 # Push to trigger CI
 git push origin your-branch
@@ -334,12 +365,14 @@ git push origin your-branch
 ## 📈 Performance Benchmarks
 
 ### API Response Times (Target)
+
 - List employees: < 100ms
 - List shifts: < 200ms
 - Dashboard stats: < 300ms
 - AI generation: < 10s (week), < 30s (month)
 
 ### Load Handling (Target)
+
 - 10 concurrent users: No degradation
 - 50 concurrent users: < 10% degradation
 - 100 concurrent users: < 20% degradation
@@ -363,28 +396,36 @@ git push origin your-branch
 ## 🆘 Common Issues
 
 ### Issue: Tests fail due to missing dependencies
+
 **Solution:**
+
 ```bash
 npm install
 npx playwright install --with-deps
 ```
 
 ### Issue: Database connection errors
+
 **Solution:**
 Check `.env.local` has correct Supabase credentials.
 
 ### Issue: API tests timeout
+
 **Solution:**
 Ensure backend is running: `npm run dev` in separate terminal.
 
 ### Issue: Playwright browsers not installed
+
 **Solution:**
+
 ```bash
 npx playwright install --with-deps
 ```
 
 ### Issue: Port already in use
+
 **Solution:**
+
 ```bash
 # Kill process on port 3000
 lsof -ti:3000 | xargs kill -9
@@ -428,4 +469,3 @@ npm run test:all                 # Run main test suites
 
 **Last Updated:** November 5, 2025  
 **Maintained by:** Reuters Breaking News Team
-

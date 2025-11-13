@@ -15,7 +15,7 @@
    - Copy contents from `supabase/seed-breaking-news-team.sql`
    - Paste into SQL Editor
    - Click "Run"
-   
+
    This creates:
    - **Milan Bureau** (ITA-MILAN) - Europe/Rome timezone
    - **Rome Bureau** (ITA-ROME) - Europe/Rome timezone
@@ -25,7 +25,7 @@
    - Copy contents from `supabase/create-dev-admin.sql`
    - Paste into SQL Editor
    - Click "Run"
-   
+
    This creates a development admin account:
    - **Email:** arlyn.gajilan@thomsonreuters
    - **Password:** testtest
@@ -43,21 +43,24 @@ For easier testing during development:
 ### Step 3: Login to the App
 
 **Option A: Use Dev Admin Account** (if you ran `create-dev-admin.sql`):
-1. Go to http://localhost:3000/login
+
+1. Go to <http://localhost:3000/login>
 2. Login with:
    - **Email:** arlyn.gajilan@thomsonreuters
    - **Password:** testtest
 3. You'll have full admin access
 
 **Option B: Use Seeded User Account**:
-1. Go to http://localhost:3000/login
+
+1. Go to <http://localhost:3000/login>
 2. Login with any Breaking News team member:
-   - **Example Email:** gianluca.semeraro@thomsonreuters.com
+   - **Example Email:** <gianluca.semeraro@thomsonreuters.com>
    - **Password:** changeme (all seeded users)
 3. Access dashboard features
 
 **Option C: Create New Account**:
-1. Go to http://localhost:3000/signup
+
+1. Go to <http://localhost:3000/signup>
 2. Fill in the form:
    - **Full Name**: Your name
    - **Email**: Your email
@@ -77,11 +80,13 @@ For easier testing during development:
 ### CSV Format
 
 Your CSV should have these columns:
+
 ```
 date,start_time,end_time,staff_name,staff_email,role,bureau
 ```
 
 Example:
+
 ```csv
 date,start_time,end_time,staff_name,staff_email,role,bureau
 2025-11-01,09:00,17:00,John Doe,john@reuters.com,senior,Milan
@@ -94,7 +99,7 @@ date,start_time,end_time,staff_name,staff_email,role,bureau
    - Include staff from both Milan and Rome
    - Specify roles: senior, junior, lead, or support
 
-2. **Go to** http://localhost:3000/import
+2. **Go to** <http://localhost:3000/import>
 
 3. **Get Bureau IDs**:
    - In Supabase → Table Editor → `bureaus`
@@ -114,39 +119,46 @@ date,start_time,end_time,staff_name,staff_email,role,bureau
 ## Database Structure
 
 ### Bureaus
+
 - **Milan** - Breaking News team members in Milan
 - **Rome** - Breaking News team members in Rome
 
 ### Users
+
 Each user has:
+
 - **bureau_id** - Links to either Milan or Rome
 - **shift_role** - senior, junior, lead, or support
 - **preferences.team** - "Breaking News" (stored in JSON)
 
 ### Teams
+
 For MVP, all users are on the **Breaking News** team. Team info is stored in the `preferences` JSON field.
 
 ## Troubleshooting
 
 ### "No bureaus available" error
+
 - Run the `setup-breaking-news-bureaus.sql` script
 - Verify bureaus exist in Supabase Table Editor
 
 ### Can't login
+
 - Check if email confirmation is disabled (Auth → Providers → Email)
 - Verify user exists in `users` table
 - Check user has a `bureau_id` assigned
 
 ### Bureau selection page shows after login
+
 - User needs a `bureau_id` in their profile
 - Update manually in Supabase or sign up again with bureau selected
 
 ## Next Steps
 
 Once you have the staff CSV:
+
 1. Share it with the development team
 2. We'll format it properly for import
 3. Run the import process
 4. All Breaking News team members will be set up in Milan and Rome bureaus
 5. You can start scheduling shifts!
-

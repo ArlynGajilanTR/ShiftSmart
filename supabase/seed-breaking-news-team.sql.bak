@@ -300,7 +300,7 @@ BEGIN
 END $$;
 
 -- Verify data
-SELECT 
+SELECT
   b.name AS bureau,
   u.full_name,
   u.title,
@@ -311,4 +311,3 @@ LEFT JOIN bureaus b ON u.bureau_id = b.id
 LEFT JOIN shift_preferences sp ON sp.user_id = u.id
 WHERE u.team = 'Breaking News'
 ORDER BY b.name, u.shift_role DESC, u.full_name;
-

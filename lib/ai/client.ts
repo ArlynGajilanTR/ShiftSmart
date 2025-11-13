@@ -49,4 +49,3 @@ export async function callClaude(
 export function isConfigured(): boolean {
   return !!process.env.ANTHROPIC_API_KEY;
 }
-

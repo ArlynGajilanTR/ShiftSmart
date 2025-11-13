@@ -41,26 +41,26 @@ run_test() {
     local data="$4"
     local expected_status="${5:-200}"
     local auth_required="${6:-false}"
-    
+
     TOTAL=$((TOTAL + 1))
-    
+
     local curl_cmd="curl -s -w '\n%{http_code}' -X $method"
     curl_cmd="$curl_cmd -H 'Content-Type: application/json'"
-    
+
     if [ "$auth_required" = "true" ] && [ -n "$AUTH_TOKEN" ]; then
         curl_cmd="$curl_cmd -H 'Authorization: Bearer $AUTH_TOKEN'"
     fi
-    
+
     if [ -n "$data" ]; then
         curl_cmd="$curl_cmd -d '$data'"
     fi
-    
+
     curl_cmd="$curl_cmd '$API_URL$endpoint'"
-    
+
     local response=$(eval $curl_cmd)
     local status=$(echo "$response" | tail -n1)
     local body=$(echo "$response" | sed '$d')
-    
+
     if [ "$status" = "$expected_status" ]; then
         echo -e "${GREEN}✓${NC} $test_name"
         PASSED=$((PASSED + 1))
@@ -383,4 +383,3 @@ else
     echo -e "${RED}╚═══════════════════════════════════════╝${NC}"
     exit 1
 fi
-

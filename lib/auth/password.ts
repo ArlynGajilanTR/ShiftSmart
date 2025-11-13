@@ -19,20 +19,14 @@ export async function hashPassword(password: string): Promise<string> {
 /**
  * Verify a password against a hash
  */
-export async function verifyPassword(
-  password: string,
-  hash: string
-): Promise<boolean> {
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
 
 /**
  * Compare password (alias for verifyPassword for test compatibility)
  */
-export async function comparePassword(
-  password: string,
-  hash: string
-): Promise<boolean> {
+export async function comparePassword(password: string, hash: string): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
 
@@ -58,4 +52,3 @@ export function getSessionExpiration(): Date {
 export function isSessionExpired(expiresAt: Date): boolean {
   return new Date() > new Date(expiresAt);
 }
-

@@ -13,7 +13,7 @@ Complete guide for setting up database, deploying API, and connecting frontend.
 
 **1.1 Run Schema Migration**
 
-In Supabase SQL Editor (https://app.supabase.com/project/YOUR_PROJECT/sql):
+In Supabase SQL Editor (<https://app.supabase.com/project/YOUR_PROJECT/sql>):
 
 ```sql
 -- Copy and paste entire contents of supabase/schema.sql
@@ -34,7 +34,7 @@ In Supabase SQL Editor (https://app.supabase.com/project/YOUR_PROJECT/sql):
 SELECT * FROM bureaus ORDER BY name;
 
 -- Check employees
-SELECT 
+SELECT
   u.full_name,
   u.email,
   u.title,
@@ -56,7 +56,7 @@ ORDER BY b.name, u.full_name;
 
 **2.1 Create New Vercel Project**
 
-1. Go to https://vercel.com/new
+1. Go to <https://vercel.com/new>
 2. Import your `shiftsmart-v1` repository
 3. Configure:
    - **Framework Preset:** Next.js
@@ -76,7 +76,7 @@ ANTHROPIC_API_KEY=sk-ant-your-key-here  # Required for AI scheduling features
 ```
 
 Get Supabase keys from: Supabase Dashboard → Project Settings → API  
-Get Anthropic key from: https://console.anthropic.com/
+Get Anthropic key from: <https://console.anthropic.com/>
 
 **2.3 Deploy**
 
@@ -167,12 +167,9 @@ interface ApiOptions extends RequestInit {
   requireAuth?: boolean;
 }
 
-export async function apiCall<T>(
-  endpoint: string, 
-  options: ApiOptions = {}
-): Promise<T> {
+export async function apiCall<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
   const { requireAuth = true, ...fetchOptions } = options;
-  
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...fetchOptions.headers,
@@ -208,9 +205,9 @@ export const api = {
       body: JSON.stringify({ email, password }),
       requireAuth: false,
     }),
-  
+
   logout: () => apiCall('/api/auth/logout', { method: 'POST' }),
-  
+
   getSession: () => apiCall('/api/auth/session'),
 
   // Employees
@@ -227,8 +224,7 @@ export const api = {
   updateEmployee: (id: string, data: any) =>
     apiCall(`/api/employees/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 
-  deleteEmployee: (id: string) =>
-    apiCall(`/api/employees/${id}`, { method: 'DELETE' }),
+  deleteEmployee: (id: string) => apiCall(`/api/employees/${id}`, { method: 'DELETE' }),
 
   getPreferences: (id: string) => apiCall(`/api/employees/${id}/preferences`),
 
@@ -241,8 +237,7 @@ export const api = {
     return apiCall(`/api/shifts${query ? `?${query}` : ''}`);
   },
 
-  getUpcomingShifts: (days = 7) =>
-    apiCall(`/api/shifts/upcoming?days=${days}`),
+  getUpcomingShifts: (days = 7) => apiCall(`/api/shifts/upcoming?days=${days}`),
 
   createShift: (data: any) =>
     apiCall('/api/shifts', { method: 'POST', body: JSON.stringify(data) }),
@@ -253,8 +248,7 @@ export const api = {
   moveShift: (id: string, data: { date: string; start_time?: string; end_time?: string }) =>
     apiCall(`/api/shifts/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
 
-  deleteShift: (id: string) =>
-    apiCall(`/api/shifts/${id}`, { method: 'DELETE' }),
+  deleteShift: (id: string) => apiCall(`/api/shifts/${id}`, { method: 'DELETE' }),
 
   // Conflicts
   getConflicts: (params?: { status?: string; severity?: string; limit?: number }) => {
@@ -263,19 +257,18 @@ export const api = {
   },
 
   resolveConflict: (id: string) =>
-    apiCall(`/api/conflicts/${id}`, { 
-      method: 'PATCH', 
-      body: JSON.stringify({ action: 'resolve' }) 
+    apiCall(`/api/conflicts/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ action: 'resolve' }),
     }),
 
   acknowledgeConflict: (id: string) =>
-    apiCall(`/api/conflicts/${id}`, { 
-      method: 'PATCH', 
-      body: JSON.stringify({ action: 'acknowledge' }) 
+    apiCall(`/api/conflicts/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ action: 'acknowledge' }),
     }),
 
-  dismissConflict: (id: string) =>
-    apiCall(`/api/conflicts/${id}`, { method: 'DELETE' }),
+  dismissConflict: (id: string) => apiCall(`/api/conflicts/${id}`, { method: 'DELETE' }),
 
   // Dashboard
   getDashboardStats: () => apiCall('/api/dashboard/stats'),
@@ -293,11 +286,11 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   try {
     const response = await api.login(email, password);
-    
+
     // Store token
     localStorage.setItem('auth_token', response.session.access_token);
     localStorage.setItem('user', JSON.stringify(response.user));
-    
+
     // Redirect to dashboard
     router.push('/dashboard');
   } catch (error) {
@@ -320,10 +313,10 @@ const [isLoading, setIsLoading] = useState(true);
 useEffect(() => {
   async function fetchEmployees() {
     try {
-      const data = await api.getEmployees({ 
-        bureau: filterBureau, 
+      const data = await api.getEmployees({
+        bureau: filterBureau,
         role: filterRole,
-        search: searchQuery 
+        search: searchQuery,
       });
       setEmployees(data);
     } catch (error) {
@@ -332,7 +325,7 @@ useEffect(() => {
       setIsLoading(false);
     }
   }
-  
+
   fetchEmployees();
 }, [filterBureau, filterRole, searchQuery]);
 ```
@@ -349,7 +342,7 @@ useEffect(() => {
     const data = await api.getDashboardStats();
     setStats(data);
   }
-  
+
   fetchStats();
 }, []);
 ```
@@ -392,19 +385,23 @@ module.exports = {
 ## Troubleshooting
 
 ### "Invalid or expired session"
+
 - Token expired (24h lifetime)
 - Re-login to get new token
 
 ### "Failed to fetch employees"
+
 - Check API URL is correct in env vars
 - Verify token is being sent in Authorization header
 - Check Supabase RLS policies are permissive
 
 ### "Email already registered"
+
 - Employee already exists in database
 - Use different email or update existing employee
 
 ### CORS errors
+
 - Add CORS headers to next.config.js
 - Verify frontend URL is allowed
 
@@ -454,10 +451,9 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed version history.
 - **API Documentation:** See [API_REFERENCE.md](./API_REFERENCE.md)
 - **Contributing Guide:** See [CONTRIBUTING.md](./CONTRIBUTING.md)
 - **Security Policy:** See [SECURITY.md](./SECURITY.md)
-- **GitHub Repository:** https://github.com/ArlynGajilanTR/ShiftSmart
+- **GitHub Repository:** <https://github.com/ArlynGajilanTR/ShiftSmart>
 
 ---
 
 **Maintained by:** Reuters Breaking News Team  
 **Last Updated:** October 30, 2025
-

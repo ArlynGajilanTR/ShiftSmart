@@ -15,14 +15,8 @@
     },
     "preserveOutput": "always",
     "reporter": [
-      [
-        "html",
-        null
-      ],
-      [
-        "list",
-        null
-      ],
+      ["html", null],
+      ["list", null],
       [
         "json",
         {
@@ -47,9 +41,7 @@
         "name": "chromium",
         "testDir": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests",
         "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
@@ -63,9 +55,7 @@
         "name": "firefox",
         "testDir": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests",
         "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
@@ -79,9 +69,7 @@
         "name": "webkit",
         "testDir": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests",
         "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       }
     ],
