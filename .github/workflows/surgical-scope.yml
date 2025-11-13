@@ -1,0 +1,121 @@
+name: Surgical Scope Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  scope-check:
+    runs-on: ubuntu-latest
+    name: Verify Surgical Change Scope
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history to compare branches
+      
+      - name: Fetch base branch
+        run: |
+          git fetch origin ${{ github.base_ref }}
+      
+      - name: Count changed files
+        id: count
+        run: |
+          base="origin/${{ github.base_ref }}"
+          
+          # Count changed files (excluding certain paths)
+          count=$(git diff --name-only "$base"...HEAD | \
+            grep -v '^\.github/' | \
+            grep -v '^tests/' | \
+            grep -v '^docs/.*\.md$' | \
+            grep -v '^\..*' | \
+            wc -l | tr -d ' ')
+          
+          # Get list of changed files for the report
+          files=$(git diff --name-only "$base"...HEAD)
+          
+          echo "count=$count" >> $GITHUB_OUTPUT
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "📊 Files changed: $count"
+      
+      - name: Surgical scope advisory
+        if: steps.count.outputs.count > 3
+        run: |
+          count=${{ steps.count.outputs.count }}
+          echo "::warning::⚠️  More than 3 files changed ($count files)"
+          echo "::warning::This PR modifies $count files. Engineering Build Rules recommend ≤3 files for surgical changes."
+          echo "::warning::If this is intentional, please add justification in the PR description."
+          echo ""
+          echo "Changed files:"
+          echo "${{ steps.count.outputs.files }}"
+          echo ""
+          echo "💡 Consider:"
+          echo "  • Can this be split into smaller PRs?"
+          echo "  • Are all changes necessary for this fix/feature?"
+          echo "  • Can refactoring be done in a separate PR?"
+      
+      - name: Comment on PR
+        if: steps.count.outputs.count > 3
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const count = ${{ steps.count.outputs.count }};
+            const files = `${{ steps.count.outputs.files }}`.split('\n').filter(f => f);
+            
+            const body = `## ⚠️ Surgical Scope Advisory
+            
+This PR modifies **${count} files**, which exceeds the recommended limit of **≤3 files** per the [Engineering Build Rules](./ENGINEERING_BUILD_RULES.md).
+
+### Changed Files:
+\`\`\`
+${files.join('\n')}
+\`\`\`
+
+### Recommended Actions:
+- ✅ Add justification in the PR description if all changes are necessary
+- 💡 Consider splitting into smaller, more focused PRs
+- 🔍 Verify that opportunistic refactors aren't mixed with bug fixes
+
+This is an **advisory warning**, not a blocking error. Surgical changes are preferred but not always possible.`;
+            
+            // Check if we already commented
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.find(c => 
+              c.user.type === 'Bot' && c.body.includes('Surgical Scope Advisory')
+            );
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body,
+              });
+            }
+      
+      - name: Success message
+        if: steps.count.outputs.count <= 3
+        run: |
+          count=${{ steps.count.outputs.count }}
+          echo "✅ Surgical scope verified: $count file(s) changed"
+          echo "This PR follows the Engineering Build Rules (≤3 files)."
+          echo ""
+          echo "Changed files:"
+          echo "${{ steps.count.outputs.files }}"
+

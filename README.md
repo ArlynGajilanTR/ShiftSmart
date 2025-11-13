@@ -317,6 +317,47 @@ See [CHANGELOG.md](./CHANGELOG.md) for version history and [API_REFERENCE.md](./
 
 ---
 
+## Engineering Build Rules
+
+This project follows the **ShiftSmart Engineering Build Rules** for safe, surgical changes:
+
+- **Surgical changes only** (prefer ≤3 files per PR)
+- **Production data protection** (use `TEST_TENANT_ID` and test fixtures only)
+- **Pre-work verification** (review schema, gotchas, and API contracts before changes)
+- **No hardcoded values or tech debt**
+
+### Key Resources
+
+- 📋 [Engineering Build Rules](./ENGINEERING_BUILD_RULES.md) - Full guidelines
+- 🔍 [Project Field Gotchas](./docs/PROJECT_FIELD_GOTCHAS.md) - Naming conventions and gotchas
+- 📊 [Database Schema](./supabase/schema.sql) - Authoritative schema
+- 📡 [API Reference](./API_REFERENCE.md) - API contracts
+
+### Developer Setup
+
+1. **Install pre-commit hooks** (recommended):
+   ```bash
+   pip install pre-commit
+   pre-commit install
+   ```
+
+2. **Use test data** from `.env.example`:
+   - `TEST_TENANT_ID=00000000-0000-0000-0000-000000000000`
+   - `TEST_ACCOUNT_ID=11111111-1111-1111-1111-111111111111`
+
+3. **Verify before changes**:
+   - Read `docs/PROJECT_FIELD_GOTCHAS.md` for field naming rules
+   - Check `supabase/schema.sql` for database structure
+   - Review `API_REFERENCE.md` for API contracts
+
+### Pull Request Guidelines
+
+- Use the [PR template](./.github/pull_request_template.md)
+- Keep changes surgical (≤3 files when possible)
+- Verify field names against schema
+- Use test IDs only (no production data)
+- All tests must pass before merging
+
 ## Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.

@@ -7,7 +7,7 @@
 
 ## 🚀 Quick Start for New Developers
 
-### 1. Initial Setup (10 minutes)
+### 1. Initial Setup (15 minutes)
 ```bash
 # Clone repository
 git clone https://github.com/ArlynGajilanTR/ShiftSmart.git
@@ -17,8 +17,12 @@ cd shiftsmart-v1
 npm install
 
 # Setup environment variables
-cp .env.local.example .env.local
+cp .env.example .env.local
 # Edit .env.local with your credentials
+
+# Install pre-commit hooks (recommended)
+pip install pre-commit
+pre-commit install
 
 # Setup database
 # Run in Supabase SQL editor:
@@ -31,6 +35,20 @@ npm run dev
 ```
 
 Visit: http://localhost:3000
+
+### 2. Read Engineering Build Rules
+
+Before making any changes, familiarize yourself with our [Engineering Build Rules](./ENGINEERING_BUILD_RULES.md):
+
+- ✅ **Surgical changes** (≤3 files preferred)
+- ✅ **Production data protection** (test IDs only)
+- ✅ **Pre-work verification** (schema, gotchas, API contracts)
+- ✅ **No hardcoded values or tech debt**
+
+**Essential Reading:**
+- [Engineering Build Rules](./ENGINEERING_BUILD_RULES.md)
+- [Project Field Gotchas](./docs/PROJECT_FIELD_GOTCHAS.md)
+- [API Reference](./API_REFERENCE.md)
 
 ---
 
@@ -75,7 +93,7 @@ shiftsmart-v1/
 
 ## 🔄 Development Workflow
 
-### Daily Development
+### Daily Development (Following Build Rules)
 ```bash
 # 1. Pull latest changes
 git pull origin main
@@ -83,27 +101,47 @@ git pull origin main
 # 2. Create feature branch
 git checkout -b feature/your-feature-name
 
-# 3. Start dev server
+# 3. Pre-work verification (REQUIRED)
+# - Read supabase/schema.sql for field names
+# - Check docs/PROJECT_FIELD_GOTCHAS.md for naming rules
+# - Review API_REFERENCE.md for API contracts
+
+# 4. Start dev server
 npm run dev
 
-# 4. Run tests in watch mode (separate terminal)
+# 5. Run tests in watch mode (separate terminal)
 npm run test:unit:watch
 
-# 5. Make changes and test
+# 6. Make changes (aim for ≤3 files)
+# - Use TEST_TENANT_ID, TEST_ACCOUNT_ID from .env.example
+# - No hardcoded values or production IDs
+# - Verify field names against schema
 
-# 6. Before committing
+# 7. Before committing (pre-commit hooks will run automatically)
 npm run lint                      # Check code quality
 npx tsc --noEmit                 # Check types
 npm run test:unit                # Run unit tests
 npm run test:api                 # Run API tests
 
-# 7. Commit changes
+# 8. Commit changes (conventional commits format)
 git add .
 git commit -m "feat: your feature description"
+# Pre-commit hooks will validate your changes
 
-# 8. Push and create PR
+# 9. Push and create PR (use the PR template)
 git push origin feature/your-feature-name
+# Surgical scope check will run automatically on PR
 ```
+
+### Build Rules Checklist
+
+Before every commit:
+- [ ] ≤3 files changed (or justification provided)
+- [ ] No hardcoded values or temporary workarounds
+- [ ] Field names verified against `supabase/schema.sql`
+- [ ] Read `docs/PROJECT_FIELD_GOTCHAS.md`
+- [ ] Uses test data only (no production IDs)
+- [ ] All tests pass
 
 ---
 
@@ -500,18 +538,21 @@ refactor(auth): improve token validation
 
 ## 📚 Key Documentation
 
-### Essential Reading
+### Essential Reading (Start Here)
 1. [README.md](./README.md) - Project overview
-2. [TESTING_QUICKSTART.md](./tests/TESTING_QUICKSTART.md) - Testing basics
-3. [API_REFERENCE.md](./API_REFERENCE.md) - API documentation
-4. [CHANGELOG.md](./CHANGELOG.md) - Version history
+2. [ENGINEERING_BUILD_RULES.md](./ENGINEERING_BUILD_RULES.md) - **Development guidelines**
+3. [PROJECT_FIELD_GOTCHAS.md](./docs/PROJECT_FIELD_GOTCHAS.md) - **Field naming conventions**
+4. [API_REFERENCE.md](./API_REFERENCE.md) - API documentation
+5. [TESTING_QUICKSTART.md](./tests/TESTING_QUICKSTART.md) - Testing basics
 
 ### Reference Guides
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
 - [COMPREHENSIVE_TESTING_PLAN.md](./tests/COMPREHENSIVE_TESTING_PLAN.md) - Full testing strategy
 - [TEST_EXECUTION_GUIDE.md](./TEST_EXECUTION_GUIDE.md) - Test commands
 - [TEST_FIXES_REPORT.md](./TEST_FIXES_REPORT.md) - Recent fixes
 - [PRD.md](./PRD.md) - Product requirements
 - [MVP_REQUIREMENTS.md](./MVP_REQUIREMENTS.md) - MVP scope
+- [CHANGELOG.md](./CHANGELOG.md) - Version history
 
 ---
 
@@ -584,7 +625,7 @@ For questions or issues, see documentation in `/docs` or check test examples.
 
 ---
 
-**Last Updated:** November 6, 2025  
-**Version:** 1.2.0  
+**Last Updated:** November 13, 2025  
+**Version:** 1.3.0  
 **Maintained by:** Reuters Breaking News Team
 

@@ -34,6 +34,7 @@ Thank you for your interest in contributing to ShiftSmart! This document provide
 - **npm:** 9.x or higher
 - **Supabase Account:** For database access
 - **Anthropic API Key:** For AI features (optional)
+- **Python & pip:** For pre-commit hooks (optional but recommended)
 
 ### Setup
 
@@ -50,19 +51,40 @@ npm install
 
 3. **Configure environment:**
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 # Edit .env.local with your credentials
 ```
 
-4. **Run database migrations:**
+4. **Install pre-commit hooks (recommended):**
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+5. **Run database migrations:**
 - Open Supabase SQL Editor
 - Run `supabase/schema.sql`
 - Run `supabase/seed-breaking-news-team.sql`
 
-5. **Start development server:**
+6. **Start development server:**
 ```bash
 npm run dev
 ```
+
+### Engineering Build Rules
+
+Before contributing, please familiarize yourself with our [Engineering Build Rules](./ENGINEERING_BUILD_RULES.md):
+
+- **Surgical changes only** (prefer ≤3 files per PR)
+- **Production data protection** (use test IDs from `.env.example`)
+- **Pre-work verification** (review schema, gotchas, and API contracts)
+- **No hardcoded values or tech debt**
+
+**Key Resources:**
+- [Engineering Build Rules](./ENGINEERING_BUILD_RULES.md) - Complete guidelines
+- [Project Field Gotchas](./docs/PROJECT_FIELD_GOTCHAS.md) - Naming conventions
+- [Database Schema](./supabase/schema.sql) - Schema reference
+- [API Reference](./API_REFERENCE.md) - API contracts
 
 ---
 
@@ -220,58 +242,66 @@ BREAKING CHANGE: Employee API now returns 'shift_role' instead of 'level'"
 
 ### Before Submitting
 
-1. **Test your changes:**
+1. **Verify surgical scope:**
+   - Aim for ≤3 files changed (justify if more)
+   - No opportunistic refactors mixed with bug fixes
+
+2. **Pre-work verification:**
+   - Review `supabase/schema.sql` for field names
+   - Check `docs/PROJECT_FIELD_GOTCHAS.md` for naming rules
+   - Verify `API_REFERENCE.md` for API contracts
+
+3. **Test your changes:**
 ```bash
-npm run build
-npm run lint
+npm run build              # Build check
+npm run lint               # Linting
+npx tsc --noEmit          # Type check
+npm run test:unit         # Unit tests
+npm run test:api          # API tests
 ```
 
-2. **Update documentation:**
-- Update API_REFERENCE.md for API changes
-- Update CHANGELOG.md with your changes
-- Update README.md if needed
+4. **Update documentation:**
+- Update `API_REFERENCE.md` for API changes
+- Update `CHANGELOG.md` with your changes
+- Update `README.md` if needed
+- Update `docs/PROJECT_FIELD_GOTCHAS.md` if adding new conventions
 
-3. **Write descriptive PR title:**
+5. **Use test data only:**
+   - Use `TEST_TENANT_ID`, `TEST_ACCOUNT_ID` from `.env.example`
+   - Never commit production IDs or PII
+
+6. **Write descriptive PR title:**
 ```
 feat(shifts): Add drag-and-drop API endpoint
 fix(auth): Resolve token refresh bug
 docs(api): Document AI scheduling endpoints
 ```
 
-### PR Description Template
+### PR Template
 
-```markdown
-## Description
-Brief description of what this PR does.
+**Use the provided PR template** (automatically loaded from `.github/pull_request_template.md`).
 
-## Type of Change
-- [ ] Bug fix (non-breaking change fixing an issue)
-- [ ] New feature (non-breaking change adding functionality)
-- [ ] Breaking change (fix or feature causing existing functionality to change)
-- [ ] Documentation update
-
-## Changes Made
-- Change 1
-- Change 2
-- Change 3
-
-## Testing
-Describe how you tested these changes.
-
-## Checklist
-- [ ] Code follows project style guidelines
-- [ ] Self-review completed
-- [ ] Comments added for complex logic
-- [ ] Documentation updated
-- [ ] No new warnings generated
-- [ ] CHANGELOG.md updated
-```
+Key sections include:
+- Surgical Change Checklist
+- Risk Assessment & Rollback Plan
+- Pre-Work Verification
+- Testing Results
 
 ### Review Process
 
-1. **Automated checks** must pass (linting, build)
+1. **Automated checks** must pass:
+   - Surgical scope check (warns if >3 files)
+   - Linting and build
+   - All tests passing
+   - TypeScript type check
+
 2. **Code review** by at least one maintainer
-3. **Testing** in staging environment
+3. **Build rules compliance:**
+   - Surgical scope verified
+   - No hardcoded values
+   - Field names match schema
+   - Uses test data only
+
 4. **Approval** from project maintainer
 5. **Merge** to main branch
 
@@ -399,6 +429,6 @@ By contributing to ShiftSmart, you agree that your contributions will be license
 
 **Thank you for contributing to ShiftSmart!** 🚀
 
-*Last Updated: October 30, 2025*
-*Version: 1.0.0*
+*Last Updated: November 13, 2025*
+*Version: 1.1.0*
 

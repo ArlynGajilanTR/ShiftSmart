@@ -1,7 +1,7 @@
 # ShiftSmart Documentation Index
 
-**Version:** 1.0.0  
-**Last Updated:** October 30, 2025
+**Version:** 1.1.0  
+**Last Updated:** November 13, 2025
 
 This document provides an overview of all available documentation for the ShiftSmart API project.
 
@@ -18,10 +18,40 @@ This document provides an overview of all available documentation for the ShiftS
 - API endpoint list
 - Development commands
 - Data overview (15 Breaking News staff)
+- Engineering Build Rules section
 
 ---
 
-### 2. [API_REFERENCE.md](./API_REFERENCE.md)
+### 2. [ENGINEERING_BUILD_RULES.md](./ENGINEERING_BUILD_RULES.md) ⭐ NEW
+**Purpose:** Surgical change guidelines and production data protection  
+**Audience:** All developers, mandatory reading before contributions  
+**Contents:**
+- Core principle: surgical changes only (≤3 files)
+- Production data protection requirements
+- Mandatory pre-work verification steps
+- Schema & naming guarantees
+- Testing requirements
+- Success criteria
+- PR process and CI integration
+- Feature flags and rollback strategies
+
+---
+
+### 3. [docs/PROJECT_FIELD_GOTCHAS.md](./docs/PROJECT_FIELD_GOTCHAS.md) ⭐ NEW
+**Purpose:** Intentional field naming deviations and conventions  
+**Audience:** All developers working with database or API  
+**Contents:**
+- Database schema gotchas (role vs shift_role, etc.)
+- API response field transformations
+- Authentication field conventions
+- Test data constants (TEST_TENANT_ID, etc.)
+- AI integration conventions
+- Date/time handling rules
+- Migration & rollback strategy
+
+---
+
+### 4. [API_REFERENCE.md](./API_REFERENCE.md)
 **Purpose:** Complete API documentation with request/response examples  
 **Audience:** Frontend developers, API consumers  
 **Contents:**
@@ -39,7 +69,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ---
 
-### 3. [CHANGELOG.md](./CHANGELOG.md)
+### 5. [CHANGELOG.md](./CHANGELOG.md)
 **Purpose:** Detailed version history following Keep a Changelog format  
 **Audience:** All developers, project managers  
 **Contents:**
@@ -51,7 +81,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ---
 
-### 4. [DEPLOYMENT.md](./DEPLOYMENT.md)
+### 6. [DEPLOYMENT.md](./DEPLOYMENT.md)
 **Purpose:** Step-by-step deployment guide  
 **Audience:** DevOps, deployment engineers  
 **Contents:**
@@ -68,7 +98,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ## 🔐 Security & Compliance
 
-### 5. [SECURITY.md](./SECURITY.md)
+### 7. [SECURITY.md](./SECURITY.md)
 **Purpose:** Security policy and vulnerability reporting  
 **Audience:** Security teams, developers  
 **Contents:**
@@ -89,7 +119,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ## 👥 Contributing
 
-### 6. [CONTRIBUTING.md](./CONTRIBUTING.md)
+### 8. [CONTRIBUTING.md](./CONTRIBUTING.md)
 **Purpose:** Guidelines for contributing to the project  
 **Audience:** All contributors  
 **Contents:**
@@ -107,7 +137,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ## 📋 Requirements & Planning
 
-### 7. [PRD.md](./PRD.md)
+### 9. [PRD.md](./PRD.md)
 **Purpose:** Original Product Requirements Document  
 **Audience:** Product managers, developers  
 **Contents:**
@@ -120,7 +150,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ---
 
-### 8. [MVP_REQUIREMENTS.md](./MVP_REQUIREMENTS.md)
+### 10. [MVP_REQUIREMENTS.md](./MVP_REQUIREMENTS.md)
 **Purpose:** MVP scope definition  
 **Audience:** Product managers, developers  
 **Contents:**
@@ -131,7 +161,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ---
 
-### 9. [REUTERS_BRANDING.md](./REUTERS_BRANDING.md)
+### 11. [REUTERS_BRANDING.md](./REUTERS_BRANDING.md)
 **Purpose:** Reuters visual and brand guidelines  
 **Audience:** Frontend developers, designers  
 **Contents:**
@@ -143,7 +173,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ---
 
-### 10. [PHASE_0_FRONTEND_ANALYSIS.md](./PHASE_0_FRONTEND_ANALYSIS.md)
+### 12. [PHASE_0_FRONTEND_ANALYSIS.md](./PHASE_0_FRONTEND_ANALYSIS.md)
 **Purpose:** Analysis of V0 frontend for backend integration  
 **Audience:** Full-stack developers  
 **Contents:**
@@ -157,7 +187,21 @@ This document provides an overview of all available documentation for the ShiftS
 
 ## 🚀 Setup & Quick Start
 
-### 11. [SETUP_INSTRUCTIONS.md](./SETUP_INSTRUCTIONS.md)
+### 13. [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md) ⭐ UPDATED
+**Purpose:** Comprehensive development guide with build rules  
+**Audience:** Active developers  
+**Contents:**
+- Quick start for new developers
+- Development workflow with build rules checklist
+- Testing strategy and commands
+- Feature development guide
+- Database changes process
+- AI integration examples
+- Best practices
+
+---
+
+### 14. [SETUP_INSTRUCTIONS.md](./SETUP_INSTRUCTIONS.md)
 **Purpose:** Detailed local development setup  
 **Audience:** New developers  
 **Contents:**
@@ -169,7 +213,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ---
 
-### 12. [QUICKSTART.md](./QUICKSTART.md)
+### 15. [QUICKSTART.md](./QUICKSTART.md)
 **Purpose:** Quick 5-minute setup guide  
 **Audience:** Experienced developers  
 **Contents:**
@@ -181,7 +225,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ## 📄 Legal & Licensing
 
-### 13. [LICENSE](./LICENSE)
+### 16. [LICENSE](./LICENSE)
 **Purpose:** MIT License with Reuters branding notice  
 **Audience:** Legal teams, open-source contributors  
 **Contents:**
@@ -193,7 +237,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ## 📦 Version Control
 
-### 14. [VERSION](./VERSION)
+### 17. [VERSION](./VERSION)
 **Purpose:** Single source of truth for current version  
 **Audience:** Build systems, CI/CD  
 **Contents:**
@@ -203,7 +247,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ## 🐛 GitHub Templates
 
-### 15. [.github/ISSUE_TEMPLATE/bug_report.md](./.github/ISSUE_TEMPLATE/bug_report.md)
+### 18. [.github/ISSUE_TEMPLATE/bug_report.md](./.github/ISSUE_TEMPLATE/bug_report.md)
 **Purpose:** Template for reporting bugs  
 **Audience:** All users and developers  
 **Contents:**
@@ -214,7 +258,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ---
 
-### 16. [.github/ISSUE_TEMPLATE/feature_request.md](./.github/ISSUE_TEMPLATE/feature_request.md)
+### 19. [.github/ISSUE_TEMPLATE/feature_request.md](./.github/ISSUE_TEMPLATE/feature_request.md)
 **Purpose:** Template for requesting new features  
 **Audience:** All users and developers  
 **Contents:**
@@ -226,7 +270,7 @@ This document provides an overview of all available documentation for the ShiftS
 
 ---
 
-### 17. [.github/ISSUE_TEMPLATE/documentation.md](./.github/ISSUE_TEMPLATE/documentation.md)
+### 20. [.github/ISSUE_TEMPLATE/documentation.md](./.github/ISSUE_TEMPLATE/documentation.md)
 **Purpose:** Template for reporting documentation issues  
 **Audience:** All users and developers  
 **Contents:**
@@ -236,15 +280,16 @@ This document provides an overview of all available documentation for the ShiftS
 
 ---
 
-### 18. [.github/pull_request_template.md](./.github/pull_request_template.md)
-**Purpose:** Template for pull requests  
+### 21. [.github/pull_request_template.md](./.github/pull_request_template.md) ⭐ UPDATED
+**Purpose:** Template for pull requests with surgical change checklist  
 **Audience:** Contributors  
 **Contents:**
-- Change description
-- Type of change
-- Testing checklist
-- Documentation checklist
-- Version impact
+- Surgical Change Checklist (≤3 files, no hardcoded values, etc.)
+- Pre-work verification checklist
+- Risk assessment & rollback plan
+- Testing results
+- Database changes section
+- Breaking changes documentation
 
 ---
 
@@ -313,18 +358,22 @@ shiftsmart-v1/
 
 ### Day 1: Getting Started
 1. **README.md** - Understand the project
-2. **SETUP_INSTRUCTIONS.md** - Set up your environment
-3. **QUICKSTART.md** - Make your first API call
+2. **ENGINEERING_BUILD_RULES.md** - ⭐ **MANDATORY** - Learn surgical change guidelines
+3. **docs/PROJECT_FIELD_GOTCHAS.md** - ⭐ **MANDATORY** - Learn field naming conventions
+4. **SETUP_INSTRUCTIONS.md** - Set up your environment
+5. **DEVELOPMENT_GUIDE.md** - Learn development workflow
 
 ### Day 2: Deep Dive
-4. **PRD.md** - Understand requirements
-5. **API_REFERENCE.md** - Learn all endpoints
-6. **DEPLOYMENT.md** - Understand deployment
+6. **PRD.md** - Understand requirements
+7. **API_REFERENCE.md** - Learn all endpoints
+8. **supabase/schema.sql** - Study database schema
+9. **DEPLOYMENT.md** - Understand deployment
 
 ### Day 3: Contributing
-7. **CONTRIBUTING.md** - Learn contribution process
-8. **SECURITY.md** - Understand security model
-9. **CHANGELOG.md** - Review version history
+10. **CONTRIBUTING.md** - Learn contribution process
+11. **SECURITY.md** - Understand security model
+12. **CHANGELOG.md** - Review version history
+13. **.github/pull_request_template.md** - Understand PR requirements
 
 ---
 
@@ -383,15 +432,22 @@ Check existing documentation first, then open a GitHub issue
 
 | Category | Files | Status |
 |----------|-------|--------|
-| Core Documentation | 5 | ✅ Complete |
+| Core Documentation | 7 | ✅ Complete |
 | Security & Compliance | 1 | ✅ Complete |
 | Contributing Guidelines | 1 | ✅ Complete |
 | Requirements & Planning | 4 | ✅ Complete |
-| Setup & Quick Start | 2 | ✅ Complete |
+| Setup & Development | 3 | ✅ Complete |
 | Legal & Licensing | 1 | ✅ Complete |
 | Version Control | 1 | ✅ Complete |
 | GitHub Templates | 4 | ✅ Complete |
-| **TOTAL** | **19** | **✅ 100%** |
+| Configuration Files | 3 | ✅ Complete |
+| **TOTAL** | **25** | **✅ 100%** |
+
+### New Configuration Files (v1.1.0):
+- `.env.example` - Environment template with test IDs
+- `.pre-commit-config.yaml` - Pre-commit hooks configuration
+- `.prettierrc.json` - Code formatting rules
+- `.github/workflows/surgical-scope.yml` - CI surgical scope check
 
 ---
 
@@ -408,6 +464,19 @@ Check existing documentation first, then open a GitHub issue
 
 **Maintained by:** Reuters Breaking News Team  
 **Repository:** https://github.com/ArlynGajilanTR/ShiftSmart  
-**Last Updated:** October 30, 2025  
-**Documentation Version:** 1.0.0
+**Last Updated:** November 13, 2025  
+**Documentation Version:** 1.1.0
+
+---
+
+## ⭐ What's New in v1.1.0
+
+1. **Engineering Build Rules** - Comprehensive guidelines for surgical changes
+2. **Project Field Gotchas** - Database field naming conventions and intentional deviations
+3. **Updated PR Template** - Includes surgical change checklist and risk assessment
+4. **Pre-commit Hooks** - Automated code quality checks
+5. **CI Surgical Scope Check** - Automated PR validation for file count
+6. **Environment Template** - `.env.example` with test IDs and doc paths
+7. **Development Guide Updates** - Integrated build rules into daily workflow
+8. **Contributing Updates** - Enhanced with build rules and pre-work verification
 
