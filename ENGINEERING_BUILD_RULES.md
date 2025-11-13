@@ -62,7 +62,9 @@ API_REF_PATH=API_REFERENCE.md
 1. **Understand** — Read schema/docs/gotchas; verify desired behavior.
 2. **Plan** — Identify **1–3 files** max; avoid breaking changes.
 3. **Implement** — Surgical edits only; prefer configuration/flags over refactors.
-4. **Verify** — Run unit/integration tests, type checks, linters; verify against test tenant.
+4. **Write/Update Tests** — Add automated tests for new functionality or bug fixes.
+5. **Verify** — Run unit/integration tests, type checks, linters; verify against test tenant.
+6. **Automate** — Ensure your change is covered by automated tests (minimize manual verification).
 
 ## Success Criteria (all must be true)
 
@@ -126,6 +128,7 @@ API_REF_PATH=API_REFERENCE.md
 - [ ] No hardcoded values / temporary workarounds
 - [ ] Field names/types verified against `supabase/schema.sql`
 - [ ] Read `docs/PROJECT_FIELD_GOTCHAS.md` and `API_REFERENCE.md`
+- [ ] Automated tests added/updated (minimize manual testing)
 - [ ] Tests & linters pass locally and in CI
 - [ ] Uses `TEST_TENANT_ID` / `TEST_ACCOUNT_ID` (no prod IDs)
 
@@ -271,8 +274,10 @@ npx prettier --write .
 
 ### Testing
 
+**Philosophy:** Automated tests should minimize or eliminate manual testing needs.
+
 ```bash
-# All tests
+# All tests (run before every commit)
 cd tests && ./run-comprehensive-tests.sh
 
 # Specific suites
@@ -280,7 +285,18 @@ npm run test:unit              # Unit tests
 npm run test:api               # API tests
 npm test                       # E2E tests
 npm run test:a11y              # Accessibility tests
+
+# Write tests for:
+# - New features (unit + integration + E2E)
+# - Bug fixes (add test that would have caught the bug)
+# - Edge cases (prevent regressions)
 ```
+
+**Goal:** 100% of functionality should be testable automatically. Manual testing should only be needed for:
+
+- Initial exploratory testing
+- UX/UI aesthetics
+- Accessibility verification (though automated tests cover most)
 
 ### Database
 

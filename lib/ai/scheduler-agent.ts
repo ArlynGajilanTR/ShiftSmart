@@ -253,6 +253,35 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
       };
     }
 
+    // 8. Validate shift count (Issue #5)
+    const dateDiff =
+      Math.abs(
+        new Date(request.period.end_date).getTime() - new Date(request.period.start_date).getTime()
+      ) /
+      (1000 * 60 * 60 * 24);
+
+    const maxExpectedShifts = (dateDiff + 1) * 24; // Max one shift per hour per day
+    if (scheduleData.shifts.length > maxExpectedShifts) {
+      console.error(
+        `[Validation Error] AI generated ${scheduleData.shifts.length} shifts, exceeds limit of ${maxExpectedShifts} for ${dateDiff + 1} days`
+      );
+      return {
+        success: false,
+        error: `AI generated ${scheduleData.shifts.length} shifts, which exceeds reasonable limit for ${Math.floor(dateDiff + 1)} days. Please try again.`,
+      };
+    }
+
+    if (scheduleData.shifts.length === 0) {
+      return {
+        success: false,
+        error: 'AI generated 0 shifts. This may indicate a prompt issue or constraint conflict.',
+      };
+    }
+
+    console.log(
+      `[Validation Success] ${scheduleData.shifts.length} shifts validated for ${Math.floor(dateDiff + 1)} days`
+    );
+
     return {
       success: true,
       data: scheduleData,
@@ -268,37 +297,100 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
 
 /**
  * Determine shift type from start time
+ * Fixed: Issue #1 - Night shifts (00:00-07:59) now correctly classified
  */
 function getShiftType(date: Date): string {
   const hour = date.getHours();
   if (hour >= 8 && hour < 16) return 'Morning';
-  if (hour >= 16 || hour < 8) return 'Afternoon';
-  return 'Night';
+  if (hour >= 16 && hour < 24) return 'Afternoon';
+  return 'Night'; // 00:00 - 07:59
 }
 
 /**
  * Parse Claude's JSON response
+ * Fixed: Issue #3 - Comprehensive validation with default values for missing fields
  */
 function parseScheduleResponse(response: string): ScheduleResponse | null {
   try {
-    // Extract JSON from response (Claude might wrap it in markdown)
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    // Log raw response for debugging (first 500 chars)
+    console.log('[AI Response] Raw Claude output (first 500 chars):', response.substring(0, 500));
+
+    // Try to extract JSON (prefer markdown code blocks first)
+    let jsonMatch = response.match(/```json\s*(\{[\s\S]*?\})\s*```/);
     if (!jsonMatch) {
-      console.error('No JSON found in response');
+      jsonMatch = response.match(/\{[\s\S]*\}/);
+    }
+
+    if (!jsonMatch) {
+      console.error('[Parse Error] No JSON found in response');
       return null;
     }
 
-    const parsed = JSON.parse(jsonMatch[0]);
+    const jsonString = jsonMatch[1] || jsonMatch[0];
+    const parsed = JSON.parse(jsonString);
 
-    // Validate structure
+    // Comprehensive validation - shifts array
     if (!parsed.shifts || !Array.isArray(parsed.shifts)) {
-      console.error('Invalid schedule structure');
+      console.error('[Parse Error] Missing or invalid shifts array');
       return null;
     }
 
+    if (parsed.shifts.length === 0) {
+      console.error('[Parse Error] Empty shifts array');
+      return null;
+    }
+
+    // Validate first shift has required fields
+    const firstShift = parsed.shifts[0];
+    const requiredFields = [
+      'date',
+      'start_time',
+      'end_time',
+      'bureau',
+      'assigned_to',
+      'shift_type',
+    ];
+    for (const field of requiredFields) {
+      if (!firstShift[field]) {
+        console.error(`[Parse Error] Missing required field in shift: ${field}`);
+        return null;
+      }
+    }
+
+    // Ensure fairness_metrics exists with defaults
+    if (!parsed.fairness_metrics) {
+      console.warn('[Parse Warning] Missing fairness_metrics, using defaults');
+      parsed.fairness_metrics = {
+        weekend_shifts_per_person: {},
+        night_shifts_per_person: {},
+        total_shifts_per_person: {},
+        preference_satisfaction_rate: 0,
+        hard_constraint_violations: [],
+      };
+    } else {
+      // Ensure all sub-fields exist
+      parsed.fairness_metrics.weekend_shifts_per_person =
+        parsed.fairness_metrics.weekend_shifts_per_person || {};
+      parsed.fairness_metrics.night_shifts_per_person =
+        parsed.fairness_metrics.night_shifts_per_person || {};
+      parsed.fairness_metrics.total_shifts_per_person =
+        parsed.fairness_metrics.total_shifts_per_person || {};
+      parsed.fairness_metrics.preference_satisfaction_rate =
+        parsed.fairness_metrics.preference_satisfaction_rate || 0;
+      parsed.fairness_metrics.hard_constraint_violations =
+        parsed.fairness_metrics.hard_constraint_violations || [];
+    }
+
+    // Ensure recommendations exists
+    if (!parsed.recommendations) {
+      parsed.recommendations = [];
+    }
+
+    console.log(`[Parse Success] Parsed ${parsed.shifts.length} shifts successfully`);
     return parsed as ScheduleResponse;
   } catch (error) {
-    console.error('JSON parse error:', error);
+    console.error('[Parse Error] JSON parse exception:', error);
+    console.error('[Parse Error] Attempted to parse:', response.substring(0, 200));
     return null;
   }
 }

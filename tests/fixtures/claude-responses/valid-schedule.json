@@ -1,0 +1,57 @@
+{
+  "shifts": [
+    {
+      "date": "2025-11-15",
+      "start_time": "08:00",
+      "end_time": "16:00",
+      "bureau": "Milan",
+      "assigned_to": "Marco Rossi",
+      "role_level": "senior",
+      "shift_type": "Morning",
+      "reasoning": "Prefers morning shifts, has seniority"
+    },
+    {
+      "date": "2025-11-15",
+      "start_time": "16:00",
+      "end_time": "00:00",
+      "bureau": "Milan",
+      "assigned_to": "Sabina Suzzi",
+      "role_level": "correspondent",
+      "shift_type": "Afternoon",
+      "reasoning": "Available for afternoon coverage"
+    },
+    {
+      "date": "2025-11-16",
+      "start_time": "00:00",
+      "end_time": "08:00",
+      "bureau": "Rome",
+      "assigned_to": "Gavin Jones",
+      "role_level": "editor",
+      "shift_type": "Night",
+      "reasoning": "Senior coverage for night shift"
+    }
+  ],
+  "fairness_metrics": {
+    "weekend_shifts_per_person": {
+      "Marco Rossi": 0,
+      "Sabina Suzzi": 0,
+      "Gavin Jones": 0
+    },
+    "night_shifts_per_person": {
+      "Marco Rossi": 0,
+      "Sabina Suzzi": 0,
+      "Gavin Jones": 1
+    },
+    "total_shifts_per_person": {
+      "Marco Rossi": 1,
+      "Sabina Suzzi": 1,
+      "Gavin Jones": 1
+    },
+    "preference_satisfaction_rate": 0.85,
+    "hard_constraint_violations": []
+  },
+  "recommendations": [
+    "Schedule is well-balanced across team members",
+    "All senior coverage requirements met"
+  ]
+}

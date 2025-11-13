@@ -322,9 +322,33 @@ Key sections include:
 
 ## Testing
 
-### Manual Testing
+### Testing Philosophy
 
-Test API endpoints using curl or Postman:
+**Automated testing protocols should minimize or eliminate the need for manual testing.**
+
+- Write comprehensive unit, integration, and E2E tests
+- Automate repetitive test scenarios
+- Manual testing should be reserved for exploratory testing and UX validation only
+
+### Automated Testing (Preferred)
+
+```bash
+# Unit tests
+npm run test:unit
+
+# API tests
+npm run test:api
+
+# E2E tests
+npm test
+
+# All tests
+cd tests && ./run-comprehensive-tests.sh
+```
+
+### Manual Testing (When Necessary)
+
+Test API endpoints using curl or Postman only when automated tests aren't sufficient:
 
 ```bash
 # Login
@@ -339,7 +363,7 @@ curl http://localhost:3000/api/employees \
 
 ### Test Checklist
 
-When adding new features, test:
+When adding new features, **write automated tests** for:
 
 - ✅ **Happy path** - Normal operation
 - ✅ **Error cases** - Invalid input, missing data
@@ -347,6 +371,8 @@ When adding new features, test:
 - ✅ **Authentication** - Valid/invalid tokens
 - ✅ **Authorization** - Proper role checks
 - ✅ **Database** - Correct queries, transactions
+
+**Goal:** Every feature should have automated tests. Manual testing should only be needed for initial exploration.
 
 ---
 
