@@ -29,11 +29,18 @@ Create optimal shift schedules for a team of 15 Breaking News correspondents and
 - **Senior Correspondent**: Experienced, must have at least 1 per shift
 - **Correspondent**: Standard editorial staff
 
-## SHIFT TYPES
+## SHIFT TYPES & COVERAGE REQUIREMENTS
 
-- **Morning**: 08:00 - 16:00
-- **Afternoon**: 16:00 - 00:00 (midnight)
-- **Night**: 00:00 - 08:00
+**Shift Definitions:**
+- **Morning**: 08:00 - 16:00 (8 hours)
+- **Afternoon**: 16:00 - 00:00 (8 hours, crosses midnight)
+- **Night**: 00:00 - 08:00 (8 hours)
+
+**Daily Coverage Requirements:**
+- Each day requires **3 shifts** to provide 24/7 coverage
+- Minimum **1 senior correspondent or editor** per shift
+- Holiday coverage: Minimum 2 shifts (Morning + Afternoon preferred)
+- If insufficient staff: Prioritize Morning > Afternoon > Night
 
 ## FAIRNESS PRINCIPLES
 
@@ -53,36 +60,56 @@ Create optimal shift schedules for a team of 15 Breaking News correspondents and
 6. Check all hard constraints are satisfied
 7. Calculate fairness scores and preference satisfaction rates
 
-## OUTPUT FORMAT
+## OUTPUT FORMAT (REQUIRED)
 
-You must respond with valid JSON in this exact structure:
+Return ONLY valid JSON (no markdown, no code blocks, no explanations outside the JSON).
+Your entire response must be parseable JSON in this exact structure.
 
-\`\`\`json
+Each shift object MUST include ALL of these fields (do not omit any):
+
 {
   "shifts": [
     {
-      "date": "YYYY-MM-DD",
-      "start_time": "HH:MM",
-      "end_time": "HH:MM",
-      "bureau": "Milan" | "Rome",
-      "assigned_to": "Employee Full Name",
-      "role_level": "editor" | "senior" | "correspondent",
-      "shift_type": "Morning" | "Afternoon" | "Night",
-      "reasoning": "Brief explanation for this assignment"
+      "date": (REQUIRED) "YYYY-MM-DD",
+      "start_time": (REQUIRED) "HH:MM",
+      "end_time": (REQUIRED) "HH:MM",
+      "bureau": (REQUIRED) "Milan" | "Rome",
+      "assigned_to": (REQUIRED) "Employee Full Name",
+      "role_level": (REQUIRED) "editor" | "senior" | "correspondent",
+      "shift_type": (REQUIRED) "Morning" | "Afternoon" | "Night",
+      "reasoning": (REQUIRED) "Brief explanation (1-2 sentences)"
     }
   ],
-  "fairness_metrics": {
+  "fairness_metrics": (REQUIRED) {
     "weekend_shifts_per_person": { "Employee Name": 2, ... },
     "night_shifts_per_person": { "Employee Name": 1, ... },
     "total_shifts_per_person": { "Employee Name": 10, ... },
     "preference_satisfaction_rate": 0.85,
     "hard_constraint_violations": []
   },
-  "recommendations": [
-    "Specific actionable suggestions for improving the schedule"
+  "recommendations": (REQUIRED) [
+    "Specific actionable suggestions"
   ]
 }
-\`\`\`
+
+## CRITICAL: EMPLOYEE NAME MATCHING
+
+When assigning shifts, you MUST use employee names EXACTLY as provided in the roster:
+- Use full names verbatim (e.g., "Marco Rossi")
+- Do NOT abbreviate (e.g., "M. Rossi" is INVALID)
+- Do NOT reverse order (e.g., "Rossi, Marco" is INVALID)
+- Do NOT add titles (e.g., "Mr. Marco Rossi" is INVALID)
+- Do NOT use nicknames or variations
+
+**Invalid names will cause schedule save failures.**
+
+## METRICS CALCULATION RULES
+
+**preference_satisfaction_rate:**
+- Calculate as: (shifts matching preferences) / (total shifts assigned)
+- Include: preferred_days and preferred_shifts in calculation
+- Exclude: unavailable days (those are hard constraints)
+- Return as decimal between 0.0 and 1.0
 
 ## IMPORTANT NOTES
 
@@ -91,6 +118,7 @@ You must respond with valid JSON in this exact structure:
 - Suggest alternative arrangements if constraints conflict
 - Be transparent about trade-offs made
 - Prioritize fairness over individual preferences when they conflict
+- Ensure all JSON fields are present (use empty arrays/objects if no data)
 `;
 
 export function buildUserPrompt(scheduleRequest: {

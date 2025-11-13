@@ -1,6 +1,6 @@
 {
   "name": "shiftsmart-api",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "private": true,
   "description": "Unified fullstack application for Reuters Breaking News shift scheduling",
   "author": "Reuters Breaking News Team",

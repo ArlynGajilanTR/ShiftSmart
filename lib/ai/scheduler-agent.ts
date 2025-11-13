@@ -419,9 +419,28 @@ export async function saveSchedule(
         continue;
       }
 
-      // Create shift
-      const startTimestamp = `${shift.date}T${shift.start_time}:00`;
-      const endTimestamp = `${shift.date}T${shift.end_time}:00`;
+      // Create shift with midnight crossing and timezone handling
+      // Issue #7: Handle shifts ending at midnight (next day)
+      let endDate = shift.date;
+      let endTime = shift.end_time;
+
+      // Check for midnight crossing (afternoon shifts ending at 00:00)
+      if (endTime === '00:00' || endTime === '24:00') {
+        // Shift crosses into next day
+        const shiftDate = parseISO(shift.date);
+        shiftDate.setDate(shiftDate.getDate() + 1);
+        endDate = format(shiftDate, 'yyyy-MM-dd');
+        endTime = '00:00';
+        console.log(
+          `[Midnight Crossing] Shift ${shift.date} ${shift.start_time}-00:00 ends on ${endDate}`
+        );
+      }
+
+      // Issue #6: Add timezone for Europe/Rome (Italy)
+      // Italy is UTC+1 (CET) or UTC+2 (CEST during DST)
+      // PostgreSQL will store as timestamptz with timezone info
+      const startTimestamp = `${shift.date}T${shift.start_time}:00+01:00`;
+      const endTimestamp = `${endDate}T${endTime}:00+01:00`;
 
       const { data: newShift, error: shiftError } = await supabase
         .from('shifts')
