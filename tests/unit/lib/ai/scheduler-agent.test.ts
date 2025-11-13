@@ -168,7 +168,18 @@ describe('AI Scheduler Agent', () => {
       mockIsConfigured.mockReturnValue(true);
       mockCallClaude.mockResolvedValue(
         JSON.stringify({
-          shifts: [],
+          shifts: [
+            {
+              date: '2025-11-01',
+              start_time: '08:00',
+              end_time: '16:00',
+              bureau: 'Milan',
+              assigned_to: 'Test User',
+              role_level: 'senior',
+              shift_type: 'Morning',
+              reasoning: 'Test shift',
+            },
+          ],
           fairness_metrics: {
             weekend_shifts_per_person: {},
             night_shifts_per_person: {},
