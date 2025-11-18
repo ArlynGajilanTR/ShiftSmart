@@ -50,7 +50,7 @@ curl http://localhost:3000/api/ai/status \
 ```json
 {
   "ai_enabled": true,
-  "model": "claude-haiku-4-5",
+  "model": "claude-haiku-4-5-20251001",
   "features": {
     "schedule_generation": true,
     "conflict_resolution": true,
@@ -65,7 +65,7 @@ curl http://localhost:3000/api/ai/status \
 ```json
 {
   "ai_enabled": false,
-  "model": "claude-haiku-4-5",
+  "model": "claude-haiku-4-5-20251001",
   "features": {
     "schedule_generation": false,
     "conflict_resolution": false,

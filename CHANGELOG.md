@@ -26,15 +26,13 @@ Reference: [Claude 4.5 Documentation](https://docs.claude.com/en/docs/about-clau
 ## [1.3.3] - 2025-11-18
 
 ### Fixed
-- **CRITICAL: Corrected Claude model identifier**
+- **Attempted fix with incorrect model**
   - Changed from invalid `claude-haiku-4-5` to `claude-3-5-haiku-20241022`
-  - Claude Haiku 4.5 does not exist; the correct model is Claude 3.5 Haiku (Oct 2024)
-  - This was causing all schedule generation to fail with "Failed to parse AI response"
-  - Schedule generation now works correctly (~17 seconds for week schedule)
+  - This was an incorrect downgrade (Haiku 4.5 DOES exist)
+  - Fixed in v1.3.4 with correct Haiku 4.5 identifier
 
 ### Changed
-- Updated all documentation references from "Claude Haiku 4.5" to "Claude 3.5 Haiku"
-- Clarified model capabilities (8192 max output tokens)
+- Temporarily updated documentation to Claude 3.5 Haiku (reverted in v1.3.4)
 
 ## [1.3.2] - 2025-11-18
 
@@ -153,6 +151,8 @@ Reference: [Claude 4.5 Documentation](https://docs.claude.com/en/docs/about-clau
 - Comprehensive test coverage (332+ tests)
 - Production-ready deployment
 
+[1.3.4]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.3...v1.3.4
+[1.3.3]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.2...v1.3.3
 [1.3.2]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.2.2...v1.3.0
