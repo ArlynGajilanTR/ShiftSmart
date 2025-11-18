@@ -1,8 +1,8 @@
-# ShiftSmart v1.3.2
+# ShiftSmart v1.3.3
 
 Unified fullstack application for Reuters Breaking News shift scheduling system.
 
-**Version:** 1.3.2 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 332+
+**Version:** 1.3.3 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 332+
 
 ## Overview
 
@@ -16,14 +16,14 @@ ShiftSmart is an internal scheduling application for Reuters Breaking News edito
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Styling
 - **@dnd-kit** - Drag-and-drop scheduling
-- **Claude Haiku 4.5** - AI-powered scheduling (near-frontier, 2x faster, 67% cheaper)
+- **Claude 3.5 Haiku** - AI-powered scheduling (near-frontier, 2x faster, 67% cheaper)
 - **bcryptjs** - Password hashing
 - **date-fns** - Date manipulation
 
 ## Key Features
 
 ✅ **100% Tested** - All 20 API endpoints passing automated tests  
-🤖 **AI Scheduling** - Claude Haiku 4.5 generates optimized schedules (near-frontier, 2-5x faster)  
+🤖 **AI Scheduling** - Claude 3.5 Haiku generates optimized schedules (near-frontier, 2-5x faster)  
 👥 **Employee Management** - CRUD operations with preferences  
 📅 **Smart Scheduling** - Drag-and-drop with conflict detection  
 ⚠️ **Conflict Resolution** - Automatic detection and AI suggestions  
@@ -42,7 +42,7 @@ shiftsmart-v1/
 │   │   ├── shifts/            # Shift scheduling (list, create, move, delete)
 │   │   ├── conflicts/         # Conflict detection and resolution
 │   │   ├── dashboard/         # Statistics and aggregations
-│   │   └── ai/                # AI-powered scheduling (Claude Haiku 4.5)
+│   │   └── ai/                # AI-powered scheduling (Claude 3.5 Haiku)
 │   ├── dashboard/             # Frontend pages (employees, schedule, conflicts)
 │   ├── login/                 # Authentication UI
 │   ├── signup/                # User registration
@@ -105,7 +105,7 @@ shiftsmart-v1/
 
 - `GET /api/dashboard/stats` - Aggregated statistics
 
-### AI Scheduling (4 endpoints) - Claude Haiku 4.5
+### AI Scheduling (4 endpoints) - Claude 3.5 Haiku
 
 - `POST /api/ai/generate-schedule` - Generate AI-powered schedule
 - `POST /api/ai/resolve-conflict` - Get AI suggestions for conflict resolution

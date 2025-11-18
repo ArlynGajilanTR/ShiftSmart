@@ -1,4 +1,4 @@
-// AI Schedule Generation Prompts for Claude Haiku 4.5
+// AI Schedule Generation Prompts for Claude 3.5 Haiku
 
 export const SYSTEM_PROMPT = `========================================================
 CRITICAL: YOU ARE A JSON API - NOT A CONVERSATIONAL AI

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2025-11-18
+
+### Fixed
+- **CRITICAL: Corrected Claude model identifier**
+  - Changed from invalid `claude-haiku-4-5` to `claude-3-5-haiku-20241022`
+  - Claude Haiku 4.5 does not exist; the correct model is Claude 3.5 Haiku (Oct 2024)
+  - This was causing all schedule generation to fail with "Failed to parse AI response"
+  - Schedule generation now works correctly (~17 seconds for week schedule)
+
+### Changed
+- Updated all documentation references from "Claude Haiku 4.5" to "Claude 3.5 Haiku"
+- Clarified model capabilities (8192 max output tokens)
+
 ## [1.3.2] - 2025-11-18
 
 ### Added

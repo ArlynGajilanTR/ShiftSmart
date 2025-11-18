@@ -1,4 +1,4 @@
-// AI Scheduling Agent - Orchestrates Claude Haiku 4.5 for intelligent scheduling
+// AI Scheduling Agent - Orchestrates Claude 3.5 Haiku for intelligent scheduling
 
 import { callClaude, isConfigured } from './client';
 import { SYSTEM_PROMPT, buildUserPrompt } from './prompts/schedule-generation';
@@ -255,8 +255,8 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
     });
 
     // 6. Call Claude with optimized settings
-    console.log('Calling Claude Haiku 4.5 for schedule generation...');
-    // Haiku 4.5 max output: 8K tokens (not 32K - that was causing errors)
+    console.log('Calling Claude 3.5 Haiku for schedule generation...');
+    // Claude 3.5 Haiku max output: 8K tokens
     // Ultra-brief reasoning keeps output under 8K even for 100+ employee teams
     const response = await callClaude(SYSTEM_PROMPT, userPrompt, 8192);
 
