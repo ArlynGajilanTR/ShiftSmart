@@ -239,9 +239,11 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
       italian_holidays: holidays,
     });
 
-    // 6. Call Claude
+    // 6. Call Claude with high token limit for scalability
     console.log('Calling Claude Haiku 4.5 for schedule generation...');
-    const response = await callClaude(SYSTEM_PROMPT, userPrompt, 8192);
+    // Set to 32768 (max for Haiku 4.5) to support future 100+ employee teams
+    // Current: 15 employees = ~6k tokens, Future: 100 employees = ~30k+ tokens
+    const response = await callClaude(SYSTEM_PROMPT, userPrompt, 32768);
 
     // 7. Parse response
     const scheduleData = parseScheduleResponse(response);

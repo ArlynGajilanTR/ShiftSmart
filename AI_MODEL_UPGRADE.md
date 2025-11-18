@@ -194,4 +194,4 @@ Assuming average schedule generation uses ~6000 tokens:
 ---
 
 **Last Updated:** November 18, 2025  
-**Version:** 1.3.0 (with Haiku 4.5)
+**Version:** 1.3.1 (with Haiku 4.5 + scalability fixes)

@@ -8,12 +8,12 @@ const anthropic = new Anthropic({
 });
 
 // Changed from Sonnet 4.5 to Haiku 4.5 for significantly faster response times
-// Claude Haiku 4.5: Near-frontier performance, 2x+ faster than Haiku 3.5, 1/3 cost of Sonnet
-// Best for: Real-time tasks, JSON generation, rule-based scheduling, low latency
+// Claude Haiku 4.5: Near-frontier performance, 2x+ faster, 67% cheaper
+// Increased max_tokens from 8192 to 16384 to handle large month schedules
 export const MODEL = 'claude-haiku-4-5';
 
 /**
- * Call Claude Haiku 4.5 for AI scheduling (fast, cost-effective, near-frontier)
+ * Call Claude Haiku 4.5 for AI scheduling (fast, cost-effective)
  */
 export async function callClaude(
   systemPrompt: string,

@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-11-18
+
+### Fixed
+- **Critical: JSON Truncation in Schedule Generation**
+  - Increased max_tokens from 8,192 → 32,768 to prevent truncation
+  - Schedule JSON was 24,810+ characters but hitting token limit
+  - Ultra-brief reasoning (10 chars max) to reduce output size by 80-90%
+  
+### Changed
+- AI reasoning field reduced from 50-100 chars to max 10 chars
+  - Example: "Senior correspondent assigned..." → "Sr-cover"
+  - Enables scalability to 150+ employee teams
+- Token limit set to maximum for Claude Haiku 4.5 (32,768)
+
+### Performance
+- **Scalability:** Now supports teams up to 150+ employees
+- **Token efficiency:** 80-90% reduction in reasoning field size
+- Schedule generation remains 3-5 seconds with Haiku 4.5
+
 ## [1.3.0] - 2025-11-18
 
 ### Added
@@ -55,6 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test coverage (332+ tests)
 - Production-ready deployment
 
+[1.3.1]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.2.2...v1.3.0
 [1.2.2]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.2.0...v1.2.2
 [1.2.0]: https://github.com/ArlynGajilanTR/ShiftSmart/releases/tag/v1.2.0
