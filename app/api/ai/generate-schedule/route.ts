@@ -4,7 +4,7 @@ import { generateSchedule, saveSchedule } from '@/lib/ai/scheduler-agent';
 
 /**
  * POST /api/ai/generate-schedule
- * Generate AI-powered schedule using Claude Sonnet 4.5
+ * Generate AI-powered schedule using Claude Haiku 4.5
  */
 export async function POST(request: NextRequest) {
   try {

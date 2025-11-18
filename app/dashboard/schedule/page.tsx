@@ -281,14 +281,16 @@ export default function SchedulePage() {
           end_date: format(addDays(new Date(), 60), 'yyyy-MM-dd'),
         });
 
-        const shiftData = response.shifts.map((shift: any) => ({
+        // Defensive check: ensure shifts array exists
+        const shiftsArray = response?.shifts || [];
+        const shiftData = shiftsArray.map((shift: any) => ({
           id: shift.id,
-          employee: shift.users?.full_name || 'Unassigned',
-          role: shift.users?.title || shift.users?.shift_role || 'Unknown',
-          bureau: shift.bureaus?.name || 'Milan',
-          date: new Date(shift.start_time),
-          startTime: format(new Date(shift.start_time), 'HH:mm'),
-          endTime: format(new Date(shift.end_time), 'HH:mm'),
+          employee: shift.employee || shift.users?.full_name || 'Unassigned',
+          role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
+          bureau: shift.bureau || shift.bureaus?.name || 'Milan',
+          date: new Date(shift.date || shift.start_time),
+          startTime: shift.startTime || format(new Date(shift.start_time), 'HH:mm'),
+          endTime: shift.endTime || format(new Date(shift.end_time), 'HH:mm'),
           status: shift.status || 'pending',
         }));
 
@@ -712,8 +714,9 @@ export default function SchedulePage() {
                   <Sparkles className="h-4 w-4" />
                   <AlertTitle>AI-Powered Scheduling</AlertTitle>
                   <AlertDescription>
-                    Claude Sonnet 4.5 will analyze employee preferences, recent shift history, and
-                    Italian holidays to generate a fair and compliant schedule.
+                    Claude Haiku 4.5 will analyze employee preferences, recent shift history, and
+                    Italian holidays to generate a fair and compliant schedule (2x faster,
+                    near-frontier performance).
                   </AlertDescription>
                 </Alert>
 

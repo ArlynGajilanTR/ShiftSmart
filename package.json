@@ -1,6 +1,6 @@
 {
   "name": "shiftsmart-api",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "private": true,
   "description": "Unified fullstack application for Reuters Breaking News shift scheduling",
   "author": "Reuters Breaking News Team",
@@ -17,8 +17,8 @@
     "ai-scheduling"
   ],
   "scripts": {
-    "dev": "next dev",
-    "dev:unsafe": "NODE_TLS_REJECT_UNAUTHORIZED=0 next dev",
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 next dev",
+    "dev:safe": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

@@ -166,12 +166,12 @@ export default function DashboardPage() {
           api.conflicts.list({ status: 'unresolved', limit: 5 }),
         ]);
 
-        // Update stats
+        // Update stats (with defensive checks)
         setStats({
-          totalEmployees: statsData.stats.totalEmployees || 0,
-          activeShifts: statsData.stats.upcomingShifts || 0,
-          openConflicts: statsData.stats.unresolvedConflicts || 0,
-          coverageRate: '94%', // TODO: Calculate from API
+          totalEmployees: statsData?.stats?.totalEmployees || 0,
+          activeShifts: statsData?.stats?.upcomingShifts || 0,
+          openConflicts: statsData?.stats?.unresolvedConflicts || 0,
+          coverageRate: statsData?.stats?.coverageRate ? `${statsData.stats.coverageRate}%` : '0%',
         });
 
         // Update shifts

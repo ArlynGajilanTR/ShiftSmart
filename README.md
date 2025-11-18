@@ -16,14 +16,14 @@ ShiftSmart is an internal scheduling application for Reuters Breaking News edito
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Styling
 - **@dnd-kit** - Drag-and-drop scheduling
-- **Claude Sonnet 4.5** - AI-powered scheduling
+- **Claude Haiku 4.5** - AI-powered scheduling (near-frontier, 2x faster, 67% cheaper)
 - **bcryptjs** - Password hashing
 - **date-fns** - Date manipulation
 
 ## Key Features
 
 ✅ **100% Tested** - All 20 API endpoints passing automated tests  
-🤖 **AI Scheduling** - Claude Sonnet 4.5 generates optimized schedules  
+🤖 **AI Scheduling** - Claude Haiku 4.5 generates optimized schedules (near-frontier, 2-5x faster)  
 👥 **Employee Management** - CRUD operations with preferences  
 📅 **Smart Scheduling** - Drag-and-drop with conflict detection  
 ⚠️ **Conflict Resolution** - Automatic detection and AI suggestions  
@@ -42,7 +42,7 @@ shiftsmart-v1/
 │   │   ├── shifts/            # Shift scheduling (list, create, move, delete)
 │   │   ├── conflicts/         # Conflict detection and resolution
 │   │   ├── dashboard/         # Statistics and aggregations
-│   │   └── ai/                # AI-powered scheduling (Claude Sonnet 4.5)
+│   │   └── ai/                # AI-powered scheduling (Claude Haiku 4.5)
 │   ├── dashboard/             # Frontend pages (employees, schedule, conflicts)
 │   ├── login/                 # Authentication UI
 │   ├── signup/                # User registration
@@ -105,7 +105,7 @@ shiftsmart-v1/
 
 - `GET /api/dashboard/stats` - Aggregated statistics
 
-### AI Scheduling (3 endpoints) - Claude Sonnet 4.5
+### AI Scheduling (3 endpoints) - Claude Haiku 4.5
 
 - `POST /api/ai/generate-schedule` - Generate AI-powered schedule
 - `POST /api/ai/resolve-conflict` - Get AI suggestions for conflict resolution
@@ -327,12 +327,12 @@ Password: changeme
 - **Minimal Auth:** Uses bcryptjs + session tokens (no Supabase Auth dependency)
 - **RLS Disabled:** Internal app with trusted users only
 - **Portable:** Easy to migrate to Snowflake later
-- **AI-Powered:** Claude Sonnet 4.5 for intelligent scheduling
+- **AI-Powered:** Claude Haiku 4.5 for intelligent scheduling (near-frontier performance)
 - **Production Ready:** Fully tested and documented
 
 ## Version
 
-**Current Version:** 1.2.2  
+**Current Version:** 1.3.0  
 **Release Date:** November 13, 2025  
 **Status:** ✅ Production Ready - 332+ Tests Passing
 

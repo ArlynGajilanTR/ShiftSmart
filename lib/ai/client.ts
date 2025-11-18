@@ -7,10 +7,13 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || '',
 });
 
-export const MODEL = 'claude-sonnet-4-20250514';
+// Changed from Sonnet 4.5 to Haiku 4.5 for significantly faster response times
+// Claude Haiku 4.5: Near-frontier performance, 2x+ faster than Haiku 3.5, 1/3 cost of Sonnet
+// Best for: Real-time tasks, JSON generation, rule-based scheduling, low latency
+export const MODEL = 'claude-haiku-4-5';
 
 /**
- * Call Claude Sonnet 4.5 for AI scheduling
+ * Call Claude Haiku 4.5 for AI scheduling (fast, cost-effective, near-frontier)
  */
 export async function callClaude(
   systemPrompt: string,

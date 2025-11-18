@@ -87,14 +87,16 @@ export async function GET(request: NextRequest) {
         ? `+${coverageChange}% from last week`
         : `${coverageChange}% from last week`;
 
-    // Format response
+    // Format response (wrapped in 'stats' object with camelCase keys)
     const response = {
-      total_employees: totalEmployees || 0,
-      active_employees: activeEmployees || 0,
-      active_shifts_count: activeShiftsThisWeek || 0,
-      open_conflicts: openConflicts || 0,
-      coverage_rate: coverageRate,
-      coverage_change: coverageChangeText,
+      stats: {
+        totalEmployees: totalEmployees || 0,
+        activeEmployees: activeEmployees || 0,
+        upcomingShifts: activeShiftsThisWeek || 0,
+        unresolvedConflicts: openConflicts || 0,
+        coverageRate: coverageRate,
+        coverageChange: coverageChangeText,
+      },
     };
 
     return NextResponse.json(response, { status: 200 });

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The "Generate Preview" button in the Schedule Management page uses Claude Sonnet 4.5 AI to automatically generate optimized shift schedules. This guide helps you set up and troubleshoot AI features.
+The "Generate Preview" button in the Schedule Management page uses Claude Haiku 4.5 AI to automatically generate optimized shift schedules with near-frontier performance (2x+ faster than Haiku 3.5, comparable quality to Sonnet 4). This guide helps you set up and troubleshoot AI features.
 
 ---
 
@@ -50,7 +50,7 @@ curl http://localhost:3000/api/ai/status \
 ```json
 {
   "ai_enabled": true,
-  "model": "claude-sonnet-4-20250514",
+  "model": "claude-haiku-4-5",
   "features": {
     "schedule_generation": true,
     "conflict_resolution": true,
@@ -65,7 +65,7 @@ curl http://localhost:3000/api/ai/status \
 ```json
 {
   "ai_enabled": false,
-  "model": "claude-sonnet-4-20250514",
+  "model": "claude-haiku-4-5",
   "features": {
     "schedule_generation": false,
     "conflict_resolution": false,
@@ -347,5 +347,5 @@ set ANTHROPIC
 
 ---
 
-**Last Updated:** 2025-01-11  
-**Version:** 1.2.0
+**Last Updated:** November 18, 2025  
+**Version:** 1.3.0

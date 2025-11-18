@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    return NextResponse.json(formattedShifts, { status: 200 });
+    return NextResponse.json({ shifts: formattedShifts }, { status: 200 });
   } catch (error) {
     console.error('Shifts API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -1,4 +1,4 @@
-// AI Scheduling Agent - Orchestrates Claude Sonnet 4.5 for intelligent scheduling
+// AI Scheduling Agent - Orchestrates Claude Haiku 4.5 for intelligent scheduling
 
 import { callClaude, isConfigured } from './client';
 import { SYSTEM_PROMPT, buildUserPrompt } from './prompts/schedule-generation';
@@ -240,7 +240,7 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
     });
 
     // 6. Call Claude
-    console.log('Calling Claude Sonnet 4.5 for schedule generation...');
+    console.log('Calling Claude Haiku 4.5 for schedule generation...');
     const response = await callClaude(SYSTEM_PROMPT, userPrompt, 8192);
 
     // 7. Parse response
