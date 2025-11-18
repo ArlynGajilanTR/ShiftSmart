@@ -7,10 +7,10 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || '',
 });
 
-// Changed from Sonnet 4.5 to Haiku 3.5 for significantly faster response times
-// Claude 3.5 Haiku: Released Oct 2024, 2x+ faster, 67% cheaper
-// Max output: 8192 tokens
-export const MODEL = 'claude-3-5-haiku-20241022';
+// Changed from Sonnet 4.5 to Haiku 4.5 for significantly faster response times
+// Claude Haiku 4.5: Released Oct 2024, near-frontier performance, 2x+ faster, 67% cheaper
+// Max output: 8192 tokens, supports extended thinking
+export const MODEL = 'claude-haiku-4-5-20251001';
 
 // Retry configuration
 const MAX_RETRIES = 3;
