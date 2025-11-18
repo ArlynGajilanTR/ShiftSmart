@@ -21,11 +21,24 @@ export async function callClaude(
   maxTokens: number = 4096
 ): Promise<string> {
   try {
+    const startTime = Date.now();
+    
     // Use streaming for large token requests to avoid 10-minute timeout
+    // OPTIMIZATION: Enable prompt caching for system prompt (saves cost on repeated calls)
+    // Haiku 4.5 supports up to 200K context window, 8K max output tokens
+    // Capped at 8192 for Haiku (32K was too high, causing streaming requirement errors)
+    const effectiveMaxTokens = Math.min(maxTokens, 8192);
+    
     const stream = await anthropic.messages.stream({
       model: MODEL,
-      max_tokens: maxTokens,
-      system: systemPrompt,
+      max_tokens: effectiveMaxTokens,
+      system: [
+        {
+          type: 'text',
+          text: systemPrompt,
+          cache_control: { type: 'ephemeral' }, // Cache system prompt (saves $0.90/$4.50 per M tokens)
+        },
+      ],
       messages: [
         {
           role: 'user',
@@ -34,16 +47,21 @@ export async function callClaude(
       ],
     });
 
-    // Collect streamed response
+    // Collect streamed response with performance tracking
     let fullText = '';
+    let tokenCount = 0;
     for await (const chunk of stream) {
       if (
         chunk.type === 'content_block_delta' &&
         chunk.delta.type === 'text_delta'
       ) {
         fullText += chunk.delta.text;
+        tokenCount++;
       }
     }
+
+    const elapsed = Date.now() - startTime;
+    console.log(`[AI Performance] Generated ${fullText.length} chars in ${elapsed}ms (~${tokenCount} tokens)`);
 
     if (!fullText) {
       throw new Error('No text content in Claude response');

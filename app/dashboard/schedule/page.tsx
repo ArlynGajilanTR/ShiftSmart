@@ -341,12 +341,13 @@ export default function SchedulePage() {
 
       const shiftData = response.shifts.map((shift: any) => ({
         id: shift.id,
-        employee: shift.users?.full_name || 'Unassigned',
-        role: shift.users?.title || shift.users?.shift_role || 'Unknown',
-        bureau: shift.bureaus?.name || 'Milan',
-        date: new Date(shift.start_time),
-        startTime: format(new Date(shift.start_time), 'HH:mm'),
-        endTime: format(new Date(shift.end_time), 'HH:mm'),
+        employee: shift.employee || shift.users?.full_name || 'Unassigned',
+        role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
+        bureau: shift.bureau || shift.bureaus?.name || 'Milan',
+        // Handle both pre-formatted strings and raw timestamps
+        date: shift.date ? new Date(shift.date) : new Date(shift.start_time),
+        startTime: shift.startTime || format(new Date(shift.start_time), 'HH:mm'),
+        endTime: shift.endTime || format(new Date(shift.end_time), 'HH:mm'),
         status: shift.status || 'pending',
       }));
 
