@@ -21,7 +21,8 @@ export async function callClaude(
   maxTokens: number = 4096
 ): Promise<string> {
   try {
-    const message = await anthropic.messages.create({
+    // Use streaming for large token requests to avoid 10-minute timeout
+    const stream = await anthropic.messages.stream({
       model: MODEL,
       max_tokens: maxTokens,
       system: systemPrompt,
@@ -33,13 +34,22 @@ export async function callClaude(
       ],
     });
 
-    // Extract text from response
-    const textContent = message.content.find((block) => block.type === 'text');
-    if (!textContent || textContent.type !== 'text') {
+    // Collect streamed response
+    let fullText = '';
+    for await (const chunk of stream) {
+      if (
+        chunk.type === 'content_block_delta' &&
+        chunk.delta.type === 'text_delta'
+      ) {
+        fullText += chunk.delta.text;
+      }
+    }
+
+    if (!fullText) {
       throw new Error('No text content in Claude response');
     }
 
-    return textContent.text;
+    return fullText;
   } catch (error) {
     console.error('Claude API error:', error);
     throw new Error('Failed to generate AI schedule');
