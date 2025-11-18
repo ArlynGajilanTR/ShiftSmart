@@ -427,7 +427,17 @@ export async function saveSchedule(
     const employeeMap = new Map(employees.map((e) => [e.full_name, e]));
 
     // OPTIMIZATION 2: Prepare bulk shift inserts
-    const shiftsToInsert = [];
+    const shiftsToInsert: Array<{
+      bureau_id: string;
+      start_time: string;
+      end_time: string;
+      status: string;
+      required_staff: number;
+      notes: string;
+      _employee_id: string;
+      _reasoning: string;
+    }> = [];
+    
     for (const shift of scheduleData.shifts) {
       const employee = employeeMap.get(shift.assigned_to);
       if (!employee) {
