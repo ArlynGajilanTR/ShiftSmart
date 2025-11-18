@@ -12,16 +12,33 @@ const anthropic = new Anthropic({
 // Increased max_tokens from 8192 to 16384 to handle large month schedules
 export const MODEL = 'claude-haiku-4-5';
 
+// Retry configuration
+const MAX_RETRIES = 3;
+const BASE_DELAY_MS = 1000; // Start with 1 second
+
+/**
+ * Sleep helper for retry delays
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 /**
  * Call Claude Haiku 4.5 for AI scheduling (fast, cost-effective)
+ * Enhanced with retry logic for transient failures
  */
 export async function callClaude(
   systemPrompt: string,
   userPrompt: string,
-  maxTokens: number = 4096
+  maxTokens: number = 4096,
+  retryCount: number = 0
 ): Promise<string> {
   try {
     const startTime = Date.now();
+    
+    if (retryCount > 0) {
+      console.log(`[Retry] Attempt ${retryCount}/${MAX_RETRIES} after ${BASE_DELAY_MS * Math.pow(2, retryCount - 1)}ms delay`);
+    }
     
     // Use streaming for large token requests to avoid 10-minute timeout
     // OPTIMIZATION: Enable prompt caching for system prompt (saves cost on repeated calls)
@@ -69,7 +86,30 @@ export async function callClaude(
 
     return fullText;
   } catch (error) {
-    console.error('Claude API error:', error);
+    console.error(`[Claude API] Error on attempt ${retryCount + 1}:`, error);
+    
+    // Determine if error is retryable
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isRetryable = 
+      errorMessage.includes('timeout') ||
+      errorMessage.includes('rate limit') ||
+      errorMessage.includes('503') ||
+      errorMessage.includes('429') ||
+      errorMessage.includes('overloaded');
+    
+    // Retry with exponential backoff for retryable errors
+    if (isRetryable && retryCount < MAX_RETRIES) {
+      const delay = BASE_DELAY_MS * Math.pow(2, retryCount);
+      console.log(`[Retry] Retryable error detected, waiting ${delay}ms before retry ${retryCount + 1}/${MAX_RETRIES}`);
+      await sleep(delay);
+      return callClaude(systemPrompt, userPrompt, maxTokens, retryCount + 1);
+    }
+    
+    // Non-retryable error or max retries exceeded
+    if (retryCount >= MAX_RETRIES) {
+      console.error(`[Claude API] Max retries (${MAX_RETRIES}) exceeded`);
+    }
+    
     throw new Error('Failed to generate AI schedule');
   }
 }

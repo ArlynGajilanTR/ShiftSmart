@@ -408,6 +408,7 @@ export default function SchedulePage() {
       // Handle specific error messages
       let errorMessage = error.message || 'Failed to generate schedule';
       let errorTitle = 'Generation Failed';
+      let showDebugOption = false;
 
       if (error.message?.includes('not configured') || error.message?.includes('API key')) {
         errorTitle = 'AI Not Configured';
@@ -421,12 +422,45 @@ export default function SchedulePage() {
       } else if (error.message?.includes('Unauthorized')) {
         errorTitle = 'Authentication Error';
         errorMessage = 'Please log out and log back in.';
+      } else if (error.message?.includes('parse') || error.message?.includes('JSON')) {
+        errorTitle = 'AI Response Error';
+        errorMessage =
+          'The AI generated an invalid response. This has been logged for debugging. Please try again with a different date range or fewer days.';
+        showDebugOption = true;
+      } else if (error.message?.includes('timeout')) {
+        errorTitle = 'Request Timeout';
+        errorMessage =
+          'The schedule generation took too long. Try generating a shorter period (e.g., one week instead of a month).';
+      } else if (error.message?.includes('rate limit')) {
+        errorTitle = 'Rate Limit Exceeded';
+        errorMessage =
+          'Too many requests. Please wait a moment before trying again.';
       }
 
       toast({
         title: errorTitle,
         description: errorMessage,
         variant: 'destructive',
+        action: showDebugOption ? (
+          <button
+            onClick={async () => {
+              try {
+                const debugResponse = await fetch('/api/ai/debug-last-response');
+                const debugData = await debugResponse.json();
+                console.log('[Debug] Last failed responses:', debugData);
+                toast({
+                  title: 'Debug Info',
+                  description: `Retrieved ${debugData.count || 0} failed responses. Check browser console for details.`,
+                });
+              } catch (e) {
+                console.error('[Debug] Failed to fetch debug info:', e);
+              }
+            }}
+            className="text-xs underline"
+          >
+            View Debug Info
+          </button>
+        ) : undefined,
       });
     } finally {
       setIsGenerating(false);

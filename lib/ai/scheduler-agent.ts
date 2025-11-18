@@ -5,6 +5,22 @@ import { SYSTEM_PROMPT, buildUserPrompt } from './prompts/schedule-generation';
 import { createClient } from '@/lib/supabase/server';
 import { format, parseISO, isWeekend, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 
+// Debug storage for failed responses (in-memory for debugging)
+interface DebugResponse {
+  timestamp: string;
+  response: string;
+  responseLength: number;
+  error: string;
+  requestConfig: any;
+}
+
+const failedResponses: DebugResponse[] = [];
+const MAX_STORED_FAILURES = 5;
+
+export function getLastFailedResponses(): DebugResponse[] {
+  return failedResponses.slice(-MAX_STORED_FAILURES);
+}
+
 interface ScheduleRequest {
   period: {
     start_date: string;
@@ -244,8 +260,13 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
     // Ultra-brief reasoning keeps output under 8K even for 100+ employee teams
     const response = await callClaude(SYSTEM_PROMPT, userPrompt, 8192);
 
-    // 7. Parse response
-    const scheduleData = parseScheduleResponse(response);
+    // 7. Parse response with request context for debugging
+    const scheduleData = parseScheduleResponse(response, {
+      period: request.period,
+      bureau: request.bureau,
+      employeeCount: employees.length,
+      existingShiftCount: existingShifts.length,
+    });
 
     if (!scheduleData) {
       return {
@@ -308,36 +329,101 @@ function getShiftType(date: Date): string {
 }
 
 /**
- * Parse Claude's JSON response
- * Fixed: Issue #3 - Comprehensive validation with default values for missing fields
+ * Parse Claude's JSON response with comprehensive error logging
+ * Enhanced: Captures failed responses for debugging
  */
-function parseScheduleResponse(response: string): ScheduleResponse | null {
-  try {
-    // Log raw response for debugging (first 500 chars)
-    console.log('[AI Response] Raw Claude output (first 500 chars):', response.substring(0, 500));
+function parseScheduleResponse(response: string, requestConfig?: any): ScheduleResponse | null {
+  const logFailure = (error: string, fullResponse: string) => {
+    console.error(`[Parse Error] ${error}`);
+    console.error('[Parse Error] Response length:', fullResponse.length);
+    console.error('[Parse Error] First 1000 chars:', fullResponse.substring(0, 1000));
+    console.error('[Parse Error] Last 500 chars:', fullResponse.substring(Math.max(0, fullResponse.length - 500)));
+    
+    // Store failed response for debugging
+    failedResponses.push({
+      timestamp: new Date().toISOString(),
+      response: fullResponse,
+      responseLength: fullResponse.length,
+      error,
+      requestConfig: requestConfig || {},
+    });
+    
+    // Keep only last 5 failures
+    if (failedResponses.length > MAX_STORED_FAILURES) {
+      failedResponses.shift();
+    }
+  };
 
-    // Try to extract JSON (prefer markdown code blocks first)
-    let jsonMatch = response.match(/```json\s*(\{[\s\S]*?\})\s*```/);
-    if (!jsonMatch) {
-      jsonMatch = response.match(/\{[\s\S]*\}/);
+  try {
+    console.log('[AI Response] Processing response...');
+    console.log('[AI Response] Length:', response.length, 'chars');
+    console.log('[AI Response] First 500 chars:', response.substring(0, 500));
+
+    // Detect if response is conversational instead of JSON
+    const conversationalPatterns = [
+      /^(I|Let me|I'll|I can|I would|I need|To create|Before)/i,
+      /^(What|Which|How|Could you|Can you|Would you)/i,
+      /question|clarify|need more information|missing information/i,
+    ];
+    
+    for (const pattern of conversationalPatterns) {
+      if (pattern.test(response.trim())) {
+        logFailure('Claude returned conversational response instead of JSON', response);
+        return null;
+      }
     }
 
-    if (!jsonMatch) {
-      console.error('[Parse Error] No JSON found in response');
+    // Try multiple JSON extraction strategies
+    let jsonString: string | null = null;
+    
+    // Strategy 1: Markdown JSON code block
+    let jsonMatch = response.match(/```json\s*(\{[\s\S]*?\})\s*```/);
+    if (jsonMatch) {
+      jsonString = jsonMatch[1];
+      console.log('[Parse] Extracted JSON from markdown code block');
+    }
+    
+    // Strategy 2: Plain JSON object (greedy match)
+    if (!jsonString) {
+      jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        jsonString = jsonMatch[0];
+        console.log('[Parse] Extracted JSON with greedy match');
+      }
+    }
+    
+    // Strategy 3: JSON between text (non-greedy)
+    if (!jsonString) {
+      jsonMatch = response.match(/\{[\s\S]*?\}\s*$/);
+      if (jsonMatch) {
+        jsonString = jsonMatch[0];
+        console.log('[Parse] Extracted JSON with non-greedy end match');
+      }
+    }
+
+    if (!jsonString) {
+      logFailure('No JSON found in response with any extraction strategy', response);
       return null;
     }
 
-    const jsonString = jsonMatch[1] || jsonMatch[0];
+    console.log('[Parse] Attempting to parse JSON, length:', jsonString.length);
+    
+    // Check for truncation indicators
+    const lastChars = jsonString.substring(jsonString.length - 50);
+    if (!lastChars.includes('}')) {
+      console.warn('[Parse Warning] JSON might be truncated - no closing brace in last 50 chars');
+    }
+
     const parsed = JSON.parse(jsonString);
 
     // Comprehensive validation - shifts array
     if (!parsed.shifts || !Array.isArray(parsed.shifts)) {
-      console.error('[Parse Error] Missing or invalid shifts array');
+      logFailure('Missing or invalid shifts array in parsed JSON', response);
       return null;
     }
 
     if (parsed.shifts.length === 0) {
-      console.error('[Parse Error] Empty shifts array');
+      logFailure('Empty shifts array in parsed JSON', response);
       return null;
     }
 
@@ -351,11 +437,11 @@ function parseScheduleResponse(response: string): ScheduleResponse | null {
       'assigned_to',
       'shift_type',
     ];
-    for (const field of requiredFields) {
-      if (!firstShift[field]) {
-        console.error(`[Parse Error] Missing required field in shift: ${field}`);
-        return null;
-      }
+    
+    const missingFields = requiredFields.filter(field => !firstShift[field]);
+    if (missingFields.length > 0) {
+      logFailure(`Missing required fields in shift: ${missingFields.join(', ')}`, response);
+      return null;
     }
 
     // Ensure fairness_metrics exists with defaults
@@ -390,8 +476,8 @@ function parseScheduleResponse(response: string): ScheduleResponse | null {
     console.log(`[Parse Success] Parsed ${parsed.shifts.length} shifts successfully`);
     return parsed as ScheduleResponse;
   } catch (error) {
-    console.error('[Parse Error] JSON parse exception:', error);
-    console.error('[Parse Error] Attempted to parse:', response.substring(0, 200));
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logFailure(`JSON parse exception: ${errorMessage}`, response);
     return null;
   }
 }
