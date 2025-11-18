@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2025-11-18
+
+### Added
+- **Debug Endpoint**: `/api/ai/debug-last-response` for troubleshooting failed AI responses
+  - Returns last 5 failed schedule generation attempts
+  - Includes response previews, error messages, and request metadata
+  - Authenticated access with PII sanitization
+- **Comprehensive Response Logging**: In-memory debug storage for failed AI responses
+  - First 1000 + last 500 characters of failed responses
+  - Conversational response pattern detection
+  - JSON truncation detection and warnings
+- **Retry Mechanism with Exponential Backoff**: 
+  - Max 3 retries for transient failures (timeout, rate limit, 503, 429)
+  - Exponential backoff delays: 1s → 2s → 4s
+  - Smart retry logic only on retryable errors
+
+### Fixed
+- **JSON Parsing Failures**: Critical improvements to reliability
+  - Multiple fallback JSON extraction strategies (3 methods)
+  - Robust detection of conversational responses vs JSON
+  - Better field validation with specific error messages
+  - Automatic defaults for missing optional fields
+- **User Error Messages**: Much more actionable and specific
+  - Parse errors now show "View Debug Info" button
+  - Specific messages for timeout, rate limit, and JSON errors
+  - Suggestions for resolution (e.g., "try shorter period")
+
+### Changed
+- **System Prompts**: Extremely forceful JSON-only enforcement
+  - Clear visual separators and repeated emphasis
+  - Examples of valid vs invalid response formats
+  - Three separate reminders about pure JSON output
+  - Removed special characters causing TypeScript errors
+- **Error Handling**: Comprehensive improvements across stack
+  - Frontend: Better error categorization and user messaging
+  - Backend: Detailed logging with request context
+  - API: Proper error propagation with debug info
+
+### Performance
+- **Expected Parse Success Rate**: 80% → 95%+ (target)
+- **Retry Rate**: Expected <5% of requests
+- **Debug Visibility**: None → Full failure tracking and analysis
+
+### Documentation
+- Added troubleshooting section for new debug endpoint
+- Updated error handling documentation
+- Added version 1.3.2 to VERSION file
+
 ## [1.3.1] - 2025-11-18
 
 ### Fixed
@@ -74,6 +122,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive test coverage (332+ tests)
 - Production-ready deployment
 
+[1.3.2]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.2.2...v1.3.0
 [1.2.2]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.2.0...v1.2.2

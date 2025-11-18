@@ -233,6 +233,65 @@ Check browser console and server logs for specific error messages:
 
 ---
 
+## 🐛 Debug AI Response Failures (v1.3.2+)
+
+**NEW**: If you see "Failed to parse AI response" errors, use the debug endpoint:
+
+### Option 1: Use Debug Button in UI
+
+1. When schedule generation fails with a parse error, click **"View Debug Info"** button in the error toast
+2. Check browser console for detailed failure information
+3. Look for patterns in the failed responses
+
+### Option 2: Call Debug Endpoint Directly
+
+```bash
+# Get last 5 failed AI responses (requires authentication)
+curl -H "Cookie: auth-token=YOUR_TOKEN" \
+  http://localhost:3000/api/ai/debug-last-response
+```
+
+**Response includes:**
+- Timestamp of each failure
+- Error message and type
+- Response length (to detect truncation)
+- First 1000 + last 500 characters of response
+- Request configuration (period, bureau, employee count)
+
+### Common Patterns to Look For:
+
+1. **Conversational Responses**:
+   ```json
+   "I'll generate the schedule for you..."
+   "Let me clarify: which bureau..."
+   ```
+   → **Fix**: Claude is being too conversational (should be rare in v1.3.2+)
+
+2. **Truncated JSON**:
+   ```json
+   "responseLength": 24810,
+   "last500": "...some incomplete JSON"
+   ```
+   → **Fix**: Response too large, try shorter period or fewer employees
+
+3. **Markdown Wrapping**:
+   ```json
+   "first1000": "```json\n{\"shifts\":[...]"
+   ```
+   → **Fix**: Claude wrapping JSON in markdown (parser handles this automatically)
+
+### Retry Logic (v1.3.2+)
+
+The system now automatically retries failed requests:
+- **Max retries**: 3
+- **Backoff**: 1s → 2s → 4s (exponential)
+- **Retryable errors**: timeout, rate limit, 503, 429
+- **Non-retryable**: parse errors, auth errors, validation errors
+
+If you see retry messages in logs, the system is working correctly.
+
+---
+
 ## 🔧 Quick Fixes
 
 ### Reset Everything:
