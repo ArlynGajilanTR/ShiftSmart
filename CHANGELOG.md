@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.4] - 2025-11-18
+
+### Fixed
+- **Corrected to actual Claude Haiku 4.5 model**
+  - Initial model identifier `claude-haiku-4-5` was close but incorrect format
+  - Incorrectly downgraded to Claude 3.5 Haiku thinking 4.5 didn't exist
+  - Now using correct identifier: `claude-haiku-4-5-20251001`
+  - Claude Haiku 4.5 DOES exist with near-frontier performance!
+
+### Key Features of Claude Haiku 4.5
+- Near-frontier intelligence matching Sonnet 4 performance
+- First Haiku model with extended thinking capabilities
+- More than 2x the speed of Sonnet 4
+- One-third the cost for high-volume deployments
+- Max output: 8192 tokens
+
+Reference: [Claude 4.5 Documentation](https://docs.claude.com/en/docs/about-claude/models/whats-new-claude-4-5)
+
 ## [1.3.3] - 2025-11-18
 
 ### Fixed

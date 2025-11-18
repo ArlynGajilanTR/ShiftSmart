@@ -749,7 +749,7 @@ export default function SchedulePage() {
                   <Sparkles className="h-4 w-4" />
                   <AlertTitle>AI-Powered Scheduling</AlertTitle>
                   <AlertDescription>
-                    Claude 3.5 Haiku will analyze employee preferences, recent shift history, and
+                    Claude Haiku 4.5 will analyze employee preferences, recent shift history, and
                     Italian holidays to generate a fair and compliant schedule (2x faster,
                     near-frontier performance).
                   </AlertDescription>
