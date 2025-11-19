@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,10 @@ const mockEmployee = {
   },
 };
 
-export default function EmployeeDetailPage({ params: _params }: { params: { id: string } }) {
+export default function EmployeeDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  // Next.js 15: params is now a Promise - use React.use() in client components
+  const { id } = use(params);
+
   const router = useRouter();
   const [employee, setEmployee] = useState(mockEmployee);
   const [isEditing, setIsEditing] = useState(false);
