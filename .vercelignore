@@ -1,0 +1,33 @@
+# Exclude test files
+tests/
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Exclude documentation files
+docs/
+*.md
+!README.md
+
+# Exclude development files
+.env.local
+.env.development
+scripts/diagnose-*.js
+
+# Exclude git and CI/CD files
+.git/
+.github/
+.pre-commit-config.yaml
+
+# Exclude config files
+jest.config.js
+playwright.config.ts
+tsconfig.test.json
+
+# Exclude example files
+.env.example
+
+# Exclude backup files
+*.bak
+*.backup
