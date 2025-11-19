@@ -1,0 +1,6 @@
+{
+  "response": "{\"fairness_metrics\":{\"weekend_shifts_per_person\":{},\"night_shifts_per_person\":{},\"total_shifts_per_person\":{},\"preference_satisfaction_rate\":0,\"hard_constraint_violations\":[]},\"recommendations\":[\"No shifts could be generated due to constraints\"]}",
+  "type": "missing-shifts",
+  "shouldFail": true,
+  "errorPattern": "Missing or invalid shifts array"
+}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShiftSmart QA Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>ShiftSmart QA Testing Dashboard</h1>
+        <div class="last-updated">Last Updated: <span id="lastUpdated">Loading...</span></div>
+    </header>
+
+    <div class="container">
+        <!-- Overview Section -->
+        <section class="overview">
+            <h2>Test Suite Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTests">0</div>
+                    <div class="stat-label">Total Tests</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="passingTests">0</div>
+                    <div class="stat-label">Passing</div>
+                </div>
+                <div class="stat-card error">
+                    <div class="stat-value" id="failingTests">0</div>
+                    <div class="stat-label">Failing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="coverage">0%</div>
+                    <div class="stat-label">Coverage</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Test Results -->
+        <section class="test-results">
+            <h2>Test Results by Category</h2>
+            <div class="results-grid">
+                <div class="result-card">
+                    <h3>Unit Tests</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill unit-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="result-stats">
+                        <span class="pass-count">0</span> / <span class="total-count">0</span> tests
+                    </div>
+                </div>
+                <div class="result-card">
+                    <h3>Integration Tests</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill integration-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="result-stats">
+                        <span class="pass-count">0</span> / <span class="total-count">0</span> tests
+                    </div>
+                </div>
+                <div class="result-card">
+                    <h3>E2E Tests</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill e2e-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="result-stats">
+                        <span class="pass-count">0</span> / <span class="total-count">0</span> tests
+                    </div>
+                </div>
+                <div class="result-card">
+                    <h3>Live AI Tests</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill ai-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="result-stats">
+                        <span class="pass-count">0</span> / <span class="total-count">0</span> tests
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Metrics -->
+        <section class="performance">
+            <h2>Performance Benchmarks</h2>
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
+            <div class="benchmark-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Average (ms)</th>
+                            <th>Min (ms)</th>
+                            <th>Max (ms)</th>
+                            <th>Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody id="benchmarkTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Coverage Trends -->
+        <section class="coverage-section">
+            <h2>Code Coverage Trends</h2>
+            <div class="chart-container">
+                <canvas id="coverageChart"></canvas>
+            </div>
+        </section>
+
+        <!-- AI Testing Insights -->
+        <section class="ai-insights">
+            <h2>AI Testing Insights</h2>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h3>Response Times</h3>
+                    <div class="metric">
+                        <span class="metric-value" id="avgResponseTime">0ms</span>
+                        <span class="metric-label">Average</span>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <h3>Token Usage</h3>
+                    <div class="metric">
+                        <span class="metric-value" id="avgTokens">0</span>
+                        <span class="metric-label">Avg per Request</span>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <h3>Parse Success Rate</h3>
+                    <div class="metric">
+                        <span class="metric-value" id="parseSuccess">0%</span>
+                        <span class="metric-label">Success</span>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <h3>Retry Rate</h3>
+                    <div class="metric">
+                        <span class="metric-value" id="retryRate">0%</span>
+                        <span class="metric-label">Requests Retried</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Failures -->
+        <section class="failures">
+            <h2>Recent Test Failures</h2>
+            <div class="failures-list" id="failuresList">
+                <!-- Populated by JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>ShiftSmart QA Dashboard v1.0 | <a href="https://github.com/ArlynGajilanTR/ShiftSmart">GitHub</a></p>
+    </footer>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

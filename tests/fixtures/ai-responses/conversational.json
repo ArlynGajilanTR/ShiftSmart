@@ -1,0 +1,6 @@
+{
+  "response": "I'll help you create a schedule for the Reuters Breaking News team in Italy. Before I generate the schedule, I'd like to clarify a few things to ensure optimal results:\n\n1. For the Milan bureau, should I prioritize morning shifts for senior editors?\n2. Are there any specific holidays or events during this period I should consider?\n3. Should I maintain the current weekend rotation pattern?\n\nOnce you confirm these details, I'll generate a comprehensive schedule that balances fairness and operational needs.",
+  "type": "conversational",
+  "shouldFail": true,
+  "errorPattern": "conversational response instead of JSON"
+}

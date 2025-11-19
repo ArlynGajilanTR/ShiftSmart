@@ -1,0 +1,6 @@
+{
+  "response": "{\"shifts\":[],\"fairness_metrics\":{\"weekend_shifts_per_person\":{},\"night_shifts_per_person\":{},\"total_shifts_per_person\":{},\"preference_satisfaction_rate\":0,\"hard_constraint_violations\":[\"No employees available\"]},\"recommendations\":[\"Add more employees to generate shifts\"]}",
+  "type": "empty-shifts",
+  "shouldFail": true,
+  "errorPattern": "Empty shifts array"
+}

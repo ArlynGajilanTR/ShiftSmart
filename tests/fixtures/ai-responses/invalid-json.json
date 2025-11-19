@@ -1,0 +1,6 @@
+{
+  "response": "{shifts: [{date: '2025-11-01', start_time: '08:00'}], fairness_metrics: {}}",
+  "type": "invalid-json",
+  "shouldFail": true,
+  "errorPattern": "JSON parse exception"
+}

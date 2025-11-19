@@ -1,0 +1,6 @@
+{
+  "response": "Here's the generated schedule for the Breaking News team:\n\n```json\n{\"shifts\":[{\"date\":\"2025-11-01\",\"start_time\":\"08:00\",\"end_time\":\"16:00\",\"bureau\":\"Milan\",\"assigned_to\":\"Marco Rossi\",\"role_level\":\"senior\",\"shift_type\":\"Morning\",\"reasoning\":\"Fair-rot\"}],\"fairness_metrics\":{\"weekend_shifts_per_person\":{\"Marco Rossi\":0},\"night_shifts_per_person\":{\"Marco Rossi\":0},\"total_shifts_per_person\":{\"Marco Rossi\":1},\"preference_satisfaction_rate\":0.95,\"hard_constraint_violations\":[]},\"recommendations\":[\"Schedule is well-balanced\"]}\n```\n\nThis schedule ensures fair distribution of shifts.",
+  "type": "markdown-wrapped",
+  "shouldFail": false,
+  "expectedShifts": 1
+}
