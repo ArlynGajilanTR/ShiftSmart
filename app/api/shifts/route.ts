@@ -324,13 +324,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Run conflict detection if employee is assigned
+    // Run conflict detection only if assignment was successfully created
     let detectedConflicts: any[] = [];
-    if (employee_id) {
+    if (assignmentData) {
       detectedConflicts = await detectConflicts(
         supabase,
         newShift.id,
-        employee_id,
+        assignmentData.user_id,
         startTimestamp,
         endTimestamp,
         bureau
