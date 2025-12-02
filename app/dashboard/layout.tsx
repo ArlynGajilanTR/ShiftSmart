@@ -41,13 +41,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     if (!token) {
-      // Keep showing loading spinner while redirecting to prevent blank screen
       router.push('/login');
-      // Don't set isCheckingAuth to false - let the redirect complete
     } else {
       setIsAuthenticated(true);
-      setIsCheckingAuth(false);
     }
+    setIsCheckingAuth(false);
   }, [router]);
 
   // Handle logout
