@@ -65,7 +65,7 @@ export default function LoginPage() {
         <div className="container mx-auto px-4 py-4">
           <Link href="/" className="inline-block">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/r_pri_logo_rgb_color%20(1)-zb8SoziJFx53ete2qb0nuMZV21AEdt.png"
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/r_pri_logo_rgb_color%20%281%29-zb8SoziJFx53ete2qb0nuMZV21AEdt.png"
               alt="Reuters"
               width={120}
               height={40}
