@@ -64,12 +64,11 @@ export function validateRoleBalance(
     .map((a) => users.find((u) => u.id === a.user_id))
     .filter(Boolean) as User[];
 
-  // Count roles
+  // Count roles - aligned with schema: editor, senior, correspondent
   const roleCounts = {
+    editor: assignedUsers.filter((u) => u.shift_role === 'editor').length,
     senior: assignedUsers.filter((u) => u.shift_role === 'senior').length,
-    junior: assignedUsers.filter((u) => u.shift_role === 'junior').length,
-    lead: assignedUsers.filter((u) => u.shift_role === 'lead').length,
-    support: assignedUsers.filter((u) => u.shift_role === 'support').length,
+    correspondent: assignedUsers.filter((u) => u.shift_role === 'correspondent').length,
   };
 
   // Check required roles
@@ -105,14 +104,15 @@ export function validateRoleBalance(
     });
   }
 
-  // Check for all-junior shifts (critical safety issue)
-  if (roleCounts.junior > 0 && roleCounts.senior === 0 && roleCounts.lead === 0) {
+  // Check for all-correspondent shifts (critical safety issue)
+  // At least one editor or senior must be present on each shift
+  if (roleCounts.correspondent > 0 && roleCounts.senior === 0 && roleCounts.editor === 0) {
     conflicts.push({
       id: crypto.randomUUID(),
       type: 'skill_gap',
       severity: 'hard',
       shift_id: shift.id,
-      message: 'Shift has only junior staff - at least one senior or lead required',
+      message: 'Shift has only correspondents - at least one editor or senior required',
       details: { roleCounts },
       resolved: false,
       created_at: new Date().toISOString(),

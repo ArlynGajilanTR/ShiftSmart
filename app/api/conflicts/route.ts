@@ -72,9 +72,72 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json(formattedConflicts, { status: 200 });
+    return NextResponse.json({ conflicts: formattedConflicts }, { status: 200 });
   } catch (error) {
     console.error('Conflicts API error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+/**
+ * POST /api/conflicts
+ * Create a new conflict manually
+ */
+export async function POST(request: NextRequest) {
+  try {
+    // Verify authentication
+    const { user, error: authError } = await verifyAuth(request);
+    if (authError || !user) {
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { type, severity, description, date, shift_id, user_id, details } = body;
+
+    // Validate required fields
+    if (!type || !severity || !description || !date) {
+      return NextResponse.json(
+        { error: 'Missing required fields: type, severity, description, date' },
+        { status: 400 }
+      );
+    }
+
+    // Validate severity
+    const validSeverities = ['high', 'medium', 'low'];
+    if (!validSeverities.includes(severity)) {
+      return NextResponse.json(
+        { error: 'Invalid severity. Must be: high, medium, or low' },
+        { status: 400 }
+      );
+    }
+
+    const supabase = await createClient();
+
+    // Create conflict
+    const { data: newConflict, error: createError } = await supabase
+      .from('conflicts')
+      .insert({
+        type,
+        severity,
+        status: 'unresolved',
+        description,
+        date,
+        shift_id: shift_id || null,
+        user_id: user_id || null,
+        details: details || {},
+        detected_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (createError) {
+      console.error('Error creating conflict:', createError);
+      return NextResponse.json({ error: 'Failed to create conflict' }, { status: 500 });
+    }
+
+    return NextResponse.json(newConflict, { status: 201 });
+  } catch (error) {
+    console.error('Create conflict error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -24,6 +24,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -136,45 +146,93 @@ export default function EmployeesPage() {
   const [filterBureau, setFilterBureau] = useState('all');
   const [filterRole, setFilterRole] = useState('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch employees from API
-  useEffect(() => {
-    async function fetchEmployees() {
-      try {
-        const response = await api.employees.list();
-        const employeeData = response.employees.map((emp: any) => ({
-          id: emp.id,
-          name: emp.full_name,
-          email: emp.email,
-          phone: emp.phone || '+39 02 0000 0000',
-          role: emp.title || emp.shift_role,
-          bureau: emp.bureaus?.name || emp.bureau || 'Milan',
-          status: emp.status || 'active',
-          shiftsThisMonth: 0, // TODO: Calculate from shifts
-          initials:
-            emp.full_name
-              ?.split(' ')
-              .map((n: string) => n[0])
-              .join('')
-              .toUpperCase() || '??',
-        }));
-        setEmployees(employeeData);
-      } catch (error: any) {
-        console.error('Failed to fetch employees:', error);
-        toast({
-          title: 'Failed to load employees',
-          description: error.message || 'Using cached data',
-          variant: 'destructive',
-        });
-        // Fallback to mock data
-        setEmployees(mockEmployees);
-      } finally {
-        setIsLoading(false);
-      }
+  const fetchEmployees = async () => {
+    try {
+      const response = await api.employees.list();
+      const employeeData = (response.employees || []).map((emp: any) => ({
+        id: emp.id,
+        name: emp.name || emp.full_name,
+        email: emp.email,
+        phone: emp.phone || '+39 02 0000 0000',
+        role: emp.role || emp.title || emp.shift_role,
+        bureau: emp.bureau || emp.bureaus?.name || 'Milan',
+        status: emp.status || 'active',
+        shiftsThisMonth: emp.shiftsThisMonth || 0,
+        initials:
+          emp.initials ||
+          (emp.name || emp.full_name)
+            ?.split(' ')
+            .map((n: string) => n[0])
+            .join('')
+            .toUpperCase() ||
+          '??',
+      }));
+      setEmployees(employeeData);
+    } catch (error: any) {
+      console.error('Failed to fetch employees:', error);
+      toast({
+        title: 'Failed to load employees',
+        description: error.message || 'Using cached data',
+        variant: 'destructive',
+      });
+      // Fallback to mock data
+      setEmployees(mockEmployees);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
+  useEffect(() => {
     fetchEmployees();
-  }, [toast]);
+  }, []);
+
+  // Handle delete employee
+  const handleDeleteEmployee = async () => {
+    if (!selectedEmployee) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/employees/${selectedEmployee.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete employee');
+      }
+
+      toast({
+        title: 'Employee deleted',
+        description: `${selectedEmployee.name} has been removed from the team`,
+      });
+
+      setIsDeleteDialogOpen(false);
+      setSelectedEmployee(null);
+      fetchEmployees();
+    } catch (error: any) {
+      toast({
+        title: 'Failed to delete employee',
+        description: error.message || 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Open delete confirmation
+  const openDeleteDialog = (employee: any) => {
+    setSelectedEmployee(employee);
+    setIsDeleteDialogOpen(true);
+  };
 
   // Filter employees based on search and filters
   const filteredEmployees = employees.filter((emp) => {
@@ -225,7 +283,7 @@ export default function EmployeesPage() {
               <DialogTitle>Add New Employee</DialogTitle>
               <DialogDescription>Add a new team member to the directory</DialogDescription>
             </DialogHeader>
-            <EmployeeForm onClose={() => setIsAddDialogOpen(false)} />
+            <EmployeeForm onClose={() => setIsAddDialogOpen(false)} onSuccess={fetchEmployees} />
           </DialogContent>
         </Dialog>
       </div>
@@ -377,6 +435,7 @@ export default function EmployeesPage() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-destructive transition-transform hover:scale-110"
+                            onClick={() => openDeleteDialog(employee)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -445,6 +504,7 @@ export default function EmployeesPage() {
                       variant="outline"
                       size="sm"
                       className="text-destructive bg-transparent transition-transform hover:scale-110"
+                      onClick={() => openDeleteDialog(employee)}
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>
@@ -455,58 +515,175 @@ export default function EmployeesPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Employee</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove {selectedEmployee?.name} from the team? This will also
+              remove all their shift assignments. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteEmployee}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
 
-function EmployeeForm({ onClose }: { onClose: () => void }) {
+function EmployeeForm({ onClose, onSuccess }: { onClose: () => void; onSuccess?: () => void }) {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    role: '',
+    bureau: '',
+    status: 'active',
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.role || !formData.bureau) {
+      toast({
+        title: 'Missing required fields',
+        description: 'Please fill in name, email, role, and bureau',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/employees', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          role: formData.role,
+          bureau: formData.bureau,
+          status: formData.status,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create employee');
+      }
+
+      toast({
+        title: 'Employee added',
+        description: `${formData.name} has been successfully added to the team`,
+      });
+
+      onClose();
+      onSuccess?.();
+    } catch (error: any) {
+      toast({
+        title: 'Failed to add employee',
+        description: error.message || 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <form className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Full Name</Label>
-        <Input id="name" placeholder="Marco Rossi" />
+        <Label htmlFor="name">Full Name *</Label>
+        <Input
+          id="name"
+          placeholder="Marco Rossi"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+        />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" placeholder="marco.rossi@reuters.com" />
+        <Label htmlFor="email">Email *</Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="marco.rossi@thomsonreuters.com"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          required
+        />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="phone">Phone</Label>
-        <Input id="phone" type="tel" placeholder="+39 02 1234 5678" />
+        <Input
+          id="phone"
+          type="tel"
+          placeholder="+39 02 1234 5678"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+        />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="role">Role</Label>
-        <Select>
+        <Label htmlFor="role">Role *</Label>
+        <Select
+          value={formData.role}
+          onValueChange={(value) => setFormData({ ...formData, role: value })}
+        >
           <SelectTrigger id="role">
             <SelectValue placeholder="Select role" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="lead">Lead Editor</SelectItem>
-            <SelectItem value="senior">Senior Editor</SelectItem>
-            <SelectItem value="junior">Junior Editor</SelectItem>
+            <SelectItem value="Breaking News Editor, Italy">Editor</SelectItem>
+            <SelectItem value="Senior Breaking News Correspondent, Italy">
+              Senior Correspondent
+            </SelectItem>
+            <SelectItem value="Breaking News Correspondent, Italy">Correspondent</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bureau">Bureau</Label>
-        <Select>
+        <Label htmlFor="bureau">Bureau *</Label>
+        <Select
+          value={formData.bureau}
+          onValueChange={(value) => setFormData({ ...formData, bureau: value })}
+        >
           <SelectTrigger id="bureau">
             <SelectValue placeholder="Select bureau" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="milan">Milan</SelectItem>
-            <SelectItem value="rome">Rome</SelectItem>
+            <SelectItem value="Milan">Milan</SelectItem>
+            <SelectItem value="Rome">Rome</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="status">Status</Label>
-        <Select defaultValue="active">
+        <Select
+          value={formData.status}
+          onValueChange={(value) => setFormData({ ...formData, status: value })}
+        >
           <SelectTrigger id="status">
             <SelectValue />
           </SelectTrigger>
@@ -518,10 +695,12 @@ function EmployeeForm({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={onClose}>
+        <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
           Cancel
         </Button>
-        <Button type="submit">Add Employee</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Adding...' : 'Add Employee'}
+        </Button>
       </div>
     </form>
   );

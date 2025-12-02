@@ -1,7 +1,131 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { verifyAuth } from '@/lib/auth/verify';
-import { format } from 'date-fns';
+import { format, parseISO, differenceInHours } from 'date-fns';
+
+/**
+ * Detect conflicts for a shift assignment
+ * Returns array of detected conflicts
+ */
+async function detectConflicts(
+  supabase: any,
+  shiftId: string,
+  employeeId: string,
+  startTime: string,
+  endTime: string,
+  bureauName: string
+): Promise<any[]> {
+  const conflicts: any[] = [];
+  const shiftDate = format(parseISO(startTime), 'yyyy-MM-dd');
+
+  // 1. Check for double booking (overlapping shifts)
+  const { data: existingAssignments } = await supabase
+    .from('shift_assignments')
+    .select('*, shifts!inner(start_time, end_time, bureaus(name))')
+    .eq('user_id', employeeId)
+    .neq('shift_id', shiftId);
+
+  if (existingAssignments) {
+    for (const assignment of existingAssignments) {
+      const existingStart = parseISO(assignment.shifts.start_time);
+      const existingEnd = parseISO(assignment.shifts.end_time);
+      const newStart = parseISO(startTime);
+      const newEnd = parseISO(endTime);
+
+      // Check for overlap
+      const hasOverlap =
+        (newStart >= existingStart && newStart < existingEnd) ||
+        (newEnd > existingStart && newEnd <= existingEnd) ||
+        (newStart <= existingStart && newEnd >= existingEnd);
+
+      if (hasOverlap) {
+        conflicts.push({
+          type: 'Double Booking',
+          severity: 'high',
+          shift_id: shiftId,
+          user_id: employeeId,
+          description: 'Employee is scheduled for overlapping shifts',
+          date: shiftDate,
+          details: {
+            shifts: [
+              {
+                time: `${format(newStart, 'HH:mm')} - ${format(newEnd, 'HH:mm')}`,
+                bureau: bureauName,
+              },
+              {
+                time: `${format(existingStart, 'HH:mm')} - ${format(existingEnd, 'HH:mm')}`,
+                bureau: assignment.shifts.bureaus?.name,
+              },
+            ],
+          },
+        });
+      }
+
+      // 2. Check for rest period violation (less than 11 hours between shifts)
+      // Check both directions: new shift after existing, and existing shift after new
+
+      // Case A: New shift starts after existing shift ends
+      const hoursAfterExisting = differenceInHours(newStart, existingEnd);
+      if (hoursAfterExisting >= 0 && hoursAfterExisting < 11) {
+        conflicts.push({
+          type: 'Rest Period Violation',
+          severity: 'high',
+          shift_id: shiftId,
+          user_id: employeeId,
+          description: `Less than 11 hours rest between shifts (${hoursAfterExisting.toFixed(1)} hours)`,
+          date: shiftDate,
+          details: {
+            hours_between: hoursAfterExisting,
+            minimum_required: 11,
+          },
+        });
+      }
+
+      // Case B: Existing shift starts after new shift ends
+      const hoursBeforeExisting = differenceInHours(existingStart, newEnd);
+      if (hoursBeforeExisting >= 0 && hoursBeforeExisting < 11) {
+        conflicts.push({
+          type: 'Rest Period Violation',
+          severity: 'high',
+          shift_id: shiftId,
+          user_id: employeeId,
+          description: `Less than 11 hours rest before next shift (${hoursBeforeExisting.toFixed(1)} hours)`,
+          date: shiftDate,
+          details: {
+            hours_between: hoursBeforeExisting,
+            minimum_required: 11,
+          },
+        });
+      }
+    }
+  }
+
+  return conflicts;
+}
+
+/**
+ * Insert detected conflicts into database
+ */
+async function insertConflicts(supabase: any, conflicts: any[]): Promise<void> {
+  if (conflicts.length === 0) return;
+
+  const conflictsToInsert = conflicts.map((c) => ({
+    type: c.type,
+    severity: c.severity,
+    status: 'unresolved',
+    shift_id: c.shift_id,
+    user_id: c.user_id,
+    description: c.description,
+    date: c.date,
+    details: c.details,
+    detected_at: new Date().toISOString(),
+  }));
+
+  const { error } = await supabase.from('conflicts').insert(conflictsToInsert);
+  if (error) {
+    console.error('Error inserting conflicts:', error);
+  }
+}
 
 /**
  * GET /api/shifts
@@ -200,8 +324,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // TODO: Run conflict detection here
-    // For now, return the created shift
+    // Run conflict detection if employee is assigned
+    let detectedConflicts: any[] = [];
+    if (employee_id) {
+      detectedConflicts = await detectConflicts(
+        supabase,
+        newShift.id,
+        employee_id,
+        startTimestamp,
+        endTimestamp,
+        bureau
+      );
+
+      // Insert conflicts into database
+      await insertConflicts(supabase, detectedConflicts);
+    }
 
     // Format response
     const response = {
@@ -216,6 +353,11 @@ export async function POST(request: NextRequest) {
       startTime: start_time,
       endTime: end_time,
       status: assignmentData?.status || newShift.status,
+      conflicts: detectedConflicts.map((c) => ({
+        type: c.type,
+        severity: c.severity,
+        description: c.description,
+      })),
     };
 
     return NextResponse.json(response, { status: 201 });

@@ -2,7 +2,7 @@
 
 export type UserRole = 'admin' | 'manager' | 'scheduler' | 'staff';
 
-export type ShiftRole = 'senior' | 'junior' | 'lead' | 'support';
+export type ShiftRole = 'editor' | 'senior' | 'correspondent';
 
 export type SchedulePeriodType = 'week' | 'month' | 'quarter' | 'special_event';
 

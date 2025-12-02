@@ -1,11 +1,12 @@
 'use client';
 
 import type React from 'react';
+import { useState, useEffect } from 'react';
 
 import { Calendar, Users, AlertCircle, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Sidebar,
   SidebarContent,
@@ -32,6 +33,60 @@ const navigation = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Authentication guard - check for valid token
+  useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      router.push('/login');
+    } else {
+      setIsAuthenticated(true);
+    }
+    setIsCheckingAuth(false);
+  }, [router]);
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      // Call logout API to invalidate session
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Logout API error:', error);
+    } finally {
+      // Always clear local storage and redirect
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      router.push('/login');
+    }
+  };
+
+  // Show loading state while checking auth
+  if (isCheckingAuth) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render dashboard if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <SidebarProvider>
@@ -79,11 +134,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href="/">
-                  <LogOut />
-                  <span>Log Out</span>
-                </Link>
+              <SidebarMenuButton onClick={handleLogout} className="cursor-pointer">
+                <LogOut />
+                <span>Log Out</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

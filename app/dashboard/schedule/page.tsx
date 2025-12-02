@@ -28,7 +28,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -272,45 +283,101 @@ export default function SchedulePage() {
     preserve_existing: false,
   });
 
+  // Edit/Delete state
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedShift, setSelectedShift] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Fetch shifts from API
-  useEffect(() => {
-    async function fetchShifts() {
-      try {
-        const response = await api.shifts.list({
-          start_date: format(addDays(new Date(), -30), 'yyyy-MM-dd'),
-          end_date: format(addDays(new Date(), 60), 'yyyy-MM-dd'),
-        });
+  const refetchShifts = async () => {
+    try {
+      const response = await api.shifts.list({
+        start_date: format(addDays(new Date(), -30), 'yyyy-MM-dd'),
+        end_date: format(addDays(new Date(), 60), 'yyyy-MM-dd'),
+      });
 
-        // Defensive check: ensure shifts array exists
-        const shiftsArray = response?.shifts || [];
-        const shiftData = shiftsArray.map((shift: any) => ({
-          id: shift.id,
-          employee: shift.employee || shift.users?.full_name || 'Unassigned',
-          role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
-          bureau: shift.bureau || shift.bureaus?.name || 'Milan',
-          date: new Date(shift.date || shift.start_time),
-          startTime: shift.startTime || format(new Date(shift.start_time), 'HH:mm'),
-          endTime: shift.endTime || format(new Date(shift.end_time), 'HH:mm'),
-          status: shift.status || 'pending',
-        }));
+      // Defensive check: ensure shifts array exists
+      const shiftsArray = response?.shifts || [];
+      const shiftData = shiftsArray.map((shift: any) => ({
+        id: shift.id,
+        employee: shift.employee || shift.users?.full_name || 'Unassigned',
+        employee_id: shift.employee_id || null,
+        role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
+        bureau: shift.bureau || shift.bureaus?.name || 'Milan',
+        date: new Date(shift.date || shift.start_time),
+        startTime: shift.startTime || format(new Date(shift.start_time), 'HH:mm'),
+        endTime: shift.endTime || format(new Date(shift.end_time), 'HH:mm'),
+        status: shift.status || 'pending',
+      }));
 
-        setShifts(shiftData);
-      } catch (error: any) {
-        console.error('Failed to fetch shifts:', error);
-        toast({
-          title: 'Failed to load shifts',
-          description: error.message || 'Using cached data',
-          variant: 'destructive',
-        });
-        // Fallback to mock data
-        setShifts(mockShifts);
-      } finally {
-        setIsLoading(false);
-      }
+      setShifts(shiftData);
+    } catch (error: any) {
+      console.error('Failed to fetch shifts:', error);
+      toast({
+        title: 'Failed to load shifts',
+        description: error.message || 'Using cached data',
+        variant: 'destructive',
+      });
+      // Fallback to mock data
+      setShifts(mockShifts);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    fetchShifts();
-  }, [toast]);
+  useEffect(() => {
+    refetchShifts();
+  }, []);
+
+  // Handle delete shift
+  const handleDeleteShift = async () => {
+    if (!selectedShift) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/shifts/${selectedShift.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete shift');
+      }
+
+      toast({
+        title: 'Shift deleted',
+        description: 'The shift has been successfully deleted',
+      });
+
+      setIsDeleteDialogOpen(false);
+      setSelectedShift(null);
+      refetchShifts();
+    } catch (error: any) {
+      toast({
+        title: 'Failed to delete shift',
+        description: error.message || 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Open edit dialog
+  const openEditDialog = (shift: any) => {
+    setSelectedShift(shift);
+    setIsEditDialogOpen(true);
+  };
+
+  // Open delete confirmation
+  const openDeleteDialog = (shift: any) => {
+    setSelectedShift(shift);
+    setIsDeleteDialogOpen(true);
+  };
 
   // Check AI configuration when dialog opens
   useEffect(() => {
@@ -330,32 +397,6 @@ export default function SchedulePage() {
 
     checkAiStatus();
   }, [isGenerateDialogOpen, aiConfigured]);
-
-  // Refetch shifts from API
-  const refetchShifts = async () => {
-    try {
-      const response = await api.shifts.list({
-        start_date: format(addDays(new Date(), -30), 'yyyy-MM-dd'),
-        end_date: format(addDays(new Date(), 60), 'yyyy-MM-dd'),
-      });
-
-      const shiftData = response.shifts.map((shift: any) => ({
-        id: shift.id,
-        employee: shift.employee || shift.users?.full_name || 'Unassigned',
-        role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
-        bureau: shift.bureau || shift.bureaus?.name || 'Milan',
-        // Handle both pre-formatted strings and raw timestamps
-        date: shift.date ? new Date(shift.date) : new Date(shift.start_time),
-        startTime: shift.startTime || format(new Date(shift.start_time), 'HH:mm'),
-        endTime: shift.endTime || format(new Date(shift.end_time), 'HH:mm'),
-        status: shift.status || 'pending',
-      }));
-
-      setShifts(shiftData);
-    } catch (error: any) {
-      console.error('Failed to fetch shifts:', error);
-    }
-  };
 
   // Handle AI schedule generation
   const handleGenerateSchedule = async () => {
@@ -433,8 +474,7 @@ export default function SchedulePage() {
           'The schedule generation took too long. Try generating a shorter period (e.g., one week instead of a month).';
       } else if (error.message?.includes('rate limit')) {
         errorTitle = 'Rate Limit Exceeded';
-        errorMessage =
-          'Too many requests. Please wait a moment before trying again.';
+        errorMessage = 'Too many requests. Please wait a moment before trying again.';
       }
 
       toast({
@@ -632,7 +672,7 @@ export default function SchedulePage() {
                   <DialogTitle>Create New Shift</DialogTitle>
                   <DialogDescription>Add a new shift assignment to the schedule</DialogDescription>
                 </DialogHeader>
-                <ShiftForm onClose={() => setIsAddDialogOpen(false)} />
+                <ShiftForm onClose={() => setIsAddDialogOpen(false)} onSuccess={refetchShifts} />
               </DialogContent>
             </Dialog>
           </div>
@@ -1207,16 +1247,22 @@ export default function SchedulePage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Edit className="mr-2 h-4 w-4" />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => openEditDialog(shift)}
+                            >
+                              <Edit className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Copy className="mr-2 h-4 w-4" />
+                              <Copy className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-destructive"
+                              onClick={() => openDeleteDialog(shift)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -1261,13 +1307,23 @@ export default function SchedulePage() {
                       </span>
                     </div>
                     <div className="flex gap-2 pt-2">
-                      <Button variant="outline" size="sm" className="flex-1 bg-transparent">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 bg-transparent"
+                        onClick={() => openEditDialog(shift)}
+                      >
                         <Edit className="mr-2 h-3 w-3" />
                         Edit
                       </Button>
-                      <Button variant="outline" size="sm" className="flex-1 bg-transparent">
-                        <Copy className="mr-2 h-3 w-3" />
-                        Copy
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 bg-transparent text-destructive"
+                        onClick={() => openDeleteDialog(shift)}
+                      >
+                        <Trash2 className="mr-2 h-3 w-3" />
+                        Delete
                       </Button>
                     </div>
                   </CardContent>
@@ -1290,23 +1346,149 @@ export default function SchedulePage() {
             </div>
           ) : null}
         </DragOverlay>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Shift</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this shift for {selectedShift?.employee}? This
+                action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteShift}
+                disabled={isDeleting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Edit Shift Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Edit Shift</DialogTitle>
+              <DialogDescription>Modify the shift details</DialogDescription>
+            </DialogHeader>
+            {selectedShift && (
+              <EditShiftForm
+                shift={selectedShift}
+                onClose={() => {
+                  setIsEditDialogOpen(false);
+                  setSelectedShift(null);
+                }}
+                onSuccess={refetchShifts}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </DndContext>
   );
 }
 
-function ShiftForm({ onClose }: { onClose: () => void }) {
+function ShiftForm({ onClose, onSuccess }: { onClose: () => void; onSuccess?: () => void }) {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [employeeList, setEmployeeList] = useState<any[]>([]);
+  const [formData, setFormData] = useState({
+    employee_id: '',
+    bureau: '',
+    date: format(new Date(), 'yyyy-MM-dd'),
+    start_time: '08:00',
+    end_time: '16:00',
+    status: 'draft',
+  });
+
+  // Fetch employees on mount
+  useEffect(() => {
+    async function fetchEmployees() {
+      try {
+        const response = await api.employees.list();
+        setEmployeeList(response.employees || []);
+      } catch (error) {
+        console.error('Failed to fetch employees:', error);
+      }
+    }
+    fetchEmployees();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.bureau || !formData.date || !formData.start_time || !formData.end_time) {
+      toast({
+        title: 'Missing required fields',
+        description: 'Please fill in bureau, date, and time fields',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // API expects bureau name, date, start_time, end_time separately
+      const response = await fetch('/api/shifts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+        body: JSON.stringify({
+          bureau: formData.bureau,
+          date: formData.date,
+          start_time: formData.start_time,
+          end_time: formData.end_time,
+          employee_id: formData.employee_id || null,
+          status: formData.status,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create shift');
+      }
+
+      toast({
+        title: 'Shift created',
+        description: 'The shift has been successfully created',
+      });
+
+      onClose();
+      onSuccess?.();
+    } catch (error: any) {
+      toast({
+        title: 'Failed to create shift',
+        description: error.message || 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <form className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="employee">Employee</Label>
-        <Select>
+        <Label htmlFor="employee">Employee (Optional)</Label>
+        <Select
+          value={formData.employee_id}
+          onValueChange={(value) => setFormData({ ...formData, employee_id: value })}
+        >
           <SelectTrigger id="employee">
-            <SelectValue placeholder="Select employee" />
+            <SelectValue placeholder="Select employee (optional)" />
           </SelectTrigger>
           <SelectContent>
-            {employees.map((emp) => (
-              <SelectItem key={emp.id} value={emp.id.toString()}>
+            <SelectItem value="">Unassigned</SelectItem>
+            {employeeList.map((emp) => (
+              <SelectItem key={emp.id} value={emp.id}>
                 {emp.name} - {emp.role}
               </SelectItem>
             ))}
@@ -1315,52 +1497,266 @@ function ShiftForm({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bureau">Bureau</Label>
-        <Select>
+        <Label htmlFor="bureau">Bureau *</Label>
+        <Select
+          value={formData.bureau}
+          onValueChange={(value) => setFormData({ ...formData, bureau: value })}
+        >
           <SelectTrigger id="bureau">
             <SelectValue placeholder="Select bureau" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="milan">Milan</SelectItem>
-            <SelectItem value="rome">Rome</SelectItem>
+            <SelectItem value="Milan">Milan</SelectItem>
+            <SelectItem value="Rome">Rome</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="date">Date</Label>
-        <Input id="date" type="date" />
+        <Label htmlFor="date">Date *</Label>
+        <Input
+          id="date"
+          type="date"
+          value={formData.date}
+          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+          required
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="startTime">Start Time</Label>
-          <Input id="startTime" type="time" />
+          <Label htmlFor="startTime">Start Time *</Label>
+          <Input
+            id="startTime"
+            type="time"
+            value={formData.start_time}
+            onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+            required
+          />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="endTime">End Time</Label>
-          <Input id="endTime" type="time" />
+          <Label htmlFor="endTime">End Time *</Label>
+          <Input
+            id="endTime"
+            type="time"
+            value={formData.end_time}
+            onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+            required
+          />
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="status">Status</Label>
-        <Select defaultValue="pending">
+        <Select
+          value={formData.status}
+          onValueChange={(value) => setFormData({ ...formData, status: value })}
+        >
           <SelectTrigger id="status">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="draft">Draft</SelectItem>
+            <SelectItem value="published">Published</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex justify-end gap-2 pt-4">
+        <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Creating...' : 'Create Shift'}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function EditShiftForm({
+  shift,
+  onClose,
+  onSuccess,
+}: {
+  shift: any;
+  onClose: () => void;
+  onSuccess?: () => void;
+}) {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [employeeList, setEmployeeList] = useState<any[]>([]);
+  const [formData, setFormData] = useState({
+    employee_id: shift.employee_id || '',
+    bureau: shift.bureau || '',
+    date: format(shift.date, 'yyyy-MM-dd'),
+    start_time: shift.startTime || '08:00',
+    end_time: shift.endTime || '16:00',
+    status: shift.status || 'draft',
+  });
+
+  // Fetch employees on mount
+  useEffect(() => {
+    async function fetchEmployees() {
+      try {
+        const response = await api.employees.list();
+        setEmployeeList(response.employees || []);
+      } catch (error) {
+        console.error('Failed to fetch employees:', error);
+      }
+    }
+    fetchEmployees();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.bureau || !formData.date || !formData.start_time || !formData.end_time) {
+      toast({
+        title: 'Missing required fields',
+        description: 'Please fill in bureau, date, and time fields',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/shifts/${shift.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+        body: JSON.stringify({
+          bureau: formData.bureau,
+          date: formData.date,
+          start_time: formData.start_time,
+          end_time: formData.end_time,
+          employee_id: formData.employee_id || null,
+          status: formData.status,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update shift');
+      }
+
+      toast({
+        title: 'Shift updated',
+        description: 'The shift has been successfully updated',
+      });
+
+      onClose();
+      onSuccess?.();
+    } catch (error: any) {
+      toast({
+        title: 'Failed to update shift',
+        description: error.message || 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="edit-employee">Employee (Optional)</Label>
+        <Select
+          value={formData.employee_id}
+          onValueChange={(value) => setFormData({ ...formData, employee_id: value })}
+        >
+          <SelectTrigger id="edit-employee">
+            <SelectValue placeholder="Select employee (optional)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Unassigned</SelectItem>
+            {employeeList.map((emp) => (
+              <SelectItem key={emp.id} value={emp.id}>
+                {emp.name} - {emp.role}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="edit-bureau">Bureau *</Label>
+        <Select
+          value={formData.bureau}
+          onValueChange={(value) => setFormData({ ...formData, bureau: value })}
+        >
+          <SelectTrigger id="edit-bureau">
+            <SelectValue placeholder="Select bureau" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Milan">Milan</SelectItem>
+            <SelectItem value="Rome">Rome</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="edit-date">Date *</Label>
+        <Input
+          id="edit-date"
+          type="date"
+          value={formData.date}
+          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+          required
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="edit-startTime">Start Time *</Label>
+          <Input
+            id="edit-startTime"
+            type="time"
+            value={formData.start_time}
+            onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="edit-endTime">End Time *</Label>
+          <Input
+            id="edit-endTime"
+            type="time"
+            value={formData.end_time}
+            onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+            required
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="edit-status">Status</Label>
+        <Select
+          value={formData.status}
+          onValueChange={(value) => setFormData({ ...formData, status: value })}
+        >
+          <SelectTrigger id="edit-status">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="draft">Draft</SelectItem>
+            <SelectItem value="published">Published</SelectItem>
             <SelectItem value="confirmed">Confirmed</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={onClose}>
+        <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
           Cancel
         </Button>
-        <Button type="submit">Create Shift</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Saving...' : 'Save Changes'}
+        </Button>
       </div>
     </form>
   );

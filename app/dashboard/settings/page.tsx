@@ -111,10 +111,9 @@ export default function SettingsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="senior-editor">Senior Editor</SelectItem>
-                  <SelectItem value="junior-editor">Junior Editor</SelectItem>
-                  <SelectItem value="lead-editor">Lead Editor</SelectItem>
-                  <SelectItem value="support-staff">Support Staff</SelectItem>
+                  <SelectItem value="editor">Editor</SelectItem>
+                  <SelectItem value="senior">Senior Correspondent</SelectItem>
+                  <SelectItem value="correspondent">Correspondent</SelectItem>
                 </SelectContent>
               </Select>
             </div>

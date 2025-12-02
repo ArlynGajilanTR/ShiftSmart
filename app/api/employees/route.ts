@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json(formattedEmployees, { status: 200 });
+    return NextResponse.json({ employees: formattedEmployees }, { status: 200 });
   } catch (error) {
     console.error('Employees API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

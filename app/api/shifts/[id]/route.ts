@@ -1,7 +1,139 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { verifyAuth } from '@/lib/auth/verify';
-import { format } from 'date-fns';
+import { format, parseISO, differenceInHours } from 'date-fns';
+
+/**
+ * Detect conflicts for a shift assignment
+ * Returns array of detected conflicts
+ */
+async function detectConflicts(
+  supabase: any,
+  shiftId: string,
+  employeeId: string,
+  startTime: string,
+  endTime: string,
+  bureauName: string
+): Promise<any[]> {
+  const conflicts: any[] = [];
+  const shiftDate = format(parseISO(startTime), 'yyyy-MM-dd');
+
+  // 1. Check for double booking (overlapping shifts)
+  const { data: existingAssignments } = await supabase
+    .from('shift_assignments')
+    .select('*, shifts!inner(start_time, end_time, bureaus(name))')
+    .eq('user_id', employeeId)
+    .neq('shift_id', shiftId);
+
+  if (existingAssignments) {
+    for (const assignment of existingAssignments) {
+      const existingStart = parseISO(assignment.shifts.start_time);
+      const existingEnd = parseISO(assignment.shifts.end_time);
+      const newStart = parseISO(startTime);
+      const newEnd = parseISO(endTime);
+
+      // Check for overlap
+      const hasOverlap =
+        (newStart >= existingStart && newStart < existingEnd) ||
+        (newEnd > existingStart && newEnd <= existingEnd) ||
+        (newStart <= existingStart && newEnd >= existingEnd);
+
+      if (hasOverlap) {
+        conflicts.push({
+          type: 'Double Booking',
+          severity: 'high',
+          shift_id: shiftId,
+          user_id: employeeId,
+          description: 'Employee is scheduled for overlapping shifts',
+          date: shiftDate,
+          details: {
+            shifts: [
+              {
+                time: `${format(newStart, 'HH:mm')} - ${format(newEnd, 'HH:mm')}`,
+                bureau: bureauName,
+              },
+              {
+                time: `${format(existingStart, 'HH:mm')} - ${format(existingEnd, 'HH:mm')}`,
+                bureau: assignment.shifts.bureaus?.name,
+              },
+            ],
+          },
+        });
+      }
+
+      // 2. Check for rest period violation (less than 11 hours between shifts)
+      // Check both directions: new shift after existing, and existing shift after new
+
+      // Case A: New shift starts after existing shift ends
+      const hoursAfterExisting = differenceInHours(newStart, existingEnd);
+      if (hoursAfterExisting >= 0 && hoursAfterExisting < 11) {
+        conflicts.push({
+          type: 'Rest Period Violation',
+          severity: 'high',
+          shift_id: shiftId,
+          user_id: employeeId,
+          description: `Less than 11 hours rest between shifts (${hoursAfterExisting.toFixed(1)} hours)`,
+          date: shiftDate,
+          details: {
+            hours_between: hoursAfterExisting,
+            minimum_required: 11,
+          },
+        });
+      }
+
+      // Case B: Existing shift starts after new shift ends
+      const hoursBeforeExisting = differenceInHours(existingStart, newEnd);
+      if (hoursBeforeExisting >= 0 && hoursBeforeExisting < 11) {
+        conflicts.push({
+          type: 'Rest Period Violation',
+          severity: 'high',
+          shift_id: shiftId,
+          user_id: employeeId,
+          description: `Less than 11 hours rest before next shift (${hoursBeforeExisting.toFixed(1)} hours)`,
+          date: shiftDate,
+          details: {
+            hours_between: hoursBeforeExisting,
+            minimum_required: 11,
+          },
+        });
+      }
+    }
+  }
+
+  return conflicts;
+}
+
+/**
+ * Insert detected conflicts into database, resolving old ones first
+ */
+async function updateConflicts(supabase: any, shiftId: string, conflicts: any[]): Promise<void> {
+  // Resolve any existing conflicts for this shift
+  await supabase
+    .from('conflicts')
+    .update({ status: 'resolved', resolved_at: new Date().toISOString() })
+    .eq('shift_id', shiftId)
+    .eq('status', 'unresolved');
+
+  // Insert new conflicts
+  if (conflicts.length > 0) {
+    const conflictsToInsert = conflicts.map((c) => ({
+      type: c.type,
+      severity: c.severity,
+      status: 'unresolved',
+      shift_id: c.shift_id,
+      user_id: c.user_id,
+      description: c.description,
+      date: c.date,
+      details: c.details,
+      detected_at: new Date().toISOString(),
+    }));
+
+    const { error } = await supabase.from('conflicts').insert(conflictsToInsert);
+    if (error) {
+      console.error('Error inserting conflicts:', error);
+    }
+  }
+}
 
 /**
  * PUT /api/shifts/:id
@@ -230,15 +362,28 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: 'Failed to move shift' }, { status: 500 });
     }
 
-    // TODO: Run conflict detection here and return any conflicts
-    // For now, just return the updated shift
-
     // Fetch assignment
     const { data: assignment } = await supabase
       .from('shift_assignments')
       .select('*, user:users!user_id(full_name, title, shift_role)')
       .eq('shift_id', id)
       .maybeSingle();
+
+    // Run conflict detection if there's an assigned employee
+    let detectedConflicts: any[] = [];
+    if (assignment?.user_id) {
+      detectedConflicts = await detectConflicts(
+        supabase,
+        id,
+        assignment.user_id,
+        updatedShift.start_time,
+        updatedShift.end_time,
+        updatedShift.bureaus?.name || ''
+      );
+
+      // Update conflicts in database (resolve old, insert new)
+      await updateConflicts(supabase, id, detectedConflicts);
+    }
 
     // Format response
     const response = {
@@ -253,7 +398,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       startTime: format(new Date(updatedShift.start_time), 'HH:mm'),
       endTime: format(new Date(updatedShift.end_time), 'HH:mm'),
       status: assignment?.status || updatedShift.status,
-      conflicts: [], // TODO: Add conflict detection
+      conflicts: detectedConflicts.map((c) => ({
+        type: c.type,
+        severity: c.severity,
+        description: c.description,
+      })),
     };
 
     return NextResponse.json(response, { status: 200 });
