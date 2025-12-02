@@ -93,11 +93,16 @@ function getItalianHolidays(startDate: string, endDate: string): string[] {
 async function calculateRecentHistoryBulk(
   userIds: string[],
   supabase: any
-): Promise<Map<string, {
-  weekend_shifts_last_month: number;
-  night_shifts_last_month: number;
-  total_shifts_last_month: number;
-}>> {
+): Promise<
+  Map<
+    string,
+    {
+      weekend_shifts_last_month: number;
+      night_shifts_last_month: number;
+      total_shifts_last_month: number;
+    }
+  >
+> {
   const oneMonthAgo = new Date();
   oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
@@ -111,9 +116,9 @@ async function calculateRecentHistoryBulk(
 
   // Build map of user_id → history
   const historyMap = new Map();
-  
+
   // Initialize all users with zero counts
-  userIds.forEach(id => {
+  userIds.forEach((id) => {
     historyMap.set(id, {
       weekend_shifts_last_month: 0,
       night_shifts_last_month: 0,
@@ -320,8 +325,9 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
 /**
  * Determine shift type from start time
  * Fixed: Issue #1 - Night shifts (00:00-07:59) now correctly classified
+ * Exported for testing
  */
-function getShiftType(date: Date): string {
+export function getShiftType(date: Date): string {
   const hour = date.getHours();
   if (hour >= 8 && hour < 16) return 'Morning';
   if (hour >= 16 && hour < 24) return 'Afternoon';
@@ -331,14 +337,21 @@ function getShiftType(date: Date): string {
 /**
  * Parse Claude's JSON response with comprehensive error logging
  * Enhanced: Captures failed responses for debugging
+ * Exported for testing
  */
-function parseScheduleResponse(response: string, requestConfig?: any): ScheduleResponse | null {
+export function parseScheduleResponse(
+  response: string,
+  requestConfig?: any
+): ScheduleResponse | null {
   const logFailure = (error: string, fullResponse: string) => {
     console.error(`[Parse Error] ${error}`);
     console.error('[Parse Error] Response length:', fullResponse.length);
     console.error('[Parse Error] First 1000 chars:', fullResponse.substring(0, 1000));
-    console.error('[Parse Error] Last 500 chars:', fullResponse.substring(Math.max(0, fullResponse.length - 500)));
-    
+    console.error(
+      '[Parse Error] Last 500 chars:',
+      fullResponse.substring(Math.max(0, fullResponse.length - 500))
+    );
+
     // Store failed response for debugging
     failedResponses.push({
       timestamp: new Date().toISOString(),
@@ -347,7 +360,7 @@ function parseScheduleResponse(response: string, requestConfig?: any): ScheduleR
       error,
       requestConfig: requestConfig || {},
     });
-    
+
     // Keep only last 5 failures
     if (failedResponses.length > MAX_STORED_FAILURES) {
       failedResponses.shift();
@@ -365,7 +378,7 @@ function parseScheduleResponse(response: string, requestConfig?: any): ScheduleR
       /^(What|Which|How|Could you|Can you|Would you)/i,
       /question|clarify|need more information|missing information/i,
     ];
-    
+
     for (const pattern of conversationalPatterns) {
       if (pattern.test(response.trim())) {
         logFailure('Claude returned conversational response instead of JSON', response);
@@ -375,14 +388,14 @@ function parseScheduleResponse(response: string, requestConfig?: any): ScheduleR
 
     // Try multiple JSON extraction strategies
     let jsonString: string | null = null;
-    
+
     // Strategy 1: Markdown JSON code block
     let jsonMatch = response.match(/```json\s*(\{[\s\S]*?\})\s*```/);
     if (jsonMatch) {
       jsonString = jsonMatch[1];
       console.log('[Parse] Extracted JSON from markdown code block');
     }
-    
+
     // Strategy 2: Plain JSON object (greedy match)
     if (!jsonString) {
       jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -391,7 +404,7 @@ function parseScheduleResponse(response: string, requestConfig?: any): ScheduleR
         console.log('[Parse] Extracted JSON with greedy match');
       }
     }
-    
+
     // Strategy 3: JSON between text (non-greedy)
     if (!jsonString) {
       jsonMatch = response.match(/\{[\s\S]*?\}\s*$/);
@@ -407,7 +420,7 @@ function parseScheduleResponse(response: string, requestConfig?: any): ScheduleR
     }
 
     console.log('[Parse] Attempting to parse JSON, length:', jsonString.length);
-    
+
     // Check for truncation indicators
     const lastChars = jsonString.substring(jsonString.length - 50);
     if (!lastChars.includes('}')) {
@@ -437,8 +450,8 @@ function parseScheduleResponse(response: string, requestConfig?: any): ScheduleR
       'assigned_to',
       'shift_type',
     ];
-    
-    const missingFields = requiredFields.filter(field => !firstShift[field]);
+
+    const missingFields = requiredFields.filter((field) => !firstShift[field]);
     if (missingFields.length > 0) {
       logFailure(`Missing required fields in shift: ${missingFields.join(', ')}`, response);
       return null;
@@ -523,7 +536,7 @@ export async function saveSchedule(
       _employee_id: string;
       _reasoning: string;
     }> = [];
-    
+
     for (const shift of scheduleData.shifts) {
       const employee = employeeMap.get(shift.assigned_to);
       if (!employee) {
