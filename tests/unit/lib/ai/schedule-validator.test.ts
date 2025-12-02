@@ -207,13 +207,14 @@ describe('Schedule Validator', () => {
         {
           date: '2025-11-01',
           start_time: '16:00', // Starts when previous ends
-          end_time: '00:00',
+          end_time: '00:00', // 8 hours exactly, not >8
           assigned_to: 'Marco Rossi',
         },
       ];
 
       const violations = validateShiftConstraints(shifts);
-      expect(violations).toHaveLength(1); // Only the >8 hour violation
+      // Fixed: 16:00-00:00 = 8 hours exactly, so no violation expected
+      expect(violations).toHaveLength(0);
     });
 
     it('should detect shifts exceeding 8 hours', () => {
@@ -256,7 +257,9 @@ describe('Schedule Validator', () => {
 
       invalidMetrics.forEach((metrics) => {
         const issues = validateFairnessMetrics(metrics);
-        expect(issues).toContain(expect.stringContaining('Invalid preference satisfaction rate'));
+        expect(issues.some((issue) => issue.includes('Invalid preference satisfaction rate'))).toBe(
+          true
+        );
       });
     });
 
@@ -275,7 +278,9 @@ describe('Schedule Validator', () => {
       };
 
       const issues = validateFairnessMetrics(unfairMetrics);
-      expect(issues).toContain(expect.stringContaining('Unfair shift distribution detected'));
+      expect(issues.some((issue) => issue.includes('Unfair shift distribution detected'))).toBe(
+        true
+      );
     });
 
     it('should detect unfair weekend distribution', () => {
@@ -292,7 +297,7 @@ describe('Schedule Validator', () => {
       };
 
       const issues = validateFairnessMetrics(metrics);
-      expect(issues).toContain(expect.stringContaining('Unfair weekend distribution'));
+      expect(issues.some((issue) => issue.includes('Unfair weekend distribution'))).toBe(true);
     });
 
     it('should accept fair metrics', () => {
