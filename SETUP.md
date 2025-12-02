@@ -42,7 +42,7 @@
 1. Copy contents from `supabase/create-dev-admin.sql`
 2. Run in SQL Editor
 3. This creates an admin account:
-   - Email: arlyn.gajilan@thomsonreuters
+   - Email: arlyn.gajilan@thomsonreuters.com
    - Password: testtest
    - Role: admin (full access)
 

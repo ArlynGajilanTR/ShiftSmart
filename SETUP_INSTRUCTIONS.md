@@ -27,7 +27,7 @@
    - Click "Run"
 
    This creates a development admin account:
-   - **Email:** arlyn.gajilan@thomsonreuters
+   - **Email:** arlyn.gajilan@thomsonreuters.com
    - **Password:** testtest
    - **Role:** admin (full access to all features)
    - **Shift Role:** editor (highest scheduling permissions)
@@ -46,7 +46,7 @@ For easier testing during development:
 
 1. Go to <http://localhost:3000/login>
 2. Login with:
-   - **Email:** arlyn.gajilan@thomsonreuters
+   - **Email:** arlyn.gajilan@thomsonreuters.com
    - **Password:** testtest
 3. You'll have full admin access
 

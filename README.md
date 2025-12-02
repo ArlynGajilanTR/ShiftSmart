@@ -180,7 +180,7 @@ The system manages **15 Breaking News team members**:
 **Test Credentials:**
 
 - Seeded users password: `changeme`
-- Dev admin (if created): arlyn.gajilan@thomsonreuters / `testtest`
+- Dev admin (if created): arlyn.gajilan@thomsonreuters.com / `testtest`
 
 ## Frontend
 

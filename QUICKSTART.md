@@ -49,7 +49,7 @@ Welcome to ShiftSmart! This guide will get you up and running in under 10 minute
 
 1. Copy contents from `supabase/create-dev-admin.sql`
 2. Run in SQL Editor
-3. Login with: arlyn.gajilan@thomsonreuters / testtest
+3. Login with: arlyn.gajilan@thomsonreuters.com / testtest
 
 ### Step 3: Install & Run (1 min)
 

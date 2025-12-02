@@ -103,7 +103,7 @@ SELECT
 FROM users AS u
 LEFT JOIN bureaus AS b ON u.bureau_id = b.id
 WHERE u.email IN (
-    'arlyn.gajilan@thomsonreuters',
+    'arlyn.gajilan@thomsonreuters.com',
     'rob.lang@thomsonreuters.com',
     'RafalWojciech.Nowak@thomsonreuters.com'
 )

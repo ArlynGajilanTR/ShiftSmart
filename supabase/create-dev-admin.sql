@@ -1,5 +1,5 @@
 -- Create dev admin user for testing/demo
--- Email: arlyn.gajilan@thomsonreuters
+-- Email: arlyn.gajilan@thomsonreuters.com
 -- Password: testtest
 -- Role: admin (full access to all parts of the app)
 
@@ -14,6 +14,9 @@ BEGIN
     SELECT id INTO milan_bureau_id FROM bureaus LIMIT 1;
   END IF;
 
+  -- Delete old user with incorrect email format (without .com)
+  DELETE FROM users WHERE email = 'arlyn.gajilan@thomsonreuters';
+
   -- Insert or update dev user with admin access
   INSERT INTO users (
     email,
@@ -26,7 +29,7 @@ BEGIN
     role,
     password_hash
   ) VALUES (
-    'arlyn.gajilan@thomsonreuters',
+    'arlyn.gajilan@thomsonreuters.com',
     'Arlyn Gajilan (Dev Admin)',
     'Development Administrator',
     'editor',
@@ -45,7 +48,7 @@ BEGIN
     updated_at = NOW();
 
   RAISE NOTICE '✓ Dev admin user created successfully!';
-  RAISE NOTICE 'Email: arlyn.gajilan@thomsonreuters';
+  RAISE NOTICE 'Email: arlyn.gajilan@thomsonreuters.com';
   RAISE NOTICE 'Password: testtest';
   RAISE NOTICE 'Role: admin (full access to all parts of app)';
   RAISE NOTICE 'Shift Role: editor (highest scheduling level)';
@@ -62,4 +65,4 @@ SELECT
     u.team
 FROM users AS u
 LEFT JOIN bureaus AS b ON u.bureau_id = b.id
-WHERE u.email = 'arlyn.gajilan@thomsonreuters';
+WHERE u.email = 'arlyn.gajilan@thomsonreuters.com';
