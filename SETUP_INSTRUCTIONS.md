@@ -2,73 +2,63 @@
 
 ## Initial Setup for Breaking News Team (MVP)
 
-### Step 1: Set up Supabase Database
+> ✅ **Good news!** The ShiftSmart-v2 database is **already configured** with all team data.
 
-1. **Go to Supabase Dashboard** → Your Project → SQL Editor
+### Supabase Project Details
 
-2. **Run the database schema** (if not done already):
-   - Copy contents from `supabase/schema.sql`
-   - Paste into SQL Editor
-   - Click "Run"
+| Property         | Value                |
+| ---------------- | -------------------- |
+| **Project Name** | ShiftSmart-v2        |
+| **Project ID**   | wmozxwlmdyxdnzcxetgl |
+| **Region**       | us-west-2            |
+| **Database**     | PostgreSQL 17.6      |
+| **Status**       | ACTIVE_HEALTHY       |
 
-3. **Seed Breaking News team data**:
-   - Copy contents from `supabase/seed-breaking-news-team.sql`
-   - Paste into SQL Editor
-   - Click "Run"
+### Step 1: Environment Variables
 
-   This creates:
-   - **Milan Bureau** (ITA-MILAN) - Europe/Rome timezone
-   - **Rome Bureau** (ITA-ROME) - Europe/Rome timezone
-   - 15 Breaking News team members with real data
+Add to your `.env.local`:
 
-4. **[Optional] Create dev admin user**:
-   - Copy contents from `supabase/create-dev-admin.sql`
-   - Paste into SQL Editor
-   - Click "Run"
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://wmozxwlmdyxdnzcxetgl.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtb3p4d2xtZHl4ZG56Y3hldGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2OTQ3ODEsImV4cCI6MjA4MDI3MDc4MX0.tTTm0G5Qwwo3dDNZBaZPnEfrLKQHbEy_0ykWVPtmwQ0
+```
 
-   This creates a development admin account:
-   - **Email:** arlyn.gajilan@thomsonreuters.com
-   - **Password:** testtest
-   - **Role:** admin (full access to all features)
-   - **Shift Role:** editor (highest scheduling permissions)
+### What's Already Set Up
 
-### Step 2: Disable Email Confirmation (Development Only)
+The database has been configured with:
 
-For easier testing during development:
+- **Milan Bureau** (ITA-MILAN) - Europe/Rome timezone
+  - 8 Breaking News team members (3 Senior + 5 Correspondents)
+- **Rome Bureau** (ITA-ROME) - Europe/Rome timezone
+  - 8 Breaking News team members (1 Editor + 1 Admin + 3 Senior + 3 Correspondents)
+- **Admin Account:**
+  - **Email:** arlyn.gajilan@thomsonreuters.com
+  - **Password:** testtest
+  - **Role:** admin (full access to all features)
+  - **Shift Role:** editor (highest scheduling permissions)
+- **Shift Preferences:** All 16 team members have preferences configured
 
-1. Go to **Authentication** → **Providers** → **Email**
-2. Turn OFF "Confirm email"
-3. Save
+### Step 2: Login to the App
 
-### Step 3: Login to the App
-
-**Option A: Use Dev Admin Account** (if you ran `create-dev-admin.sql`):
+**Admin Account (Recommended):**
 
 1. Go to <http://localhost:3000/login>
 2. Login with:
    - **Email:** arlyn.gajilan@thomsonreuters.com
    - **Password:** testtest
-3. You'll have full admin access
+3. You'll have full admin access to both bureaus
 
-**Option B: Use Seeded User Account**:
+**Other Team Members:**
 
-1. Go to <http://localhost:3000/login>
-2. Login with any Breaking News team member:
-   - **Example Email:** <gianluca.semeraro@thomsonreuters.com>
-   - **Password:** changeme (all seeded users)
-3. Access dashboard features
+You can also login as any Breaking News team member:
 
-**Option C: Create New Account**:
+| Name              | Email                                | Bureau | Role             |
+| ----------------- | ------------------------------------ | ------ | ---------------- |
+| Gavin Jones       | gavin.jones@thomsonreuters.com       | Rome   | Editor (Manager) |
+| Gianluca Semeraro | gianluca.semeraro@thomsonreuters.com | Milan  | Senior           |
+| Giulia Segreti    | giulia.segreti@thomsonreuters.com    | Rome   | Senior           |
 
-1. Go to <http://localhost:3000/signup>
-2. Fill in the form:
-   - **Full Name**: Your name
-   - **Email**: Your email
-   - **Password**: Choose a password (min 6 chars)
-   - **Bureau**: Select either Milan or Rome
-   - **Team**: "Breaking News" (pre-filled, read-only for MVP)
-   - **Role Level**: Choose your role (Junior, Senior, Lead, or Support)
-3. Click "Sign Up"
+> Note: Team members need passwords set before they can login.
 
 ### Step 4: Access Dashboard
 
@@ -139,26 +129,26 @@ For MVP, all users are on the **Breaking News** team. Team info is stored in the
 
 ### "No bureaus available" error
 
-- Run the `setup-breaking-news-bureaus.sql` script
-- Verify bureaus exist in Supabase Table Editor
+- Database should already have bureaus configured
+- Check Supabase Table Editor → `bureaus` table
+- Verify you're using the correct Supabase URL
 
 ### Can't login
 
-- Check if email confirmation is disabled (Auth → Providers → Email)
-- Verify user exists in `users` table
-- Check user has a `bureau_id` assigned
+- Verify you're using the correct password (`testtest` for admin)
+- Check user exists in `users` table
+- Verify user has a `bureau_id` assigned
 
 ### Bureau selection page shows after login
 
 - User needs a `bureau_id` in their profile
-- Update manually in Supabase or sign up again with bureau selected
+- All pre-seeded users already have bureau assignments
 
-## Next Steps
+## Team Data Summary
 
-Once you have the staff CSV:
+| Bureau | Code      | Members | Seniors | Correspondents | Editor    |
+| ------ | --------- | ------- | ------- | -------------- | --------- |
+| Milan  | ITA-MILAN | 8       | 3       | 5              | 0         |
+| Rome   | ITA-ROME  | 8       | 3       | 3              | 1 + Admin |
 
-1. Share it with the development team
-2. We'll format it properly for import
-3. Run the import process
-4. All Breaking News team members will be set up in Milan and Rome bureaus
-5. You can start scheduling shifts!
+_Last Updated: December 2, 2025_

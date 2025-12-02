@@ -10,7 +10,7 @@ Welcome to ShiftSmart! This guide will get you up and running in under 10 minute
 
 ## 5-Minute Setup
 
-### Step 1: Environment Variables (2 min)
+### Step 1: Environment Variables (1 min)
 
 1. Create a `.env.local` file in the project root:
 
@@ -18,38 +18,30 @@ Welcome to ShiftSmart! This guide will get you up and running in under 10 minute
    cp .env.local.example .env.local
    ```
 
-2. Go to [Supabase](https://supabase.com) and create a new project (or use existing)
-
-3. Get your credentials:
-   - Project Settings → API
-   - Copy the URL and `anon` key
-
-4. Paste into `.env.local`:
+2. Use the pre-configured **ShiftSmart-v2** Supabase project:
 
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhb...
+   # ShiftSmart-v2 Supabase Project (Production)
+   NEXT_PUBLIC_SUPABASE_URL=https://wmozxwlmdyxdnzcxetgl.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtb3p4d2xtZHl4ZG56Y3hldGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2OTQ3ODEsImV4cCI6MjA4MDI3MDc4MX0.tTTm0G5Qwwo3dDNZBaZPnEfrLKQHbEy_0ykWVPtmwQ0
    ```
 
-### Step 2: Database Setup (2 min)
+> ✅ The database is **already configured** with schema, team data, and your admin account!
 
-1. In Supabase, go to **SQL Editor**
-2. Click "New Query"
-3. Copy ALL contents from `supabase/schema.sql`
-4. Paste and click "Run"
-5. ✅ You should see "Success" messages
+### Step 2: Database (Already Set Up! ✅)
 
-**Optional: Seed with Breaking News team data**
+> **No action needed!** The ShiftSmart-v2 database is fully configured:
+>
+> - ✅ Schema with 8 tables, indexes, triggers, and RLS policies
+> - ✅ Milan Bureau: 8 Breaking News team members
+> - ✅ Rome Bureau: 8 Breaking News team members
+> - ✅ Admin account: arlyn.gajilan@thomsonreuters.com / `testtest`
+> - ✅ Shift preferences configured for all team members
 
-1. Copy contents from `supabase/seed-breaking-news-team.sql`
-2. Run in SQL Editor
-3. This creates 15 real Breaking News team members
+**If you need to reset the database**, run in Supabase SQL Editor:
 
-**Optional: Create dev admin account for testing**
-
-1. Copy contents from `supabase/create-dev-admin.sql`
-2. Run in SQL Editor
-3. Login with: arlyn.gajilan@thomsonreuters.com / testtest
+1. Copy contents from `supabase/schema.sql`
+2. Re-seed data using the Supabase MCP tools
 
 ### Step 3: Install & Run (1 min)
 
@@ -62,16 +54,22 @@ Open [http://localhost:3000](http://localhost:3000) 🎉
 
 ## First Time Use
 
-### Create Your First Bureau
+### Login with Your Admin Account
 
-1. Go to Supabase → Table Editor → `bureaus`
-2. Insert a new row:
-   - **name**: "Main Office"
-   - **code**: "MAIN"
-   - **timezone**: "America/New_York"
-   - Leave settings as default
+1. Go to [http://localhost:3000/login](http://localhost:3000/login)
+2. Login with:
+   - **Email:** arlyn.gajilan@thomsonreuters.com
+   - **Password:** testtest
+3. You'll have full admin access to both bureaus!
 
-3. Copy the bureau `id` (you'll need this for CSV import)
+### Bureaus (Pre-Configured)
+
+Two bureaus are already set up:
+
+| Bureau                | Code      | Team Members | Timezone    |
+| --------------------- | --------- | ------------ | ----------- |
+| Reuters Italy - Milan | ITA-MILAN | 8            | Europe/Rome |
+| Reuters Italy - Rome  | ITA-ROME  | 8            | Europe/Rome |
 
 ### Option A: Import Sample Data (Recommended)
 
@@ -194,15 +192,26 @@ Open [http://localhost:3000](http://localhost:3000) 🎉
 - **Schema**: See `supabase/schema.sql`
 - **Sample Data**: See `data/sample_schedule.csv`
 
+## Supabase Project Details
+
+| Property         | Value           |
+| ---------------- | --------------- |
+| **Project Name** | ShiftSmart-v2   |
+| **Region**       | us-west-2       |
+| **Database**     | PostgreSQL 17.6 |
+| **Status**       | ACTIVE_HEALTHY  |
+
 ## Support
 
 Questions? Check:
 
 1. The documentation files
 2. Browser console for errors
-3. Supabase logs
-4. Database table contents
+3. Supabase Dashboard → Logs
+4. Database table contents in Supabase Table Editor
 
 ---
 
 **Ready to schedule smarter?** Let's go! 🚀
+
+_Last Updated: December 2, 2025_

@@ -15,36 +15,43 @@
    cp .env.local.example .env.local
    ```
 
-2. Fill in your Supabase credentials in `.env.local`:
-   - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
-   - `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key (optional)
+2. Use the pre-configured **ShiftSmart-v2** credentials in `.env.local`:
 
-## Step 2: Database Setup
+   ```env
+   # ShiftSmart-v2 Supabase Project (Production - us-west-2)
+   NEXT_PUBLIC_SUPABASE_URL=https://wmozxwlmdyxdnzcxetgl.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtb3p4d2xtZHl4ZG56Y3hldGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2OTQ3ODEsImV4cCI6MjA4MDI3MDc4MX0.tTTm0G5Qwwo3dDNZBaZPnEfrLKQHbEy_0ykWVPtmwQ0
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key  # Get from Supabase Dashboard → Settings → API
+   ```
 
-1. Go to your Supabase project dashboard
-2. Navigate to the SQL Editor
-3. Copy the contents of `supabase/schema.sql`
-4. Run the SQL to create all tables, indexes, and policies
-5. Verify the tables were created successfully
+## Step 2: Database Setup (Already Configured ✅)
 
-### Optional: Seed Sample Data
+> **The ShiftSmart-v2 database is fully set up!** No manual migration needed.
 
-**For Breaking News team setup:**
+### What's Pre-Configured
 
-1. Copy contents from `supabase/seed-breaking-news-team.sql`
+| Component             | Status | Details                              |
+| --------------------- | ------ | ------------------------------------ |
+| **Schema**            | ✅     | 8 tables with indexes, triggers, RLS |
+| **Milan Bureau**      | ✅     | 8 Breaking News team members         |
+| **Rome Bureau**       | ✅     | 8 Breaking News team members         |
+| **Admin Account**     | ✅     | arlyn.gajilan@thomsonreuters.com     |
+| **Shift Preferences** | ✅     | 16 team members configured           |
+
+### Admin Account
+
+- **Email:** arlyn.gajilan@thomsonreuters.com
+- **Password:** testtest
+- **Role:** admin (full access to all features)
+- **Shift Role:** editor (highest scheduling permissions)
+
+### If You Need to Reset
+
+Only run these if you need to recreate the database:
+
+1. Copy contents from `supabase/schema.sql`
 2. Run in SQL Editor
-3. This creates Milan and Rome bureaus with 15 real team members
-4. Default password for all seeded users: `changeme`
-
-**For development/testing:**
-
-1. Copy contents from `supabase/create-dev-admin.sql`
-2. Run in SQL Editor
-3. This creates an admin account:
-   - Email: arlyn.gajilan@thomsonreuters.com
-   - Password: testtest
-   - Role: admin (full access)
+3. Use Supabase MCP to re-seed team data
 
 ## Step 3: Install Dependencies
 

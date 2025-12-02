@@ -1,33 +1,38 @@
 # ShiftSmart API - Deployment Guide
 
-**Version:** 1.0.0  
-**Last Updated:** October 30, 2025
+**Version:** 1.3.5  
+**Last Updated:** December 2, 2025  
+**Database:** ShiftSmart-v2 (Supabase, us-west-2)
 
-Complete guide for setting up database, deploying API, and connecting frontend.
+Complete guide for deploying API and connecting frontend. Database is pre-configured!
 
 ---
 
 ## Phase 2: Setup & Deployment
 
-### Step 1: Database Setup (Supabase)
+### Step 1: Database (Already Configured ✅)
 
-**1.1 Run Schema Migration**
+> **The ShiftSmart-v2 database is fully set up!** Skip to Step 2.
 
-In Supabase SQL Editor (<https://app.supabase.com/project/YOUR_PROJECT/sql>):
+**Database Details:**
 
-```sql
--- Copy and paste entire contents of supabase/schema.sql
--- This creates all tables, indexes, triggers, and RLS policies
-```
+| Property     | Value                |
+| ------------ | -------------------- |
+| Project Name | ShiftSmart-v2        |
+| Project ID   | wmozxwlmdyxdnzcxetgl |
+| Region       | us-west-2            |
+| Database     | PostgreSQL 17.6      |
+| Status       | ACTIVE_HEALTHY       |
 
-**1.2 Seed Employee Data**
+**Pre-Configured Data:**
 
-```sql
--- Copy and paste entire contents of supabase/seed-breaking-news-team.sql
--- This creates Milan and Rome bureaus and adds 15 Breaking News employees
-```
+- ✅ 8 tables with indexes, triggers, and RLS policies
+- ✅ Milan Bureau: 8 Breaking News team members
+- ✅ Rome Bureau: 8 Breaking News team members
+- ✅ Admin account: arlyn.gajilan@thomsonreuters.com / `testtest`
+- ✅ Shift preferences for all 16 team members
 
-**1.3 Verify Data**
+**Verify Data (optional):**
 
 ```sql
 -- Check bureaus
@@ -45,10 +50,8 @@ LEFT JOIN bureaus b ON u.bureau_id = b.id
 WHERE u.team = 'Breaking News'
 ORDER BY b.name, u.full_name;
 
--- Should return 15 employees (8 Milan, 7 Rome)
+-- Should return 16 employees (8 Milan, 8 Rome)
 ```
-
-**Default password for all seeded users:** `changeme`
 
 ---
 
@@ -69,13 +72,14 @@ ORDER BY b.name, u.full_name;
 In Vercel Project Settings → Environment Variables:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://kkqiknndofddjugbdefa.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+# ShiftSmart-v2 Supabase Project
+NEXT_PUBLIC_SUPABASE_URL=https://wmozxwlmdyxdnzcxetgl.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtb3p4d2xtZHl4ZG56Y3hldGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2OTQ3ODEsImV4cCI6MjA4MDI3MDc4MX0.tTTm0G5Qwwo3dDNZBaZPnEfrLKQHbEy_0ykWVPtmwQ0
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here  # Get from Supabase Dashboard
 ANTHROPIC_API_KEY=sk-ant-your-key-here  # Required for AI scheduling features
 ```
 
-Get Supabase keys from: Supabase Dashboard → Project Settings → API  
+Get service role key from: Supabase Dashboard → Project Settings → API  
 Get Anthropic key from: <https://console.anthropic.com/>
 
 **2.3 Deploy**
@@ -409,8 +413,9 @@ module.exports = {
 
 ## Production Checklist
 
-- [ ] Database schema migrated in Supabase
-- [ ] 15 employees seeded successfully
+- [x] Database schema migrated in Supabase (ShiftSmart-v2)
+- [x] 16 employees seeded successfully (8 Milan + 8 Rome)
+- [x] Admin account configured (arlyn.gajilan@thomsonreuters.com)
 - [ ] API deployed to Vercel
 - [ ] Environment variables set in Vercel
 - [ ] Frontend updated with API client
@@ -456,4 +461,4 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed version history.
 ---
 
 **Maintained by:** Reuters Breaking News Team  
-**Last Updated:** October 30, 2025
+**Last Updated:** December 2, 2025

@@ -1,13 +1,14 @@
 # ShiftSmart Development Guide
 
-**Version:** 1.2.0  
-**Last Updated:** November 6, 2025
+**Version:** 1.3.5  
+**Last Updated:** December 2, 2025  
+**Database:** ShiftSmart-v2 (Supabase, us-west-2)
 
 ---
 
 ## 🚀 Quick Start for New Developers
 
-### 1. Initial Setup (15 minutes)
+### 1. Initial Setup (5 minutes)
 
 ```bash
 # Clone repository
@@ -19,17 +20,23 @@ npm install
 
 # Setup environment variables
 cp .env.example .env.local
-# Edit .env.local with your credentials
+```
 
+Add to `.env.local`:
+
+```env
+# ShiftSmart-v2 Supabase Project (Production)
+NEXT_PUBLIC_SUPABASE_URL=https://wmozxwlmdyxdnzcxetgl.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtb3p4d2xtZHl4ZG56Y3hldGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2OTQ3ODEsImV4cCI6MjA4MDI3MDc4MX0.tTTm0G5Qwwo3dDNZBaZPnEfrLKQHbEy_0ykWVPtmwQ0
+```
+
+```bash
 # Install pre-commit hooks (recommended)
 pip install pre-commit
 pre-commit install
 
-# Setup database
-# Run in Supabase SQL editor:
-# 1. supabase/schema.sql
-# 2. supabase/seed-breaking-news-team.sql
-# 3. supabase/create-dev-admin.sql (optional)
+# Database is already configured! ✅
+# No manual SQL setup needed - ShiftSmart-v2 has all data
 
 # Start development server
 npm run dev
@@ -612,8 +619,8 @@ npm run test:debug
 
 **Q: Where are the test credentials?**
 
-- See README.md "Test Credentials" section
-- Default password: `changeme`
+- **Admin:** arlyn.gajilan@thomsonreuters.com / `testtest`
+- See README.md "Test Credentials" section for other accounts
 
 **Q: How do I add a new test?**
 
@@ -663,6 +670,7 @@ For questions or issues, see documentation in `/docs` or check test examples.
 
 ---
 
-**Last Updated:** November 13, 2025  
-**Version:** 1.3.0  
+**Last Updated:** December 2, 2025  
+**Version:** 1.3.5  
+**Database:** ShiftSmart-v2 (Supabase)  
 **Maintained by:** Reuters Breaking News Team

@@ -65,17 +65,24 @@ pip install pre-commit
 pre-commit install
 ```
 
-5. **Run database migrations:**
+5. **Database (Already Configured):**
 
-- Open Supabase SQL Editor
-- Run `supabase/schema.sql`
-- Run `supabase/seed-breaking-news-team.sql`
+> ✅ The ShiftSmart-v2 database is pre-configured with schema and team data.
+
+Add to `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://wmozxwlmdyxdnzcxetgl.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtb3p4d2xtZHl4ZG56Y3hldGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2OTQ3ODEsImV4cCI6MjA4MDI3MDc4MX0.tTTm0G5Qwwo3dDNZBaZPnEfrLKQHbEy_0ykWVPtmwQ0
+```
 
 6. **Start development server:**
 
 ```bash
 npm run dev
 ```
+
+**Test login:** arlyn.gajilan@thomsonreuters.com / `testtest`
 
 ### Engineering Build Rules
 
@@ -472,5 +479,6 @@ By contributing to ShiftSmart, you agree that your contributions will be license
 
 **Thank you for contributing to ShiftSmart!** 🚀
 
-_Last Updated: November 13, 2025_
-_Version: 1.1.0_
+_Last Updated: December 2, 2025_  
+_Version: 1.3.5_  
+_Database: ShiftSmart-v2 (Supabase)_

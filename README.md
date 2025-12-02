@@ -129,22 +129,29 @@ cp .env.local.example .env.local
 Edit `.env.local`:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+# ShiftSmart-v2 Supabase Project (Production)
+NEXT_PUBLIC_SUPABASE_URL=https://wmozxwlmdyxdnzcxetgl.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indtb3p4d2xtZHl4ZG56Y3hldGdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2OTQ3ODEsImV4cCI6MjA4MDI3MDc4MX0.tTTm0G5Qwwo3dDNZBaZPnEfrLKQHbEy_0ykWVPtmwQ0
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key  # Get from Supabase Dashboard → Settings → API
 ANTHROPIC_API_KEY=your_anthropic_key  # Optional: For AI scheduling features
 ```
 
 > 🤖 **AI Setup:** To enable AI-powered schedule generation, see [AI_SETUP_TROUBLESHOOTING.md](./AI_SETUP_TROUBLESHOOTING.md)  
 > Quick check: `npm run check:ai`
 
-3. **Run database migrations:**
+3. **Database (Already Configured):**
+
+> ✅ **The ShiftSmart-v2 database is pre-configured** with schema, indexes, RLS policies, and team data.
+>
+> **Project:** ShiftSmart-v2 (us-west-2)  
+> **Status:** ACTIVE_HEALTHY  
+> **Database:** PostgreSQL 17.6
+
+If you need to reset or recreate the database, run in Supabase SQL editor:
 
 ```sql
--- In Supabase SQL editor:
--- 1. Run supabase/schema.sql (required - creates tables)
--- 2. Run supabase/seed-breaking-news-team.sql (optional - 15 real team members)
--- 3. Run supabase/create-dev-admin.sql (optional - dev admin account)
+-- 1. Run supabase/schema.sql (creates tables, indexes, triggers, RLS)
+-- 2. Seed data is already populated via MCP
 ```
 
 4. **Start the dev server:**
@@ -172,15 +179,23 @@ curl http://localhost:3000/api/employees \
 
 ## Data
 
-The system manages **15 Breaking News team members**:
+The system manages **16 Breaking News team members** across two bureaus:
 
-- **Milan Bureau:** 8 staff (3 Senior + 5 Correspondents)
-- **Rome Bureau:** 7 staff (1 Editor + 3 Senior + 3 Correspondents)
+- **Milan Bureau (ITA-MILAN):** 8 staff
+  - 3 Senior Correspondents (Gianluca Semeraro, Sabina Suzzi, Sara Rossi)
+  - 5 Correspondents (Alessia Pe', Andrea Mandala', Claudia Cristoferi, Cristina Carlevaro, Giancarlo Navach)
+
+- **Rome Bureau (ITA-ROME):** 8 staff
+  - 1 Editor (Gavin Jones - Breaking News Editor)
+  - 1 Admin (Arlyn Gajilan - System Administrator)
+  - 3 Senior Correspondents (Alvise Armellini, Giulia Segreti, Stefano Bernabei)
+  - 3 Correspondents (Antonella Cinelli, Francesca Piscioneri, Valentina Consiglio)
 
 **Test Credentials:**
 
-- Seeded users password: `changeme`
-- Dev admin (if created): arlyn.gajilan@thomsonreuters.com / `testtest`
+- **Admin:** arlyn.gajilan@thomsonreuters.com / `testtest` (full access)
+- **Editor:** gavin.jones@thomsonreuters.com (manager role)
+- All team members have shift preferences configured based on their availability
 
 ## Frontend
 
@@ -333,9 +348,10 @@ Password: changeme
 
 ## Version
 
-**Current Version:** 1.3.1  
-**Release Date:** November 13, 2025  
-**Status:** ✅ Production Ready - 332+ Tests Passing
+**Current Version:** 1.3.5  
+**Release Date:** December 2, 2025  
+**Status:** ✅ Production Ready - 332+ Tests Passing  
+**Database:** ShiftSmart-v2 (Supabase, us-west-2)
 
 See [CHANGELOG.md](./CHANGELOG.md) for version history and [API_REFERENCE.md](./API_REFERENCE.md) for detailed API documentation.
 
@@ -396,4 +412,4 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ---
 
 **Maintained by:** Reuters Breaking News Team  
-**Last Updated:** November 13, 2025
+**Last Updated:** December 2, 2025
