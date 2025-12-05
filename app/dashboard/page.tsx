@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,6 +13,9 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
+  Sunrise,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import {
   format,
@@ -528,15 +531,15 @@ export default function DashboardPage() {
     const TimeSlotSection = ({
       title,
       shifts,
-      icon,
+      icon: Icon,
     }: {
       title: string;
       shifts: Shift[];
-      icon: string;
+      icon: React.ComponentType<{ className?: string }>;
     }) => (
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <span className="text-xl">{icon}</span>
+          <Icon className="h-5 w-5 text-[#FF6600]" />
           <h4 className="font-bold text-gray-700">{title}</h4>
           <Badge variant="outline" className="ml-auto">
             {shifts.length} shift{shifts.length !== 1 ? 's' : ''}
@@ -576,9 +579,9 @@ export default function DashboardPage() {
               <span className="text-gray-600 ml-2">total shifts today</span>
             </div>
 
-            <TimeSlotSection title="Morning (6AM - 12PM)" shifts={morningShifts} icon="🌅" />
-            <TimeSlotSection title="Afternoon (12PM - 6PM)" shifts={afternoonShifts} icon="☀️" />
-            <TimeSlotSection title="Evening/Night (6PM - 6AM)" shifts={eveningShifts} icon="🌙" />
+            <TimeSlotSection title="Morning (6AM - 12PM)" shifts={morningShifts} icon={Sunrise} />
+            <TimeSlotSection title="Afternoon (12PM - 6PM)" shifts={afternoonShifts} icon={Sun} />
+            <TimeSlotSection title="Evening/Night (6PM - 6AM)" shifts={eveningShifts} icon={Moon} />
           </div>
         )}
       </div>
