@@ -52,14 +52,6 @@ interface Shift {
   status: string;
 }
 
-interface Conflict {
-  id: string;
-  type: string;
-  employee?: string;
-  date: string;
-  severity: string;
-}
-
 // Mock data as fallback
 const mockUpcomingShifts = [
   {
@@ -118,34 +110,10 @@ const mockUpcomingShifts = [
   },
 ];
 
-const mockRecentConflicts = [
-  {
-    id: '1',
-    type: 'Double Booking',
-    employee: 'Marco Rossi',
-    date: '2025-11-02',
-    severity: 'high',
-  },
-  {
-    id: '2',
-    type: 'Rest Period Violation',
-    employee: 'Sofia Romano',
-    date: '2025-11-03',
-    severity: 'medium',
-  },
-  {
-    id: '3',
-    type: 'Skill Gap',
-    date: '2025-11-05',
-    severity: 'low',
-  },
-];
-
 export default function DashboardPage() {
   const { toast } = useToast();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [upcomingShifts, setUpcomingShifts] = useState<Shift[]>([]);
-  const [recentConflicts, setRecentConflicts] = useState<Conflict[]>([]);
   const [stats, setStats] = useState({
     totalEmployees: 0,
     activeShifts: 0,
@@ -175,13 +143,12 @@ export default function DashboardPage() {
         const dateRange = getDateRange();
 
         // Fetch all data in parallel
-        const [statsData, shiftsData, conflictsData] = await Promise.all([
+        const [statsData, shiftsData] = await Promise.all([
           api.dashboard.getStats(),
           api.shifts.list({
             start_date: dateRange.start_date,
             end_date: dateRange.end_date,
           }),
-          api.conflicts.list({ status: 'unresolved', limit: 5 }),
         ]);
 
         // Update stats (with defensive checks)
@@ -207,9 +174,6 @@ export default function DashboardPage() {
 
         // Update shifts
         setUpcomingShifts(transformedShifts);
-
-        // Update conflicts
-        setRecentConflicts(conflictsData.conflicts || []);
       } catch (error: any) {
         console.error('Failed to fetch dashboard data:', error);
         toast({
@@ -219,7 +183,6 @@ export default function DashboardPage() {
         });
         // Use mock data as fallback
         setUpcomingShifts(mockUpcomingShifts as any);
-        setRecentConflicts(mockRecentConflicts);
       } finally {
         setIsLoading(false);
       }
@@ -621,117 +584,57 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Calendar Section */}
-        <Card className="lg:col-span-2 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-xl font-bold">Schedule Overview</CardTitle>
-                <CardDescription className="font-medium">
-                  View and manage shift assignments
-                </CardDescription>
-              </div>
-              <Button className="hover:scale-105 transition-transform">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Shift
-              </Button>
+      {/* Schedule Overview */}
+      <Card className="shadow-sm hover:shadow-md transition-shadow">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-xl font-bold">Schedule Overview</CardTitle>
+              <CardDescription className="font-medium">
+                View and manage shift assignments
+              </CardDescription>
             </div>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="today" className="w-full">
-              <TabsList className="mb-4">
-                <TabsTrigger value="today" className="font-semibold">
-                  Today
-                </TabsTrigger>
-                <TabsTrigger value="week" className="font-semibold">
-                  Week
-                </TabsTrigger>
-                <TabsTrigger value="month" className="font-semibold">
-                  Month
-                </TabsTrigger>
-                <TabsTrigger value="quarter" className="font-semibold">
-                  Quarter
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="today">
-                <TodayView />
-              </TabsContent>
-
-              <TabsContent value="week">
-                <WeekView />
-              </TabsContent>
-
-              <TabsContent value="month">
-                <MonthView />
-              </TabsContent>
-
-              <TabsContent value="quarter">
-                <QuarterView />
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        {/* Recent Conflicts */}
-        <Card className="shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">Recent Conflicts</CardTitle>
-            <CardDescription className="font-medium">Issues requiring attention</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentConflicts.map((conflict) => (
-                <div
-                  key={conflict.id}
-                  className="flex items-start gap-3 pb-4 border-b last:border-0 last:pb-0 hover:bg-gray-50 -mx-2 px-2 py-2 rounded transition-colors"
-                >
-                  <AlertCircle
-                    className={`h-5 w-5 mt-0.5 ${
-                      conflict.severity === 'high'
-                        ? 'text-red-500'
-                        : conflict.severity === 'medium'
-                          ? 'text-orange-500'
-                          : 'text-yellow-500'
-                    }`}
-                  />
-                  <div className="flex-1 space-y-1">
-                    <p className="text-sm font-bold">{conflict.type}</p>
-                    {conflict.employee && (
-                      <p className="text-sm text-muted-foreground font-medium">
-                        {conflict.employee}
-                      </p>
-                    )}
-                    <p className="text-xs text-muted-foreground font-medium">
-                      {format(new Date(conflict.date), 'MMM dd, yyyy')}
-                    </p>
-                  </div>
-                  <Badge
-                    variant={
-                      conflict.severity === 'high'
-                        ? 'destructive'
-                        : conflict.severity === 'medium'
-                          ? 'default'
-                          : 'secondary'
-                    }
-                    className="font-semibold"
-                  >
-                    {conflict.severity}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-            <Button
-              variant="outline"
-              className="w-full mt-4 bg-transparent hover:bg-primary hover:text-primary-foreground transition-colors font-semibold"
-            >
-              View All Conflicts
+            <Button className="hover:scale-105 transition-transform">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Shift
             </Button>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="today" className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="today" className="font-semibold">
+                Today
+              </TabsTrigger>
+              <TabsTrigger value="week" className="font-semibold">
+                Week
+              </TabsTrigger>
+              <TabsTrigger value="month" className="font-semibold">
+                Month
+              </TabsTrigger>
+              <TabsTrigger value="quarter" className="font-semibold">
+                Quarter
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="today">
+              <TodayView />
+            </TabsContent>
+
+            <TabsContent value="week">
+              <WeekView />
+            </TabsContent>
+
+            <TabsContent value="month">
+              <MonthView />
+            </TabsContent>
+
+            <TabsContent value="quarter">
+              <QuarterView />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }
