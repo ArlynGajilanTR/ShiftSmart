@@ -60,7 +60,6 @@ import {
   Edit,
   Trash2,
   Copy,
-  Filter,
   ChevronLeft,
   ChevronRight,
   GripVertical,
@@ -73,18 +72,17 @@ import {
   AlertCircle,
   ShieldAlert,
   RotateCcw,
+  Building2,
+  CheckCircle,
+  User,
+  Filter,
   X,
 } from 'lucide-react';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
-  SheetClose,
-} from '@/components/ui/sheet';
+  Filters,
+  type Filter as FilterType,
+  type FilterFieldConfig,
+} from '@/components/ui/filters';
 import {
   format,
   addDays,
@@ -318,14 +316,8 @@ export default function SchedulePage() {
   const [isResetting, setIsResetting] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
 
-  // Filter state
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    bureau: 'all' as 'all' | 'Milan' | 'Rome',
-    status: 'all' as 'all' | 'confirmed' | 'pending' | 'draft' | 'published',
-    shiftType: 'all' as 'all' | 'morning' | 'afternoon' | 'evening',
-    employee: '',
-  });
+  // Filter state - using inline Filters component
+  const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
   const [employeeList, setEmployeeList] = useState<any[]>([]);
 
   // Fetch employees for filter dropdown
@@ -341,57 +333,78 @@ export default function SchedulePage() {
     fetchEmployees();
   }, []);
 
-  // Count active filters
-  const activeFilterCount = [
-    filters.bureau !== 'all',
-    filters.status !== 'all',
-    filters.shiftType !== 'all',
-    filters.employee !== '',
-  ].filter(Boolean).length;
+  // Filter field configurations
+  const filterFields: FilterFieldConfig[] = [
+    {
+      key: 'bureau',
+      label: 'Bureau',
+      icon: <Building2 className="h-3.5 w-3.5" />,
+      options: [
+        { value: 'Milan', label: 'Milan' },
+        { value: 'Rome', label: 'Rome' },
+      ],
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      icon: <CheckCircle className="h-3.5 w-3.5" />,
+      options: [
+        { value: 'confirmed', label: 'Confirmed' },
+        { value: 'pending', label: 'Pending' },
+        { value: 'draft', label: 'Draft' },
+        { value: 'published', label: 'Published' },
+      ],
+    },
+    {
+      key: 'shiftType',
+      label: 'Shift Type',
+      icon: <Clock className="h-3.5 w-3.5" />,
+      options: [
+        {
+          value: 'morning',
+          label: 'Morning (6AM-12PM)',
+          icon: <Sunrise className="h-3.5 w-3.5" />,
+        },
+        {
+          value: 'afternoon',
+          label: 'Afternoon (12PM-6PM)',
+          icon: <Sun className="h-3.5 w-3.5" />,
+        },
+        { value: 'evening', label: 'Evening (6PM-6AM)', icon: <Moon className="h-3.5 w-3.5" /> },
+      ],
+    },
+    {
+      key: 'employee',
+      label: 'Employee',
+      icon: <User className="h-3.5 w-3.5" />,
+      options: employeeList.map((emp) => ({
+        value: emp.id,
+        label: emp.name,
+      })),
+    },
+  ];
 
   // Apply filters to shifts
   const filteredShifts = shifts.filter((shift) => {
-    // Bureau filter
-    if (filters.bureau !== 'all' && shift.bureau !== filters.bureau) {
-      return false;
-    }
-
-    // Status filter
-    if (filters.status !== 'all' && shift.status !== filters.status) {
-      return false;
-    }
-
-    // Shift type filter (based on start time)
-    if (filters.shiftType !== 'all') {
-      const hour = parseInt(shift.startTime?.split(':')[0] || '0');
-      if (filters.shiftType === 'morning' && (hour < 6 || hour >= 12)) {
+    for (const filter of activeFilters) {
+      if (filter.field === 'bureau' && shift.bureau !== filter.value) {
         return false;
       }
-      if (filters.shiftType === 'afternoon' && (hour < 12 || hour >= 18)) {
+      if (filter.field === 'status' && shift.status !== filter.value) {
         return false;
       }
-      if (filters.shiftType === 'evening' && hour >= 6 && hour < 18) {
+      if (filter.field === 'shiftType') {
+        const hour = parseInt(shift.startTime?.split(':')[0] || '0');
+        if (filter.value === 'morning' && (hour < 6 || hour >= 12)) return false;
+        if (filter.value === 'afternoon' && (hour < 12 || hour >= 18)) return false;
+        if (filter.value === 'evening' && hour >= 6 && hour < 18) return false;
+      }
+      if (filter.field === 'employee' && shift.employee_id !== filter.value) {
         return false;
       }
     }
-
-    // Employee filter
-    if (filters.employee && shift.employee_id !== filters.employee) {
-      return false;
-    }
-
     return true;
   });
-
-  // Clear all filters
-  const clearFilters = () => {
-    setFilters({
-      bureau: 'all',
-      status: 'all',
-      shiftType: 'all',
-      employee: '',
-    });
-  };
 
   // Check if running on localhost (dev mode)
   useEffect(() => {
@@ -908,7 +921,7 @@ export default function SchedulePage() {
             <h1 className="text-3xl font-bold">Schedule Management</h1>
             <p className="text-muted-foreground">Create and manage shift assignments</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             {/* DEV ONLY: Reset Schedule Button - only visible on localhost */}
             {isLocalhost && (
               <Button
@@ -920,142 +933,6 @@ export default function SchedulePage() {
                 DEV: Reset
               </Button>
             )}
-            <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" className="relative">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filter
-                  {activeFilterCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Filter Shifts</SheetTitle>
-                  <SheetDescription>
-                    Narrow down the shifts displayed on the schedule
-                  </SheetDescription>
-                </SheetHeader>
-                <div className="space-y-6 py-6">
-                  {/* Bureau Filter */}
-                  <div className="space-y-2">
-                    <Label>Bureau</Label>
-                    <Select
-                      value={filters.bureau}
-                      onValueChange={(value: 'all' | 'Milan' | 'Rome') =>
-                        setFilters({ ...filters, bureau: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="All bureaus" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Bureaus</SelectItem>
-                        <SelectItem value="Milan">Milan</SelectItem>
-                        <SelectItem value="Rome">Rome</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Status Filter */}
-                  <div className="space-y-2">
-                    <Label>Status</Label>
-                    <Select
-                      value={filters.status}
-                      onValueChange={(
-                        value: 'all' | 'confirmed' | 'pending' | 'draft' | 'published'
-                      ) => setFilters({ ...filters, status: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="All statuses" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Statuses</SelectItem>
-                        <SelectItem value="confirmed">Confirmed</SelectItem>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="published">Published</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Shift Type Filter */}
-                  <div className="space-y-2">
-                    <Label>Shift Type</Label>
-                    <Select
-                      value={filters.shiftType}
-                      onValueChange={(value: 'all' | 'morning' | 'afternoon' | 'evening') =>
-                        setFilters({ ...filters, shiftType: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="All shift types" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Shift Types</SelectItem>
-                        <SelectItem value="morning">Morning (6AM - 12PM)</SelectItem>
-                        <SelectItem value="afternoon">Afternoon (12PM - 6PM)</SelectItem>
-                        <SelectItem value="evening">Evening/Night (6PM - 6AM)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Employee Filter */}
-                  <div className="space-y-2">
-                    <Label>Employee</Label>
-                    <Select
-                      value={filters.employee || 'all'}
-                      onValueChange={(value) =>
-                        setFilters({ ...filters, employee: value === 'all' ? '' : value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="All employees" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Employees</SelectItem>
-                        {employeeList.map((emp) => (
-                          <SelectItem key={emp.id} value={emp.id}>
-                            {emp.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Active Filters Summary */}
-                  {activeFilterCount > 0 && (
-                    <div className="rounded-lg bg-muted p-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
-                          {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''} active
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          Showing {filteredShifts.length} of {shifts.length} shifts
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <SheetFooter className="flex-row gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={clearFilters}
-                    disabled={activeFilterCount === 0}
-                    className="flex-1"
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    Clear Filters
-                  </Button>
-                  <SheetClose asChild>
-                    <Button className="flex-1">Apply Filters</Button>
-                  </SheetClose>
-                </SheetFooter>
-              </SheetContent>
-            </Sheet>
             <Button variant="outline" onClick={() => setIsGenerateDialogOpen(true)}>
               <Sparkles className="mr-2 h-4 w-4" />
               Generate Schedule
@@ -1404,6 +1281,16 @@ export default function SchedulePage() {
           </DialogContent>
         </Dialog>
 
+        {/* Inline Filters */}
+        <div className="flex items-center justify-between">
+          <Filters filters={activeFilters} fields={filterFields} onChange={setActiveFilters} />
+          {activeFilters.length > 0 && (
+            <span className="text-sm text-muted-foreground">
+              Showing {filteredShifts.length} of {shifts.length} shifts
+            </span>
+          )}
+        </div>
+
         {/* View Tabs */}
         <Tabs value={selectedView} onValueChange={setSelectedView}>
           <TabsList>
@@ -1741,13 +1628,13 @@ export default function SchedulePage() {
                   <div>
                     <CardTitle>All Shifts</CardTitle>
                     <CardDescription>
-                      {activeFilterCount > 0
+                      {activeFilters.length > 0
                         ? `Showing ${filteredShifts.length} of ${shifts.length} shifts`
                         : 'Complete list of scheduled shifts'}
                     </CardDescription>
                   </div>
-                  {activeFilterCount > 0 && (
-                    <Button variant="ghost" size="sm" onClick={clearFilters}>
+                  {activeFilters.length > 0 && (
+                    <Button variant="ghost" size="sm" onClick={() => setActiveFilters([])}>
                       <X className="mr-1 h-3 w-3" />
                       Clear filters
                     </Button>
@@ -1764,8 +1651,12 @@ export default function SchedulePage() {
                         ? 'Try adjusting your filter criteria'
                         : 'No shifts scheduled yet'}
                     </p>
-                    {activeFilterCount > 0 && (
-                      <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                    {activeFilters.length > 0 && (
+                      <Button
+                        variant="outline"
+                        className="mt-4"
+                        onClick={() => setActiveFilters([])}
+                      >
                         Clear all filters
                       </Button>
                     )}
@@ -1842,8 +1733,12 @@ export default function SchedulePage() {
                         ? 'Try adjusting your filter criteria'
                         : 'No shifts scheduled yet'}
                     </p>
-                    {activeFilterCount > 0 && (
-                      <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                    {activeFilters.length > 0 && (
+                      <Button
+                        variant="outline"
+                        className="mt-4"
+                        onClick={() => setActiveFilters([])}
+                      >
                         Clear all filters
                       </Button>
                     )}
