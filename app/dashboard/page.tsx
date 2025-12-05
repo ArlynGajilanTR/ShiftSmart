@@ -27,6 +27,8 @@ import {
   startOfWeek,
   endOfWeek,
   addDays,
+  addWeeks,
+  subWeeks,
   startOfMonth,
   endOfMonth,
   eachDayOfInterval,
@@ -34,6 +36,7 @@ import {
   addMonths,
   subMonths,
   startOfQuarter,
+  endOfQuarter,
   addQuarters,
   subQuarters,
 } from 'date-fns';
@@ -155,14 +158,33 @@ export default function DashboardPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch dashboard data on mount
+  // Calculate date range for fetching shifts based on current view
+  const getDateRange = () => {
+    // Get the start of the current week (Monday)
+    const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+    // Get the end of the current quarter
+    const quarterEnd = endOfQuarter(currentDate);
+
+    // Fetch from start of current week to end of quarter (covers all views)
+    return {
+      start_date: format(weekStart, 'yyyy-MM-dd'),
+      end_date: format(quarterEnd, 'yyyy-MM-dd'),
+    };
+  };
+
+  // Fetch dashboard data on mount and when currentDate changes
   useEffect(() => {
     async function fetchDashboardData() {
       try {
+        const dateRange = getDateRange();
+
         // Fetch all data in parallel
         const [statsData, shiftsData, conflictsData] = await Promise.all([
           api.dashboard.getStats(),
-          api.shifts.upcoming(7),
+          api.shifts.list({
+            start_date: dateRange.start_date,
+            end_date: dateRange.end_date,
+          }),
           api.conflicts.list({ status: 'unresolved', limit: 5 }),
         ]);
 
@@ -174,8 +196,21 @@ export default function DashboardPage() {
           coverageRate: statsData?.stats?.coverageRate ? `${statsData.stats.coverageRate}%` : '0%',
         });
 
+        // Transform shifts data to match expected format
+        const transformedShifts = (shiftsData.shifts || []).map((shift: any) => ({
+          id: shift.id,
+          employee: shift.employee || shift.users?.full_name || 'Unassigned',
+          employee_id: shift.employee_id || null,
+          role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
+          bureau: shift.bureau || shift.bureaus?.name || 'Milan',
+          date: shift.date || format(new Date(shift.start_time), 'yyyy-MM-dd'),
+          startTime: shift.startTime || format(new Date(shift.start_time), 'HH:mm'),
+          endTime: shift.endTime || format(new Date(shift.end_time), 'HH:mm'),
+          status: shift.status || 'pending',
+        }));
+
         // Update shifts
-        setUpcomingShifts(shiftsData.shifts || []);
+        setUpcomingShifts(transformedShifts);
 
         // Update conflicts
         setRecentConflicts(conflictsData.conflicts || []);
@@ -195,7 +230,7 @@ export default function DashboardPage() {
     }
 
     fetchDashboardData();
-  }, [toast]);
+  }, [toast, currentDate]);
 
   const statsDisplay = [
     {
@@ -256,7 +291,7 @@ export default function DashboardPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentDate(subMonths(currentDate, 1))}
+            onClick={() => setCurrentDate(subWeeks(currentDate, 1))}
             className="hover:bg-primary hover:text-primary-foreground transition-colors"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -268,7 +303,7 @@ export default function DashboardPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentDate(addMonths(currentDate, 1))}
+            onClick={() => setCurrentDate(addWeeks(currentDate, 1))}
             className="hover:bg-primary hover:text-primary-foreground transition-colors"
           >
             <ChevronRight className="h-4 w-4" />
