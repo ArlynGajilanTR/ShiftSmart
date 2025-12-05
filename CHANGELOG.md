@@ -21,6 +21,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Set sidebar header to fixed height (`h-16`) matching main header
   - Replaced `<Separator />` with `border-b` for consistent styling
 
+## [1.4.6] - 2025-12-05
+
+### Added
+
+- **DEV ONLY: Reset Schedule Button**: Developer tool for testing on localhost
+  - Orange dashed button appears only on `localhost:3000` or `127.0.0.1`
+  - Confirmation dialog with clear warnings about destructive action
+  - Deletes all shifts, shift assignments, and conflicts from database
+  - New API endpoint: `DELETE /api/shifts/reset` (localhost only)
+  - Useful for clearing schedule data during development/testing cycles
+
 ## [1.4.5] - 2025-12-05
 
 ### Removed

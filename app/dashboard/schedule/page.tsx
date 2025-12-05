@@ -72,6 +72,7 @@ import {
   AlertTriangle,
   AlertCircle,
   ShieldAlert,
+  RotateCcw,
 } from 'lucide-react';
 import {
   format,
@@ -300,6 +301,53 @@ export default function SchedulePage() {
 
   // Track recently moved shifts for settle animation
   const [recentlyMovedShiftId, setRecentlyMovedShiftId] = useState<string | null>(null);
+
+  // DEV ONLY: Reset schedule state
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [isLocalhost, setIsLocalhost] = useState(false);
+
+  // Check if running on localhost (dev mode)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const host = window.location.host;
+      setIsLocalhost(host.includes('localhost') || host.includes('127.0.0.1'));
+    }
+  }, []);
+
+  // DEV ONLY: Reset all shifts
+  const handleResetSchedule = async () => {
+    setIsResetting(true);
+    try {
+      const response = await fetch('/api/shifts/reset', {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to reset schedule');
+      }
+
+      toast({
+        title: 'Schedule reset',
+        description: 'All shifts have been deleted. Ready for fresh testing.',
+      });
+
+      setIsResetDialogOpen(false);
+      setShifts([]);
+    } catch (error: any) {
+      toast({
+        title: 'Failed to reset schedule',
+        description: error.message || 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   // Fetch shifts from API
   const refetchShifts = async () => {
@@ -774,6 +822,17 @@ export default function SchedulePage() {
             <p className="text-muted-foreground">Create and manage shift assignments</p>
           </div>
           <div className="flex gap-2">
+            {/* DEV ONLY: Reset Schedule Button - only visible on localhost */}
+            {isLocalhost && (
+              <Button
+                variant="outline"
+                onClick={() => setIsResetDialogOpen(true)}
+                className="border-dashed border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                DEV: Reset
+              </Button>
+            )}
             <Button variant="outline">
               <Filter className="mr-2 h-4 w-4" />
               Filter
@@ -1729,6 +1788,60 @@ export default function SchedulePage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* DEV ONLY: Reset Schedule Confirmation Dialog */}
+        {isLocalhost && (
+          <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+            <AlertDialogContent className="border-orange-200">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2 text-orange-600">
+                  <RotateCcw className="h-5 w-5" />
+                  Reset Schedule (DEV ONLY)
+                </AlertDialogTitle>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-3">
+                    <p>
+                      This will <strong>permanently delete ALL shifts</strong> and shift assignments
+                      from the database.
+                    </p>
+                    <div className="rounded-lg bg-orange-50 border border-orange-200 p-3 text-sm">
+                      <p className="font-medium text-orange-800">This action:</p>
+                      <ul className="mt-1 list-disc list-inside text-orange-700 space-y-1">
+                        <li>Deletes all shifts</li>
+                        <li>Deletes all shift assignments</li>
+                        <li>Clears all scheduling conflicts</li>
+                        <li>Cannot be undone</li>
+                      </ul>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      This button only appears on localhost for development/testing purposes.
+                    </p>
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isResetting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleResetSchedule}
+                  disabled={isResetting}
+                  className="bg-orange-600 text-white hover:bg-orange-700"
+                >
+                  {isResetting ? (
+                    <>
+                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      Resetting...
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                      Yes, Reset Everything
+                    </>
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </div>
     </DndContext>
   );
