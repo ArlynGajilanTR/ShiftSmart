@@ -647,59 +647,93 @@ export default function EmployeesPage() {
 
 ### Calendar/Schedule Page with Drag-and-Drop
 
-**File:** `app/schedule/page.tsx`
+**File:** `app/dashboard/schedule/page.tsx`
+
+The Schedule Management page supports full drag-and-drop across all views using `@dnd-kit/core`:
+
+#### Views with Drag-and-Drop Support
+
+| View        | Draggable | Droppable | Description                                             |
+| ----------- | --------- | --------- | ------------------------------------------------------- |
+| **Today**   | ✅        | ✅        | Shifts grouped by time slot (Morning/Afternoon/Evening) |
+| **Week**    | ✅        | ✅        | 7-day calendar grid                                     |
+| **Month**   | ✅        | ✅        | Full month calendar                                     |
+| **Quarter** | ✅        | ❌        | 3-month overview (read-only)                            |
+
+#### Key Components
 
 ```typescript
-'use client';
+// DraggableShift - Makes shift cards draggable
+function DraggableShift({ shift, view = 'week' }: { shift: any; view?: string }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `shift-${shift.id}`,
+    data: { shift },
+  });
+  // Renders different layouts based on view: 'today', 'week', 'month'
+}
 
-import { useEffect, useState } from 'react';
-import { api } from '@/lib/api-client';
-
-export default function SchedulePage() {
-  const [shifts, setShifts] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
-  useEffect(() => {
-    async function fetchShifts() {
-      try {
-        // Get shifts for selected month
-        const startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-        const endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
-
-        const data = await api.shifts.list({
-          start_date: startDate.toISOString().split('T')[0],
-          end_date: endDate.toISOString().split('T')[0],
-        });
-
-        setShifts(data.shifts);
-      } catch (error) {
-        console.error('Failed to fetch shifts:', error);
-      }
-    }
-
-    fetchShifts();
-  }, [selectedDate]);
-
-  const handleShiftMove = async (shiftId: string, newDate: string) => {
-    try {
-      await api.shifts.move(shiftId, newDate);
-
-      // Refresh shifts
-      // (Re-run the fetch logic or update state optimistically)
-    } catch (error) {
-      console.error('Failed to move shift:', error);
-    }
-  };
-
-  return (
-    <div>
-      <h1>Schedule</h1>
-      {/* Your calendar component here */}
-      {/* Pass shifts data and handleShiftMove callback */}
-    </div>
-  );
+// DroppableDay - Makes a day cell accept dropped shifts
+function DroppableDay({ date, children }: { date: Date; children: React.ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `day-${format(date, 'yyyy-MM-dd')}`,
+    data: { date },
+  });
+  // Highlights when shift is dragged over
 }
 ```
+
+#### Handling Drag End
+
+```typescript
+const handleDragEnd = async (event: DragEndEvent) => {
+  const { active, over } = event;
+  if (!over) return;
+
+  const shiftId = active.data.current?.shift?.id;
+  const newDate = over.data.current?.date;
+
+  if (shiftId && newDate) {
+    try {
+      // Update via API
+      await api.shifts.move(shiftId, format(newDate, 'yyyy-MM-dd'));
+
+      // Update local state - all views share this state so changes sync automatically
+      setShifts((prevShifts) =>
+        prevShifts.map((shift) =>
+          shift.id === shiftId ? { ...shift, date: new Date(newDate) } : shift
+        )
+      );
+    } catch (error) {
+      // Handle error
+    }
+  }
+};
+```
+
+#### Cross-View Synchronization
+
+All views share the same `shifts` state, so when you drag a shift from one view to another:
+
+1. API call updates the database (`api.shifts.move()`)
+2. Local state updates immediately (`setShifts()`)
+3. All views re-render with the new data automatically
+
+```
+┌─────────────────────────────────────────────────┐
+│              Shared shifts State                │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
+│  │ Today   │  │  Week   │  │  Month  │  │ Quarter │
+│  └─────────┘  └─────────┘  └─────────┘  └─────────┘
+│                     ↓
+│            handleDragEnd()
+│                     ↓
+│         api.shifts.move() + setShifts()
+│                     ↓
+│         All views reflect the change
+└─────────────────────────────────────────────────┘
+```
+
+````
 
 ---
 
@@ -714,7 +748,7 @@ npm run dev
 # Try logging in with:
 # Email: gianluca.semeraro@thomsonreuters.com
 # Password: changeme
-```
+````
 
 ### Test Data Loading
 

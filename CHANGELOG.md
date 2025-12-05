@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.9] - 2025-12-05
+
+### Added
+
+- **Drag and Drop in Today View**: Schedule management Today view now supports full drag and drop
+  - Shifts can be dragged from Today view to any other view (Week, Month, Quarter)
+  - Shifts from other views can be dropped onto Today
+  - Draggable shift cards show grip handle indicator
+  - Consistent drag overlay preview across all views
+
+### Changed
+
+- **Dashboard/Schedule Alignment**: Aligned data handling between Dashboard and Schedule pages
+  - Both pages now use same date range for fetching shifts (-30 days to +60 days)
+  - Consistent Date object storage for shift dates
+  - Unified `getShiftsForDate` implementation
+
+### Fixed
+
+- **Null Date Handling**: Added defensive checks for shift date transformation
+  - Filters out shifts without valid date or start_time
+  - Safe date parsing before formatting
+  - Fallback values prevent format() errors on undefined dates
+
 ## [1.3.8] - 2025-12-05
 
 ### Fixed
@@ -269,6 +293,8 @@ Reference: [Claude 4.5 Documentation](https://docs.claude.com/en/docs/about-clau
 - Comprehensive test coverage (332+ tests)
 - Production-ready deployment
 
+[1.3.9]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.8...v1.3.9
+[1.3.8]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.7...v1.3.8
 [1.3.7]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.6...v1.3.7
 [1.3.6]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.5...v1.3.6
 [1.3.5]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.4...v1.3.5
