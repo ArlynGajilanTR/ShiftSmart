@@ -159,17 +159,25 @@ export default function DashboardPage() {
         });
 
         // Transform shifts data to match expected format
-        const transformedShifts = (shiftsData.shifts || []).map((shift: any) => ({
-          id: shift.id,
-          employee: shift.employee || shift.users?.full_name || 'Unassigned',
-          employee_id: shift.employee_id || null,
-          role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
-          bureau: shift.bureau || shift.bureaus?.name || 'Milan',
-          date: shift.date || format(new Date(shift.start_time), 'yyyy-MM-dd'),
-          startTime: shift.startTime || format(new Date(shift.start_time), 'HH:mm'),
-          endTime: shift.endTime || format(new Date(shift.end_time), 'HH:mm'),
-          status: shift.status || 'pending',
-        }));
+        const transformedShifts = (shiftsData.shifts || [])
+          .filter((shift: any) => shift && (shift.date || shift.start_time))
+          .map((shift: any) => {
+            // Safely parse dates
+            const startDate = shift.start_time ? new Date(shift.start_time) : null;
+            const endDate = shift.end_time ? new Date(shift.end_time) : null;
+
+            return {
+              id: shift.id,
+              employee: shift.employee || shift.users?.full_name || 'Unassigned',
+              employee_id: shift.employee_id || null,
+              role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
+              bureau: shift.bureau || shift.bureaus?.name || 'Milan',
+              date: shift.date || (startDate ? format(startDate, 'yyyy-MM-dd') : ''),
+              startTime: shift.startTime || (startDate ? format(startDate, 'HH:mm') : '00:00'),
+              endTime: shift.endTime || (endDate ? format(endDate, 'HH:mm') : '00:00'),
+              status: shift.status || 'pending',
+            };
+          });
 
         // Update shifts
         setUpcomingShifts(transformedShifts);
