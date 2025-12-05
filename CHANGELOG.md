@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2025-12-05
+
+### Added
+
+- **Drag-and-Drop Conflict Confirmation Dialog**: Full conflict prevention flow for shift moves
+  - Modal dialog displays all detected conflicts when dragging shifts to conflicting dates
+  - Shows conflict type, severity (high/medium/low), and detailed descriptions
+  - Color-coded conflict cards (red for high severity, orange for medium)
+  - "Cancel Move" option keeps shift in original position
+  - "Move Anyway" option allows override with logged confirmation
+  - Conflicts from overrides are recorded in Schedule Health for audit
+
+### Changed
+
+- **Enhanced `handleDragEnd`**: Now properly handles 409 conflict responses
+  - Detects conflict responses from API
+  - Calls `validateMove()` to get detailed conflict information
+  - Opens confirmation modal instead of showing generic error toast
+
+### Fixed
+
+- **Drag-and-Drop Conflict Flow**: Previously, conflicts were detected by backend but frontend only showed generic error message. Now users see full conflict details and can make informed decisions.
+
 ## [1.4.0] - 2025-12-05
 
 ### Added

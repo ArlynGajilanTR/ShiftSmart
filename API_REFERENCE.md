@@ -553,7 +553,7 @@ Content-Type: application/json
 
 ### PATCH /api/shifts/:id
 
-Move a shift (drag-and-drop support).
+Move a shift (drag-and-drop support). Includes pre-move conflict validation.
 
 **Request:**
 
@@ -563,21 +563,71 @@ Authorization: Bearer YOUR_TOKEN
 Content-Type: application/json
 
 {
-  "employee_id": "new-uuid",
-  "start_time": "2025-11-02T08:00:00Z",
-  "end_time": "2025-11-02T16:00:00Z"
+  "date": "2025-11-02",
+  "start_time": "08:00",
+  "end_time": "16:00",
+  "validate_only": false,
+  "force": false
 }
 ```
+
+**Body Parameters:**
+
+- `date` (string, required) - New date for the shift (YYYY-MM-DD)
+- `start_time` (string, optional) - New start time (HH:mm), defaults to existing
+- `end_time` (string, optional) - New end time (HH:mm), defaults to existing
+- `validate_only` (boolean, optional) - If `true`, only check for conflicts without moving
+- `force` (boolean, optional) - If `true`, move even if conflicts exist (logged for audit)
 
 **Response (200 OK):**
 
 ```json
 {
-  "shift": {
-    "id": "uuid",
-    "employee_id": "new-uuid",
-    "start_time": "2025-11-02T08:00:00Z"
-  }
+  "id": "uuid",
+  "employee": "Marco Rossi",
+  "employee_id": "uuid",
+  "bureau": "Milan",
+  "date": "2025-11-02",
+  "startTime": "08:00",
+  "endTime": "16:00",
+  "status": "confirmed",
+  "forced": false,
+  "conflicts_overridden": 0
+}
+```
+
+**Response (409 Conflict):** - When conflicts detected and `force` is not `true`
+
+```json
+{
+  "error": "Move would create conflicts",
+  "conflicts": [
+    {
+      "type": "Double Booking",
+      "severity": "high",
+      "employee": "Marco Rossi",
+      "description": "Marco Rossi is already scheduled for 08:00 - 16:00 on Nov 02",
+      "date": "2025-11-02",
+      "details": {
+        "shifts": [
+          { "time": "08:00 - 16:00", "bureau": "Milan", "label": "Moved shift" },
+          { "time": "08:00 - 16:00", "bureau": "Rome", "label": "Existing shift" }
+        ]
+      }
+    }
+  ],
+  "message": "This move would create scheduling conflicts. Set force=true to move anyway."
+}
+```
+
+**Validation-Only Response (200 OK):** - When `validate_only` is `true`
+
+```json
+{
+  "valid": false,
+  "conflicts": [...],
+  "current": { "date": "2025-11-01", "startTime": "08:00", "endTime": "16:00" },
+  "proposed": { "date": "2025-11-02", "startTime": "08:00", "endTime": "16:00" }
 }
 ```
 

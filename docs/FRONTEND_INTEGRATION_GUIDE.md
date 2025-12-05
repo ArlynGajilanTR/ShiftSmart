@@ -682,7 +682,9 @@ function DroppableDay({ date, children }: { date: Date; children: React.ReactNod
 }
 ```
 
-#### Handling Drag End
+#### Handling Drag End with Conflict Detection
+
+The `handleDragEnd` function detects conflicts and shows a confirmation dialog:
 
 ```typescript
 const handleDragEnd = async (event: DragEndEvent) => {
@@ -690,25 +692,88 @@ const handleDragEnd = async (event: DragEndEvent) => {
   if (!over) return;
 
   const shiftId = active.data.current?.shift?.id;
+  const shift = active.data.current?.shift;
   const newDate = over.data.current?.date;
 
   if (shiftId && newDate) {
-    try {
-      // Update via API
-      await api.shifts.move(shiftId, format(newDate, 'yyyy-MM-dd'));
+    const formattedDate = format(newDate, 'yyyy-MM-dd');
 
-      // Update local state - all views share this state so changes sync automatically
+    try {
+      // Attempt move - API returns 409 if conflicts exist
+      await api.shifts.move(shiftId, formattedDate);
+
+      // Success - update local state
       setShifts((prevShifts) =>
-        prevShifts.map((shift) =>
-          shift.id === shiftId ? { ...shift, date: new Date(newDate) } : shift
-        )
+        prevShifts.map((s) => (s.id === shiftId ? { ...s, date: new Date(newDate) } : s))
       );
-    } catch (error) {
-      // Handle error
+      toast({ title: 'Shift moved', description: 'Shift moved successfully' });
+    } catch (error: any) {
+      // Check if this is a conflict response (409)
+      if (error.message?.includes('conflicts')) {
+        // Get detailed conflict information
+        const validation = await api.shifts.validateMove(
+          shiftId,
+          formattedDate,
+          shift.startTime,
+          shift.endTime
+        );
+
+        if (!validation.valid && validation.conflicts?.length > 0) {
+          // Open conflict confirmation dialog
+          setPendingMove({
+            shiftId,
+            newDate: formattedDate,
+            shift,
+            conflicts: validation.conflicts,
+          });
+          setIsConflictDialogOpen(true);
+          return;
+        }
+      }
+
+      // Generic error
+      toast({
+        title: 'Failed to move shift',
+        description: error.message,
+        variant: 'destructive',
+      });
     }
   }
 };
+
+// Handle force move (user confirms despite conflicts)
+const handleForceMove = async () => {
+  if (!pendingMove) return;
+
+  await api.shifts.move(
+    pendingMove.shiftId,
+    pendingMove.newDate,
+    pendingMove.shift.startTime,
+    pendingMove.shift.endTime,
+    true // force = true
+  );
+
+  // Update local state and close dialog
+  setShifts((prevShifts) =>
+    prevShifts.map((s) =>
+      s.id === pendingMove.shiftId ? { ...s, date: new Date(pendingMove.newDate) } : s
+    )
+  );
+  setIsConflictDialogOpen(false);
+  setPendingMove(null);
+};
 ```
+
+#### Conflict Confirmation Dialog
+
+When conflicts are detected, a modal shows:
+
+- List of all conflicts with severity badges
+- Conflict type and description
+- Affected employee information
+- "Cancel Move" and "Move Anyway" buttons
+
+Conflicts from forced moves are logged in Schedule Health for audit.
 
 #### Cross-View Synchronization
 

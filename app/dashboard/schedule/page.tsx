@@ -69,6 +69,9 @@ import {
   Sunrise,
   Sun,
   Moon,
+  AlertTriangle,
+  AlertCircle,
+  ShieldAlert,
 } from 'lucide-react';
 import {
   format,
@@ -333,6 +336,16 @@ export default function SchedulePage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedShift, setSelectedShift] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Drag-drop conflict confirmation state
+  const [isConflictDialogOpen, setIsConflictDialogOpen] = useState(false);
+  const [pendingMove, setPendingMove] = useState<{
+    shiftId: string;
+    newDate: string;
+    shift: any;
+    conflicts: any[];
+  } | null>(null);
+  const [isForceMoving, setIsForceMoving] = useState(false);
 
   // Fetch shifts from API
   const refetchShifts = async () => {
@@ -648,18 +661,19 @@ export default function SchedulePage() {
     if (!over) return;
 
     const shiftId = active.data.current?.shift?.id;
+    const shift = active.data.current?.shift;
     const newDate = over.data.current?.date;
 
     if (shiftId && newDate) {
-      try {
-        // Update via API
-        await api.shifts.move(shiftId, format(newDate, 'yyyy-MM-dd'));
+      const formattedDate = format(newDate, 'yyyy-MM-dd');
 
-        // Update local state
+      try {
+        // Attempt to move via API (will return 409 if conflicts exist)
+        await api.shifts.move(shiftId, formattedDate);
+
+        // Success - update local state
         setShifts((prevShifts) =>
-          prevShifts.map((shift) =>
-            shift.id === shiftId ? { ...shift, date: new Date(newDate) } : shift
-          )
+          prevShifts.map((s) => (s.id === shiftId ? { ...s, date: new Date(newDate) } : s))
         );
 
         toast({
@@ -667,13 +681,95 @@ export default function SchedulePage() {
           description: 'Shift has been successfully moved to the new date',
         });
       } catch (error: any) {
+        // Check if this is a conflict response (409)
+        // The error message from apiCall includes the JSON error field
+        if (error.message?.includes('conflicts') || error.message?.includes('Move would create')) {
+          // Need to fetch the full conflict details
+          try {
+            const validationResult = await api.shifts.validateMove(
+              shiftId,
+              formattedDate,
+              shift.startTime,
+              shift.endTime
+            );
+
+            if (!validationResult.valid && validationResult.conflicts?.length > 0) {
+              // Open conflict confirmation dialog
+              setPendingMove({
+                shiftId,
+                newDate: formattedDate,
+                shift,
+                conflicts: validationResult.conflicts,
+              });
+              setIsConflictDialogOpen(true);
+              return;
+            }
+          } catch (validationError) {
+            // If validation also fails, show the original error
+            console.error('Validation error:', validationError);
+          }
+        }
+
+        // Generic error handling
         toast({
           title: 'Failed to move shift',
-          description: error.message,
+          description: error.message || 'An error occurred while moving the shift',
           variant: 'destructive',
         });
       }
     }
+  };
+
+  // Handle force move (when user confirms despite conflicts)
+  const handleForceMove = async () => {
+    if (!pendingMove) return;
+
+    setIsForceMoving(true);
+    try {
+      // Call move with force=true to override conflict warnings
+      await api.shifts.move(
+        pendingMove.shiftId,
+        pendingMove.newDate,
+        pendingMove.shift.startTime,
+        pendingMove.shift.endTime,
+        true // force = true
+      );
+
+      // Update local state
+      setShifts((prevShifts) =>
+        prevShifts.map((s) =>
+          s.id === pendingMove.shiftId ? { ...s, date: new Date(pendingMove.newDate) } : s
+        )
+      );
+
+      toast({
+        title: 'Shift moved with override',
+        description: `Shift moved despite ${pendingMove.conflicts.length} conflict(s). These have been logged for review.`,
+        variant: 'default',
+      });
+
+      // Close dialog and reset state
+      setIsConflictDialogOpen(false);
+      setPendingMove(null);
+    } catch (error: any) {
+      toast({
+        title: 'Failed to move shift',
+        description: error.message || 'An error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsForceMoving(false);
+    }
+  };
+
+  // Cancel the pending move
+  const handleCancelMove = () => {
+    setIsConflictDialogOpen(false);
+    setPendingMove(null);
+    toast({
+      title: 'Move cancelled',
+      description: 'The shift remains in its original position',
+    });
   };
 
   if (isLoading) {
@@ -1547,6 +1643,101 @@ export default function SchedulePage() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Conflict Confirmation Dialog for Drag-and-Drop */}
+        <AlertDialog open={isConflictDialogOpen} onOpenChange={setIsConflictDialogOpen}>
+          <AlertDialogContent className="max-w-lg">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                <ShieldAlert className="h-5 w-5" />
+                Scheduling Conflict Detected
+              </AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div className="space-y-4">
+                  <p>
+                    Moving this shift would create {pendingMove?.conflicts?.length || 0} scheduling
+                    conflict{(pendingMove?.conflicts?.length || 0) !== 1 ? 's' : ''}:
+                  </p>
+
+                  {/* Conflict Details */}
+                  <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                    {pendingMove?.conflicts?.map((conflict: any, index: number) => (
+                      <div
+                        key={index}
+                        className={`rounded-lg border p-3 ${
+                          conflict.severity === 'high'
+                            ? 'border-red-200 bg-red-50'
+                            : conflict.severity === 'medium'
+                              ? 'border-orange-200 bg-orange-50'
+                              : 'border-yellow-200 bg-yellow-50'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          {conflict.severity === 'high' ? (
+                            <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                          ) : (
+                            <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-sm text-foreground">
+                                {conflict.type}
+                              </span>
+                              <Badge
+                                variant={conflict.severity === 'high' ? 'destructive' : 'secondary'}
+                                className="text-xs"
+                              >
+                                {conflict.severity}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{conflict.description}</p>
+                            {conflict.employee && (
+                              <p className="text-sm font-medium text-foreground mt-1">
+                                Employee: {conflict.employee}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Warning about proceeding */}
+                  <div className="rounded-lg bg-muted p-3 text-sm">
+                    <p className="font-medium text-foreground">What happens if you proceed?</p>
+                    <ul className="mt-1 list-disc list-inside text-muted-foreground space-y-1">
+                      <li>The shift will be moved to {pendingMove?.newDate}</li>
+                      <li>Conflicts will be logged for review in Schedule Health</li>
+                      <li>Affected employees may need manual notification</li>
+                    </ul>
+                  </div>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+              <AlertDialogCancel onClick={handleCancelMove} disabled={isForceMoving}>
+                Cancel Move
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleForceMove}
+                disabled={isForceMoving}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isForceMoving ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-foreground" />
+                    Moving...
+                  </>
+                ) : (
+                  <>
+                    <AlertTriangle className="mr-2 h-4 w-4" />
+                    Move Anyway
+                  </>
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </DndContext>
   );
