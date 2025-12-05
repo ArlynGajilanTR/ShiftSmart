@@ -1007,14 +1007,16 @@ export default function SchedulePage() {
                   <div className="space-y-2">
                     <Label>Employee</Label>
                     <Select
-                      value={filters.employee}
-                      onValueChange={(value) => setFilters({ ...filters, employee: value })}
+                      value={filters.employee || 'all'}
+                      onValueChange={(value) =>
+                        setFilters({ ...filters, employee: value === 'all' ? '' : value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="All employees" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Employees</SelectItem>
+                        <SelectItem value="all">All Employees</SelectItem>
                         {employeeList.map((emp) => (
                           <SelectItem key={emp.id} value={emp.id}>
                             {emp.name}
