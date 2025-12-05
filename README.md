@@ -1,8 +1,8 @@
-# ShiftSmart v1.4.0
+# ShiftSmart v1.4.2
 
 Unified fullstack application for Reuters Breaking News shift scheduling system.
 
-**Version:** 1.4.0 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 332+
+**Version:** 1.4.2 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 332+
 
 ## Overview
 
@@ -24,6 +24,7 @@ ShiftSmart is an internal scheduling application for Reuters Breaking News edito
 
 ✅ **100% Tested** - All 20 API endpoints passing automated tests  
 🤖 **AI Scheduling** - Claude Haiku 4.5 generates optimized schedules (near-frontier performance, 2x+ faster)  
+💬 **AI Chatbot Guide** - In-app assistant helps users navigate features (NEW in v1.4.2)  
 👥 **Employee Management** - CRUD operations with preferences  
 📅 **Smart Scheduling** - Drag-and-drop with conflict detection  
 🛡️ **Schedule Health** - AI-powered conflict prevention and resolution  
@@ -114,10 +115,11 @@ shiftsmart-v1/
 
 - `GET /api/dashboard/stats` - Aggregated statistics
 
-### AI Scheduling (4 endpoints) - Claude Haiku 4.5
+### AI Scheduling (5 endpoints) - Claude Haiku 4.5
 
 - `POST /api/ai/generate-schedule` - Generate AI-powered schedule (with post-generation conflict validation)
 - `POST /api/ai/resolve-conflict` - Get AI suggestions and auto-apply conflict resolution
+- `POST /api/ai/chatbot` - Conversational AI guide for user assistance (v1.4.2+)
 - `GET /api/ai/status` - Check AI configuration status
 - `GET /api/ai/debug-last-response` - Debug failed AI responses (v1.3.2+)
 

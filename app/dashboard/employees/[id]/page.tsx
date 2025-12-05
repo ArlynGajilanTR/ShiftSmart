@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, use } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,26 +16,56 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, Mail, Phone, MapPin, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, Save, Mail, Phone, MapPin, Calendar, Clock, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
-// Mock employee data - in real app, fetch based on params.id
-const mockEmployee = {
-  id: 1,
-  name: 'Marco Rossi',
-  email: 'marco.rossi@reuters.com',
-  phone: '+39 02 1234 5678',
-  role: 'Senior Editor',
-  bureau: 'Milan',
-  status: 'active',
-  shiftsThisMonth: 18,
-  initials: 'MR',
+interface Employee {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  bureau: string;
+  status: string;
+  shiftsThisMonth: number;
+  initials: string;
   preferences: {
-    preferredDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
-    preferredShifts: ['Morning', 'Afternoon'],
+    preferredDays: string[];
+    preferredShifts: string[];
+    maxShiftsPerWeek: number;
+    notes: string;
+  } | null;
+}
+
+interface ShiftHistory {
+  id: string;
+  date: string;
+  shiftType: string;
+  bureau: string;
+  status: string;
+  startTime: string;
+  endTime: string;
+}
+
+// Default employee structure for when data is loading
+const defaultEmployee: Employee = {
+  id: '',
+  name: '',
+  email: '',
+  phone: '',
+  role: '',
+  bureau: '',
+  status: 'active',
+  shiftsThisMonth: 0,
+  initials: '??',
+  preferences: {
+    preferredDays: [],
+    preferredShifts: [],
     maxShiftsPerWeek: 5,
-    notes: 'Prefers morning shifts. Available for weekend coverage in emergencies.',
+    notes: '',
   },
 };
 
@@ -44,20 +74,230 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const { id } = use(params);
 
   const router = useRouter();
-  const [employee, setEmployee] = useState(mockEmployee);
-  const [isEditing, setIsEditing] = useState(false);
+  const { toast } = useToast();
+  const [employee, setEmployee] = useState<Employee>(defaultEmployee);
+  const [originalEmployee, setOriginalEmployee] = useState<Employee>(defaultEmployee);
+  const [shiftHistory, setShiftHistory] = useState<ShiftHistory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const shiftTypes = ['Morning', 'Afternoon', 'Evening', 'Night'];
 
-  const handleSave = () => {
-    // In real app, save to backend
-    console.log('[v0] Saving employee data:', employee);
-    setIsEditing(false);
-    // Show success message
+  // Fetch employee data from API
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      setIsLoading(true);
+      setLoadError(null);
+
+      try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+          router.push('/login');
+          return;
+        }
+
+        // Fetch employee details
+        const response = await fetch(`/api/employees/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('Employee not found');
+          }
+          throw new Error('Failed to fetch employee');
+        }
+
+        const data = await response.json();
+
+        // Map API response to component state
+        const employeeData: Employee = {
+          id: data.id,
+          name: data.name,
+          email: data.email,
+          phone: data.phone || '',
+          role: data.role || '',
+          bureau: data.bureau || '',
+          status: data.status || 'active',
+          shiftsThisMonth: data.shiftsThisMonth || 0,
+          initials:
+            data.initials ||
+            data.name
+              ?.split(' ')
+              .map((n: string) => n[0])
+              .join('')
+              .toUpperCase() ||
+            '??',
+          preferences: data.preferences || {
+            preferredDays: [],
+            preferredShifts: [],
+            maxShiftsPerWeek: 5,
+            notes: '',
+          },
+        };
+
+        setEmployee(employeeData);
+        setOriginalEmployee(employeeData);
+
+        // Fetch shift history
+        await fetchShiftHistory(token);
+      } catch (error: any) {
+        console.error('Error fetching employee:', error);
+        setLoadError(error.message || 'Failed to load employee');
+        toast({
+          title: 'Error loading employee',
+          description: error.message || 'Please try again',
+          variant: 'destructive',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmployee();
+  }, [id, router, toast]);
+
+  // Fetch shift history for employee
+  const fetchShiftHistory = async (token: string) => {
+    try {
+      const response = await fetch(`/api/shifts?employee_id=${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const shifts = (data.shifts || []).map((shift: any) => {
+          const startTime = new Date(shift.start_time);
+          const endTime = new Date(shift.end_time);
+          const hour = startTime.getHours();
+
+          // Determine shift type based on start time
+          let shiftType = 'Morning';
+          if (hour >= 12 && hour < 17) shiftType = 'Afternoon';
+          else if (hour >= 17 && hour < 21) shiftType = 'Evening';
+          else if (hour >= 21 || hour < 6) shiftType = 'Night';
+
+          return {
+            id: shift.id,
+            date: startTime.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            }),
+            shiftType,
+            bureau: shift.bureau_name || shift.bureaus?.name || 'Unknown',
+            status:
+              shift.assignment_status === 'completed'
+                ? 'Completed'
+                : shift.assignment_status === 'confirmed'
+                  ? 'Confirmed'
+                  : shift.assignment_status === 'declined'
+                    ? 'Declined'
+                    : 'Assigned',
+            startTime: startTime.toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            endTime: endTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          };
+        });
+
+        // Sort by date descending (most recent first)
+        shifts.sort(
+          (a: ShiftHistory, b: ShiftHistory) =>
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+
+        setShiftHistory(shifts.slice(0, 20)); // Show last 20 shifts
+      }
+    } catch (error) {
+      console.error('Error fetching shift history:', error);
+      // Don't show error toast for shift history - it's not critical
+    }
+  };
+
+  // Save employee data and preferences
+  const handleSave = async () => {
+    setIsSaving(true);
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        router.push('/login');
+        return;
+      }
+
+      // Update employee details
+      const employeeResponse = await fetch(`/api/employees/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: employee.name,
+          email: employee.email,
+          phone: employee.phone,
+          role: employee.role,
+          bureau: employee.bureau,
+          status: employee.status,
+        }),
+      });
+
+      if (!employeeResponse.ok) {
+        const errorData = await employeeResponse.json();
+        throw new Error(errorData.error || 'Failed to update employee');
+      }
+
+      // Update preferences
+      if (employee.preferences) {
+        const prefsResponse = await fetch(`/api/employees/${id}/preferences`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            preferred_days: employee.preferences.preferredDays,
+            preferred_shifts: employee.preferences.preferredShifts,
+            max_shifts_per_week: employee.preferences.maxShiftsPerWeek,
+            notes: employee.preferences.notes,
+          }),
+        });
+
+        if (!prefsResponse.ok) {
+          const errorData = await prefsResponse.json();
+          throw new Error(errorData.error || 'Failed to update preferences');
+        }
+      }
+
+      // Update original state to reflect saved changes
+      setOriginalEmployee(employee);
+
+      toast({
+        title: 'Changes saved',
+        description: `${employee.name}'s profile has been updated successfully`,
+      });
+    } catch (error: any) {
+      console.error('Error saving employee:', error);
+      toast({
+        title: 'Failed to save changes',
+        description: error.message || 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const togglePreferredDay = (day: string) => {
+    if (!employee.preferences) return;
     setEmployee({
       ...employee,
       preferences: {
@@ -70,6 +310,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   };
 
   const togglePreferredShift = (shift: string) => {
+    if (!employee.preferences) return;
     setEmployee({
       ...employee,
       preferences: {
@@ -80,6 +321,65 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
       },
     });
   };
+
+  // Check if there are unsaved changes
+  const hasChanges = JSON.stringify(employee) !== JSON.stringify(originalEmployee);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-16 w-16 rounded-full" />
+              <div>
+                <Skeleton className="h-8 w-48 mb-2" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-20" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-16" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
+
+  // Error state
+  if (loadError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 space-y-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-destructive mb-2">Error Loading Employee</h2>
+          <p className="text-muted-foreground mb-4">{loadError}</p>
+          <div className="flex gap-2 justify-center">
+            <Button variant="outline" onClick={() => router.back()}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Go Back
+            </Button>
+            <Button onClick={() => window.location.reload()}>Try Again</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -112,12 +412,32 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
           <Button variant="outline" onClick={() => router.back()}>
             Cancel
           </Button>
-          <Button onClick={handleSave} className="transition-all hover:scale-105">
-            <Save className="mr-2 h-4 w-4" />
-            Save Changes
+          <Button
+            onClick={handleSave}
+            disabled={isSaving || !hasChanges}
+            className="transition-all hover:scale-105"
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Changes
+              </>
+            )}
           </Button>
         </div>
       </div>
+
+      {/* Unsaved changes indicator */}
+      {hasChanges && (
+        <div className="bg-yellow-500/10 border border-yellow-500/20 text-yellow-700 dark:text-yellow-400 px-4 py-2 rounded-lg text-sm">
+          You have unsaved changes
+        </div>
+      )}
 
       {/* Quick Stats */}
       <div className="grid gap-4 md:grid-cols-4">
@@ -151,7 +471,9 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{employee.preferences.preferredDays.length}</div>
+            <div className="text-2xl font-bold">
+              {employee.preferences?.preferredDays.length || 0}
+            </div>
           </CardContent>
         </Card>
         <Card className="transition-all hover:shadow-md">
@@ -161,7 +483,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{employee.preferences.maxShiftsPerWeek}</div>
+            <div className="text-2xl font-bold">{employee.preferences?.maxShiftsPerWeek || 5}</div>
           </CardContent>
         </Card>
       </div>
@@ -242,7 +564,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
           </Card>
 
           <Card className="transition-all hover:shadow-md">
-            <CardHeader className="border-l-4 border-l-charcoal">
+            <CardHeader className="border-l-4 border-l-muted-foreground">
               <CardTitle>Role & Bureau</CardTitle>
               <CardDescription>Position and location information</CardDescription>
             </CardHeader>
@@ -258,13 +580,15 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                       id="role"
                       className="transition-all focus:ring-2 focus:ring-primary"
                     >
-                      <SelectValue />
+                      <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Lead Editor">Lead Editor</SelectItem>
                       <SelectItem value="Senior Editor">Senior Editor</SelectItem>
                       <SelectItem value="Junior Editor">Junior Editor</SelectItem>
-                      <SelectItem value="Support Staff">Support Staff</SelectItem>
+                      <SelectItem value="Editor">Editor</SelectItem>
+                      <SelectItem value="Senior Correspondent">Senior Correspondent</SelectItem>
+                      <SelectItem value="Correspondent">Correspondent</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -280,7 +604,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                         id="bureau"
                         className="pl-9 transition-all focus:ring-2 focus:ring-primary"
                       >
-                        <SelectValue />
+                        <SelectValue placeholder="Select bureau" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Milan">Milan</SelectItem>
@@ -314,7 +638,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                   >
                     <Checkbox
                       id={day}
-                      checked={employee.preferences.preferredDays.includes(day)}
+                      checked={employee.preferences?.preferredDays.includes(day) || false}
                       onCheckedChange={() => togglePreferredDay(day)}
                     />
                     <label htmlFor={day} className="text-sm font-medium cursor-pointer">
@@ -327,7 +651,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
           </Card>
 
           <Card className="transition-all hover:shadow-md">
-            <CardHeader className="border-l-4 border-l-charcoal">
+            <CardHeader className="border-l-4 border-l-muted-foreground">
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
                 Preferred Shift Types
@@ -344,7 +668,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                   >
                     <Checkbox
                       id={shift}
-                      checked={employee.preferences.preferredShifts.includes(shift)}
+                      checked={employee.preferences?.preferredShifts.includes(shift) || false}
                       onCheckedChange={() => togglePreferredShift(shift)}
                     />
                     <label htmlFor={shift} className="text-sm font-medium cursor-pointer">
@@ -365,12 +689,16 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               <div className="space-y-2">
                 <Label htmlFor="maxShifts">Maximum Shifts Per Week</Label>
                 <Select
-                  value={employee.preferences.maxShiftsPerWeek.toString()}
+                  value={(employee.preferences?.maxShiftsPerWeek || 5).toString()}
                   onValueChange={(value) =>
                     setEmployee({
                       ...employee,
                       preferences: {
-                        ...employee.preferences,
+                        ...(employee.preferences || {
+                          preferredDays: [],
+                          preferredShifts: [],
+                          notes: '',
+                        }),
                         maxShiftsPerWeek: Number.parseInt(value),
                       },
                     })
@@ -396,11 +724,18 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                 <Label htmlFor="notes">Additional Notes</Label>
                 <Textarea
                   id="notes"
-                  value={employee.preferences.notes}
+                  value={employee.preferences?.notes || ''}
                   onChange={(e) =>
                     setEmployee({
                       ...employee,
-                      preferences: { ...employee.preferences, notes: e.target.value },
+                      preferences: {
+                        ...(employee.preferences || {
+                          preferredDays: [],
+                          preferredShifts: [],
+                          maxShiftsPerWeek: 5,
+                        }),
+                        notes: e.target.value,
+                      },
                     })
                   }
                   placeholder="Any additional preferences or constraints..."
@@ -414,42 +749,52 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         {/* Shift History Tab */}
         <TabsContent value="history">
           <Card className="transition-all hover:shadow-md">
-            <CardHeader className="border-l-4 border-l-charcoal">
+            <CardHeader className="border-l-4 border-l-muted-foreground">
               <CardTitle>Recent Shifts</CardTitle>
               <CardDescription>Past shift assignments and attendance</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {[
-                  { date: 'Oct 28, 2025', shift: 'Morning', bureau: 'Milan', status: 'Completed' },
-                  {
-                    date: 'Oct 27, 2025',
-                    shift: 'Afternoon',
-                    bureau: 'Milan',
-                    status: 'Completed',
-                  },
-                  { date: 'Oct 25, 2025', shift: 'Morning', bureau: 'Milan', status: 'Completed' },
-                  { date: 'Oct 24, 2025', shift: 'Evening', bureau: 'Milan', status: 'Completed' },
-                  { date: 'Oct 22, 2025', shift: 'Morning', bureau: 'Milan', status: 'Completed' },
-                ].map((shift, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 rounded-lg border transition-all hover:bg-accent"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="text-sm font-medium">{shift.date}</div>
-                      <Badge variant="outline">{shift.shift}</Badge>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <MapPin className="h-3 w-3" />
-                        {shift.bureau}
+              {shiftHistory.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No shift history available</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {shiftHistory.map((shift) => (
+                    <div
+                      key={shift.id}
+                      className="flex items-center justify-between p-3 rounded-lg border transition-all hover:bg-accent"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="text-sm font-medium">{shift.date}</div>
+                        <Badge variant="outline">{shift.shiftType}</Badge>
+                        <div className="text-sm text-muted-foreground">
+                          {shift.startTime} - {shift.endTime}
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <MapPin className="h-3 w-3" />
+                          {shift.bureau}
+                        </div>
                       </div>
+                      <Badge
+                        variant="secondary"
+                        className={
+                          shift.status === 'Completed'
+                            ? 'bg-green-500/10 text-green-700'
+                            : shift.status === 'Confirmed'
+                              ? 'bg-blue-500/10 text-blue-700'
+                              : shift.status === 'Declined'
+                                ? 'bg-red-500/10 text-red-700'
+                                : 'bg-yellow-500/10 text-yellow-700'
+                        }
+                      >
+                        {shift.status}
+                      </Badge>
                     </div>
-                    <Badge variant="secondary" className="bg-green-500/10 text-green-700">
-                      {shift.status}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

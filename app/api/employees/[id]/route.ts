@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { verifyAuth } from '@/lib/auth/verify';
+import { verifyAuth, isAdminOrManager } from '@/lib/auth/verify';
 
 /**
  * GET /api/employees/:id
@@ -85,6 +85,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 /**
  * PUT /api/employees/:id
  * Update an employee
+ * Requires: admin, manager, scheduler, or self-update
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -94,11 +95,23 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
+
+    // Allow users to update their own profile, or admin/manager/scheduler to update anyone
+    const isSelfUpdate = user.id === id;
+    const hasEditPermission = isAdminOrManager(user) || user.role === 'scheduler';
+
+    if (!isSelfUpdate && !hasEditPermission) {
+      return NextResponse.json(
+        { error: 'You do not have permission to edit this employee' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { name, email, phone, role, bureau, status } = body;
 
     const supabase = await createClient();
-    const { id } = await params;
 
     // Check if employee exists
     const { data: existingEmployee } = await supabase
@@ -203,6 +216,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 /**
  * DELETE /api/employees/:id
  * Delete an employee
+ * Requires: admin or manager role
  */
 export async function DELETE(
   request: NextRequest,
@@ -213,6 +227,14 @@ export async function DELETE(
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
       return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin or manager can delete employees
+    if (!isAdminOrManager(user)) {
+      return NextResponse.json(
+        { error: 'Only administrators and managers can delete employees' },
+        { status: 403 }
+      );
     }
 
     const supabase = await createClient();

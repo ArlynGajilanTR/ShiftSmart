@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { verifyAuth } from '@/lib/auth/verify';
+import { verifyAuth, isAdminOrManager } from '@/lib/auth/verify';
 
 /**
  * GET /api/employees
@@ -115,6 +115,7 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/employees
  * Create a new employee
+ * Requires: admin, manager, or scheduler role
  */
 export async function POST(request: NextRequest) {
   try {
@@ -122,6 +123,14 @@ export async function POST(request: NextRequest) {
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
       return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only admin, manager, or scheduler can create employees
+    if (!isAdminOrManager(user) && user.role !== 'scheduler') {
+      return NextResponse.json(
+        { error: 'You do not have permission to create employees' },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();

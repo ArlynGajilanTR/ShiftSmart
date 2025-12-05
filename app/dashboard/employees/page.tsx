@@ -356,6 +356,9 @@ export default function EmployeesPage() {
                 <SelectItem value="Lead Editor">Lead Editor</SelectItem>
                 <SelectItem value="Senior Editor">Senior Editor</SelectItem>
                 <SelectItem value="Junior Editor">Junior Editor</SelectItem>
+                <SelectItem value="Editor">Editor</SelectItem>
+                <SelectItem value="Senior Correspondent">Senior Correspondent</SelectItem>
+                <SelectItem value="Correspondent">Correspondent</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -653,11 +656,12 @@ function EmployeeForm({ onClose, onSuccess }: { onClose: () => void; onSuccess?:
             <SelectValue placeholder="Select role" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Breaking News Editor, Italy">Editor</SelectItem>
-            <SelectItem value="Senior Breaking News Correspondent, Italy">
-              Senior Correspondent
-            </SelectItem>
-            <SelectItem value="Breaking News Correspondent, Italy">Correspondent</SelectItem>
+            <SelectItem value="Lead Editor">Lead Editor</SelectItem>
+            <SelectItem value="Senior Editor">Senior Editor</SelectItem>
+            <SelectItem value="Junior Editor">Junior Editor</SelectItem>
+            <SelectItem value="Editor">Editor</SelectItem>
+            <SelectItem value="Senior Correspondent">Senior Correspondent</SelectItem>
+            <SelectItem value="Correspondent">Correspondent</SelectItem>
           </SelectContent>
         </Select>
       </div>

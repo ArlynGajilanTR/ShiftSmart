@@ -10,10 +10,10 @@ import { cn } from '@/lib/utils';
 const faqChips = [
   { label: 'Create a shift', question: 'How do I create a new shift?' },
   { label: 'AI scheduling', question: 'How does AI schedule generation work?' },
-  { label: 'View conflicts', question: 'How do I view and resolve conflicts?' },
+  { label: 'Schedule Health', question: 'How do I view and resolve conflicts in Schedule Health?' },
   { label: 'Add employee', question: 'How do I add a new employee?' },
   { label: 'Drag & drop', question: 'How does drag and drop work for shifts?' },
-  { label: 'Filter employees', question: 'How do I filter employees by bureau or role?' },
+  { label: 'AI resolution', question: 'How does AI-powered conflict resolution work?' },
 ];
 
 interface Message {

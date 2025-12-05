@@ -5,6 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.3] - 2025-12-05
+
+### Fixed
+
+- **Employee Detail Page**: Completely rewired to fetch real data from API
+  - Now fetches employee data from `GET /api/employees/:id`
+  - Loads employee preferences from API
+  - Fetches real shift history from `GET /api/shifts?employee_id=:id`
+  - Save Changes button now calls `PUT /api/employees/:id` and `PUT /api/employees/:id/preferences`
+  - Added proper loading skeleton with skeleton UI components
+  - Added error state handling for failed API requests
+  - Added "unsaved changes" indicator
+  - Disabled save button when no changes detected
+
+- **Role Value Consistency**: Standardized role values across the application
+  - Add Employee form, Edit Employee form, and Filter dropdowns now use consistent role values
+  - Available roles: `Lead Editor`, `Senior Editor`, `Junior Editor`, `Editor`, `Senior Correspondent`, `Correspondent`
+
+- **Loading State**: Employee list loading page now shows proper skeleton UI instead of blank
+
+### Added
+
+- **Authorization Checks**: Role-based access control for employee management
+  - `POST /api/employees` requires `admin`, `manager`, or `scheduler` role
+  - `PUT /api/employees/:id` requires `admin`, `manager`, `scheduler`, or self-update
+  - `DELETE /api/employees/:id` requires `admin` or `manager` role only
+  - Returns `403 Forbidden` with clear error messages for unauthorized access
+
+### Changed
+
+- Updated API Reference documentation with authorization requirements table
+- Employee Detail page shift history now shows actual shifts from database
+
+## [1.4.2] - 2025-12-05
+
+### Added
+
+- **AI Chatbot Guide Widget**: In-app assistant powered by Claude Haiku 4.5
+  - Lives in sidebar with "Ask ShiftSmart" button
+  - FAQ chips for quick access to common questions
+  - Shimmering text animation on page load (15 seconds)
+  - Liquid metal button effect with hover shine
+  - Markdown bold text rendering in responses
+  - Scrolls to top of AI response for readability
+  - Knowledge base updated to v1.4.1 features
+
+- **New API Endpoint**: `POST /api/ai/chatbot`
+  - Conversational AI for user guidance
+  - Context-aware responses with conversation history
+  - Embedded knowledge base covering all ShiftSmart features
+
+### Changed
+
+- Sidebar layout updated to include chatbot widget below navigation
+- Added shimmer animation keyframes to global CSS
+
 ## [1.4.1] - 2025-12-05
 
 ### Added

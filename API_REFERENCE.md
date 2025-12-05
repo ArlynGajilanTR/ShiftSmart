@@ -1,8 +1,8 @@
 # ShiftSmart API Reference
 
-**Version:** 1.0.0  
+**Version:** 1.4.3  
 **Base URL:** `https://your-api-domain.vercel.app`  
-**Last Updated:** October 30, 2025
+**Last Updated:** December 5, 2025
 
 ---
 
@@ -151,6 +151,18 @@ Authorization: Bearer YOUR_TOKEN
 
 Manage Breaking News team members.
 
+### Authorization Requirements
+
+| Endpoint                             | Required Role                                   |
+| ------------------------------------ | ----------------------------------------------- |
+| `GET /api/employees`                 | Any authenticated user                          |
+| `POST /api/employees`                | `admin`, `manager`, or `scheduler`              |
+| `GET /api/employees/:id`             | Any authenticated user                          |
+| `PUT /api/employees/:id`             | `admin`, `manager`, `scheduler`, or self-update |
+| `DELETE /api/employees/:id`          | `admin` or `manager` only                       |
+| `GET /api/employees/:id/preferences` | Any authenticated user                          |
+| `PUT /api/employees/:id/preferences` | Any authenticated user                          |
+
 ### GET /api/employees
 
 List all employees with optional filtering.
@@ -197,6 +209,8 @@ Authorization: Bearer YOUR_TOKEN
 ### POST /api/employees
 
 Create a new employee.
+
+**Required Role:** `admin`, `manager`, or `scheduler`
 
 **Request:**
 
@@ -273,6 +287,8 @@ Authorization: Bearer YOUR_TOKEN
 
 Update an employee's details.
 
+**Required Role:** `admin`, `manager`, `scheduler`, or the employee themselves (self-update)
+
 **Request:**
 
 ```http
@@ -304,6 +320,8 @@ Content-Type: application/json
 
 Delete an employee (soft delete recommended).
 
+**Required Role:** `admin` or `manager` only
+
 **Request:**
 
 ```http
@@ -318,6 +336,11 @@ Authorization: Bearer YOUR_TOKEN
   "message": "Employee deleted successfully"
 }
 ```
+
+**Errors:**
+
+- `403` - "Only administrators and managers can delete employees"
+- `404` - Employee not found
 
 ---
 
@@ -803,7 +826,7 @@ Authorization: Bearer YOUR_TOKEN
 
 ## AI Scheduling API
 
-AI-powered scheduling using Claude Sonnet 4.5.
+AI-powered scheduling and assistance using Claude Haiku 4.5.
 
 ### POST /api/ai/generate-schedule
 
@@ -958,6 +981,47 @@ Authorization: Bearer YOUR_TOKEN
   }
 }
 ```
+
+---
+
+### POST /api/ai/chatbot
+
+Get AI-powered guidance for using ShiftSmart features. Uses Claude Haiku 4.5 for fast, cost-effective responses.
+
+**Request:**
+
+```http
+POST /api/ai/chatbot
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
+  "question": "How do I create a new shift?",
+  "history": [
+    { "role": "user", "content": "Previous question" },
+    { "role": "assistant", "content": "Previous answer" }
+  ]
+}
+```
+
+**Body Parameters:**
+
+- `question` (string, required) - The user's question about ShiftSmart
+- `history` (array, optional) - Previous conversation messages for context (max 6 recommended)
+
+**Response (200 OK):**
+
+```json
+{
+  "answer": "To create a new shift:\n1. Go to the **Schedule** page from the sidebar\n2. Click the **Add Shift** button in the top right\n3. Select an employee, bureau, date, and times\n4. Click **Create Shift**"
+}
+```
+
+**Notes:**
+
+- Responses may contain markdown bold (`**text**`) which should be rendered appropriately
+- The AI has knowledge of all ShiftSmart features including Schedule Health, AI scheduling, drag-and-drop, and employee management
+- If AI is not configured, returns a friendly fallback message
 
 ---
 
