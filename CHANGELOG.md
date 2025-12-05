@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.6] - 2025-12-05
+
+### Added
+
+- **Dynamic Schedule Health Icon**: Sidebar navigation icon reflects real-time conflict status
+  - Green `ShieldCheck` icon when no unresolved conflicts (healthy schedule)
+  - Red `ShieldAlert` icon when unresolved conflicts exist (needs attention)
+  - Neutral `Shield` icon while loading
+  - Auto-polls every 30 seconds to keep status current
+
+### Fixed
+
+- **Sidebar Header Alignment**: Horizontal rules now align between Reuters logo and ShiftSmart header
+  - Set sidebar header to fixed height (`h-16`) matching main header
+  - Replaced `<Separator />` with `border-b` for consistent styling
+
 ## [1.4.5] - 2025-12-05
 
 ### Removed
