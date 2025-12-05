@@ -235,7 +235,6 @@ export default function DashboardPage() {
       icon: Users,
       change: 'Breaking News Team',
       color: 'border-l-4 border-l-black',
-      progressColor: 'bg-black',
     },
     {
       label: 'Active Shifts',
@@ -243,7 +242,6 @@ export default function DashboardPage() {
       icon: CalendarIcon,
       change: 'This week',
       color: 'border-l-4 border-l-black',
-      progressColor: 'bg-black',
     },
     {
       label: 'Open Conflicts',
@@ -251,7 +249,6 @@ export default function DashboardPage() {
       icon: AlertCircle,
       change: stats.openConflicts === 0 ? 'All clear' : 'Needs attention',
       color: `border-l-4 ${stats.openConflicts === 0 ? 'border-l-green-500' : 'border-l-red-500'}`,
-      progressColor: stats.openConflicts === 0 ? 'bg-green-500' : 'bg-red-500',
     },
     {
       label: 'Coverage Rate',
@@ -260,6 +257,7 @@ export default function DashboardPage() {
       change: 'Milan & Rome',
       color: `border-l-4 ${stats.coverageRate === '100%' ? 'border-l-green-500' : 'border-l-red-500'}`,
       progressColor: stats.coverageRate === '100%' ? 'bg-green-500' : 'bg-red-500',
+      showProgress: true,
     },
   ];
 
@@ -606,16 +604,18 @@ export default function DashboardPage() {
               <stat.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="flex flex-col">
-              <div className="mb-4">
+              <div className={stat.showProgress ? 'mb-4' : ''}>
                 <div className="text-3xl font-bold">{stat.value}</div>
                 <p className="text-xs text-muted-foreground font-medium mt-1">{stat.change}</p>
               </div>
-              <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className={`h-full ${stat.progressColor} transition-all duration-500`}
-                  style={{ width: stat.label === 'Coverage Rate' ? stat.value : '75%' }}
-                />
-              </div>
+              {stat.showProgress && (
+                <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${stat.progressColor} transition-all duration-500`}
+                    style={{ width: stat.value }}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
