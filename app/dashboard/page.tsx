@@ -3,14 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,6 +25,7 @@ import {
   endOfMonth,
   eachDayOfInterval,
   isSameMonth,
+  isToday,
   addMonths,
   subMonths,
   startOfQuarter,
@@ -491,6 +484,107 @@ export default function DashboardPage() {
     );
   };
 
+  const TodayView = () => {
+    const today = new Date();
+    const todayShifts = getShiftsForDate(today);
+
+    // Group shifts by time slot
+    const morningShifts = todayShifts.filter((s) => parseInt(s.startTime.split(':')[0]) < 12);
+    const afternoonShifts = todayShifts.filter(
+      (s) => parseInt(s.startTime.split(':')[0]) >= 12 && parseInt(s.startTime.split(':')[0]) < 18
+    );
+    const eveningShifts = todayShifts.filter(
+      (s) => parseInt(s.startTime.split(':')[0]) >= 18 || parseInt(s.startTime.split(':')[0]) < 6
+    );
+
+    const ShiftCard = ({ shift }: { shift: Shift }) => (
+      <div className="bg-white border-l-4 border-l-[#FF6600] rounded-lg p-4 shadow-sm hover:shadow-md transition-all hover:scale-[1.01]">
+        <div className="flex items-start justify-between">
+          <div className="space-y-1">
+            <div className="font-bold text-[#FF6600] text-lg">{shift.employee}</div>
+            <div className="text-gray-600 font-medium">{shift.role}</div>
+          </div>
+          <Badge variant="secondary" className="text-sm font-semibold">
+            {shift.bureau}
+          </Badge>
+        </div>
+        <div className="mt-3 flex items-center gap-4">
+          <div className="flex items-center gap-2 text-gray-700">
+            <Clock className="h-4 w-4" />
+            <span className="font-semibold">
+              {shift.startTime} - {shift.endTime}
+            </span>
+          </div>
+          <Badge
+            variant={shift.status === 'confirmed' ? 'default' : 'secondary'}
+            className="font-semibold"
+          >
+            {shift.status}
+          </Badge>
+        </div>
+      </div>
+    );
+
+    const TimeSlotSection = ({
+      title,
+      shifts,
+      icon,
+    }: {
+      title: string;
+      shifts: Shift[];
+      icon: string;
+    }) => (
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{icon}</span>
+          <h4 className="font-bold text-gray-700">{title}</h4>
+          <Badge variant="outline" className="ml-auto">
+            {shifts.length} shift{shifts.length !== 1 ? 's' : ''}
+          </Badge>
+        </div>
+        {shifts.length > 0 ? (
+          <div className="grid gap-3 md:grid-cols-2">
+            {shifts.map((shift) => (
+              <ShiftCard key={shift.id} shift={shift} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-lg">
+            No shifts scheduled
+          </div>
+        )}
+      </div>
+    );
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center gap-3">
+          <h3 className="font-bold text-2xl">{format(today, 'EEEE, MMMM d, yyyy')}</h3>
+          {isToday(today) && <Badge className="bg-[#FF6600] hover:bg-[#e55a00]">Today</Badge>}
+        </div>
+
+        {todayShifts.length === 0 ? (
+          <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg">
+            <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-lg font-medium">No shifts scheduled for today</p>
+            <p className="text-sm mt-1">Enjoy your day off!</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="text-center">
+              <span className="text-3xl font-bold text-[#FF6600]">{todayShifts.length}</span>
+              <span className="text-gray-600 ml-2">total shifts today</span>
+            </div>
+
+            <TimeSlotSection title="Morning (6AM - 12PM)" shifts={morningShifts} icon="🌅" />
+            <TimeSlotSection title="Afternoon (12PM - 6PM)" shifts={afternoonShifts} icon="☀️" />
+            <TimeSlotSection title="Evening/Night (6PM - 6AM)" shifts={eveningShifts} icon="🌙" />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Stats Grid */}
@@ -539,8 +633,11 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="week" className="w-full">
+            <Tabs defaultValue="today" className="w-full">
               <TabsList className="mb-4">
+                <TabsTrigger value="today" className="font-semibold">
+                  Today
+                </TabsTrigger>
                 <TabsTrigger value="week" className="font-semibold">
                   Week
                 </TabsTrigger>
@@ -551,6 +648,10 @@ export default function DashboardPage() {
                   Quarter
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="today">
+                <TodayView />
+              </TabsContent>
 
               <TabsContent value="week">
                 <WeekView />
@@ -624,51 +725,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Upcoming Shifts Table */}
-      <Card className="shadow-sm hover:shadow-md transition-shadow">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold">Upcoming Shifts</CardTitle>
-          <CardDescription className="font-medium">Next 7 days of scheduled shifts</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="font-bold">Employee</TableHead>
-                <TableHead className="font-bold">Role</TableHead>
-                <TableHead className="font-bold">Bureau</TableHead>
-                <TableHead className="font-bold">Date</TableHead>
-                <TableHead className="font-bold">Time</TableHead>
-                <TableHead className="font-bold">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {upcomingShifts.map((shift) => (
-                <TableRow key={shift.id} className="hover:bg-gray-50 transition-colors">
-                  <TableCell className="font-bold">{shift.employee}</TableCell>
-                  <TableCell className="font-medium">{shift.role}</TableCell>
-                  <TableCell className="font-medium">{shift.bureau}</TableCell>
-                  <TableCell className="font-medium">
-                    {format(new Date(shift.date), 'MMM dd, yyyy')}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {shift.startTime} - {shift.endTime}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={shift.status === 'confirmed' ? 'default' : 'secondary'}
-                      className="font-semibold"
-                    >
-                      {shift.status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
     </div>
   );
 }
