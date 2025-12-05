@@ -3,7 +3,7 @@
 import type React from 'react';
 import { useState, useEffect } from 'react';
 
-import { Calendar, Users, Shield, Settings, LogOut } from 'lucide-react';
+import { Calendar, Users, Shield, ShieldCheck, ShieldAlert, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -25,11 +25,11 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { ChatbotGuide } from '@/components/chatbot-guide';
 
-const navigation = [
+// Navigation items - Schedule Health icon will be dynamic
+const baseNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Calendar },
   { name: 'Schedule', href: '/dashboard/schedule', icon: Calendar },
   { name: 'Employees', href: '/dashboard/employees', icon: Users },
-  { name: 'Schedule Health', href: '/dashboard/conflicts', icon: Shield },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -37,6 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [unresolvedConflictCount, setUnresolvedConflictCount] = useState<number | null>(null);
 
   // Authentication guard - check for valid token
   useEffect(() => {
@@ -48,6 +49,59 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
     setIsCheckingAuth(false);
   }, [router]);
+
+  // Fetch unresolved conflict count for dynamic icon
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const fetchConflictCount = async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        const response = await fetch('/api/conflicts?status=unresolved', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUnresolvedConflictCount(data.conflicts?.length ?? 0);
+        }
+      } catch (error) {
+        console.error('Failed to fetch conflict count:', error);
+      }
+    };
+
+    fetchConflictCount();
+    // Poll every 30 seconds to keep icon updated
+    const interval = setInterval(fetchConflictCount, 30000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
+
+  // Dynamic Schedule Health icon based on conflict status
+  const ScheduleHealthIcon =
+    unresolvedConflictCount === null
+      ? Shield // Loading state - neutral
+      : unresolvedConflictCount === 0
+        ? ShieldCheck // No conflicts - green checkmark shield
+        : ShieldAlert; // Has conflicts - alert shield
+
+  const scheduleHealthIconColor =
+    unresolvedConflictCount === null
+      ? ''
+      : unresolvedConflictCount === 0
+        ? 'text-green-500'
+        : 'text-red-500';
+
+  // Build navigation with dynamic Schedule Health entry
+  const navigation = [
+    ...baseNavigation,
+    {
+      name: 'Schedule Health',
+      href: '/dashboard/conflicts',
+      icon: ScheduleHealthIcon,
+      iconClassName: scheduleHealthIconColor,
+    },
+  ];
 
   // Handle logout
   const handleLogout = async () => {
@@ -112,7 +166,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <SidebarMenuItem key={item.name}>
                     <SidebarMenuButton asChild isActive={pathname === item.href}>
                       <Link href={item.href}>
-                        <item.icon />
+                        <item.icon
+                          className={'iconClassName' in item ? item.iconClassName : undefined}
+                        />
                         <span>{item.name}</span>
                       </Link>
                     </SidebarMenuButton>
