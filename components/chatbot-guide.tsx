@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Sparkles, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,17 +21,46 @@ interface Message {
   content: string;
 }
 
+// Parse markdown bold (**text**) and render as JSX
+function formatMessage(content: string): React.ReactNode {
+  const parts = content.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      // Remove asterisks and wrap in bold
+      return (
+        <strong key={i} className="font-semibold">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+}
+
 export function ChatbotGuide() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isShimmering, setIsShimmering] = useState(true);
+  const [lastAiMessageIndex, setLastAiMessageIndex] = useState<number | null>(null);
+  const aiResponseRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Stop shimmering after 15 seconds
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    const timer = setTimeout(() => {
+      setIsShimmering(false);
+    }, 15000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Scroll to top of AI response when it arrives
+  useEffect(() => {
+    if (lastAiMessageIndex !== null && aiResponseRef.current) {
+      aiResponseRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [lastAiMessageIndex]);
 
   const sendMessage = async (question: string) => {
     if (!question.trim()) return;
@@ -63,16 +92,22 @@ export function ChatbotGuide() {
         role: 'assistant',
         content: data.answer,
       };
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages((prev) => {
+        setLastAiMessageIndex(prev.length); // Index of the new AI message
+        return [...prev, assistantMessage];
+      });
     } catch (error) {
       console.error('Chatbot error:', error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: "Sorry, I couldn't process that request. Please try again.",
-        },
-      ]);
+      setMessages((prev) => {
+        setLastAiMessageIndex(prev.length); // Index of the error message
+        return [
+          ...prev,
+          {
+            role: 'assistant',
+            content: "Sorry, I couldn't process that request. Please try again.",
+          },
+        ];
+      });
     } finally {
       setIsLoading(false);
     }
@@ -89,14 +124,55 @@ export function ChatbotGuide() {
 
   return (
     <div className="relative">
-      {/* Collapsed state - just the button */}
+      {/* Collapsed state - liquid metal button with shimmering text */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-sidebar-accent rounded-md transition-colors"
+          className={cn(
+            'group relative flex items-center gap-2 w-full px-3 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300',
+            'bg-gradient-to-r from-slate-100 via-white to-slate-100',
+            'hover:from-slate-200 hover:via-slate-50 hover:to-slate-200',
+            'border border-slate-200/60',
+            'shadow-[0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(0,0,0,0.05)]',
+            'hover:shadow-[0_4px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.08)]',
+            'hover:scale-[1.02] active:scale-[0.98]',
+            'overflow-hidden'
+          )}
         >
-          <Sparkles className="h-4 w-4 text-primary" />
-          <span>Ask ShiftSmart</span>
+          {/* Liquid metal shine effect */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+          </div>
+
+          {/* Sparkles icon with glow */}
+          <Sparkles
+            className={cn(
+              'h-4 w-4 relative z-10 transition-all duration-300',
+              isShimmering
+                ? 'text-orange-500 drop-shadow-[0_0_6px_rgba(249,115,22,0.6)] animate-pulse'
+                : 'text-primary group-hover:text-orange-500'
+            )}
+          />
+
+          {/* Text with shimmer animation */}
+          <span
+            className={cn(
+              'relative z-10 transition-colors duration-300',
+              isShimmering
+                ? 'bg-gradient-to-r from-slate-700 via-orange-500 via-amber-400 via-orange-500 to-slate-700 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer'
+                : 'text-slate-700 group-hover:text-slate-900'
+            )}
+          >
+            Ask ShiftSmart
+          </span>
+
+          {/* Subtle pulse ring when shimmering */}
+          {isShimmering && (
+            <div
+              className="absolute inset-0 rounded-lg border-2 border-orange-400/30 animate-ping"
+              style={{ animationDuration: '2s' }}
+            />
+          )}
         </button>
       )}
 
@@ -120,7 +196,7 @@ export function ChatbotGuide() {
           </div>
 
           {/* Messages area */}
-          <div className="h-[200px] overflow-y-auto p-3 space-y-3">
+          <div className="h-[240px] overflow-y-auto p-3 space-y-3">
             {messages.length === 0 ? (
               <div className="text-center py-4">
                 <p className="text-xs text-muted-foreground mb-3">
@@ -144,6 +220,7 @@ export function ChatbotGuide() {
                 {messages.map((msg, idx) => (
                   <div
                     key={idx}
+                    ref={idx === lastAiMessageIndex ? aiResponseRef : null}
                     className={cn(
                       'text-xs p-2 rounded-lg max-w-[90%]',
                       msg.role === 'user'
@@ -151,7 +228,7 @@ export function ChatbotGuide() {
                         : 'bg-muted'
                     )}
                   >
-                    {msg.content}
+                    {msg.role === 'assistant' ? formatMessage(msg.content) : msg.content}
                   </div>
                 ))}
                 {isLoading && (
@@ -169,7 +246,6 @@ export function ChatbotGuide() {
                     </div>
                   </div>
                 )}
-                <div ref={messagesEndRef} />
               </>
             )}
           </div>

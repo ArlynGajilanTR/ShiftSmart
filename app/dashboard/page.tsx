@@ -45,67 +45,46 @@ interface Shift {
   employee_id: string;
   role: string;
   bureau: string;
-  date: string;
+  date: Date; // Changed to Date to align with schedule page
   startTime: string;
   endTime: string;
   status: string;
 }
 
-// Mock data as fallback
-const mockUpcomingShifts = [
+// Mock data as fallback - uses Date objects to align with schedule page
+const mockUpcomingShifts: Shift[] = [
   {
-    id: 1,
+    id: '1',
     employee: 'Marco Rossi',
+    employee_id: '1',
     role: 'Senior Editor',
     bureau: 'Milan',
-    date: '2025-10-30',
-    time: '08:00 - 16:00',
+    date: new Date(),
+    startTime: '07:00',
+    endTime: '15:00',
     status: 'confirmed',
   },
   {
-    id: 2,
+    id: '2',
     employee: 'Sofia Romano',
+    employee_id: '2',
     role: 'Junior Editor',
     bureau: 'Rome',
-    date: '2025-10-30',
-    time: '16:00 - 00:00',
+    date: new Date(),
+    startTime: '15:00',
+    endTime: '23:00',
     status: 'confirmed',
   },
   {
-    id: 3,
+    id: '3',
     employee: 'Luca Ferrari',
+    employee_id: '3',
     role: 'Lead Editor',
     bureau: 'Milan',
-    date: '2025-10-31',
-    time: '00:00 - 08:00',
+    date: new Date(),
+    startTime: '23:00',
+    endTime: '07:00',
     status: 'pending',
-  },
-  {
-    id: 4,
-    employee: 'Giulia Bianchi',
-    role: 'Senior Editor',
-    bureau: 'Rome',
-    date: '2025-10-31',
-    time: '08:00 - 16:00',
-    status: 'confirmed',
-  },
-  {
-    id: 5,
-    employee: 'Alessandro Conti',
-    role: 'Junior Editor',
-    bureau: 'Milan',
-    date: '2025-11-01',
-    time: '08:00 - 16:00',
-    status: 'confirmed',
-  },
-  {
-    id: 6,
-    employee: 'Francesca Marino',
-    role: 'Senior Editor',
-    bureau: 'Rome',
-    date: '2025-11-01',
-    time: '16:00 - 00:00',
-    status: 'confirmed',
   },
 ];
 
@@ -121,17 +100,12 @@ export default function DashboardPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  // Calculate date range for fetching shifts based on current view
+  // Calculate date range for fetching shifts - aligned with schedule page
   const getDateRange = () => {
-    // Get the start of the current week (Monday)
-    const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-    // Get the end of the current quarter
-    const quarterEnd = endOfQuarter(currentDate);
-
-    // Fetch from start of current week to end of quarter (covers all views)
+    // Fetch from 30 days ago to 60 days from now (matches schedule page)
     return {
-      start_date: format(weekStart, 'yyyy-MM-dd'),
-      end_date: format(quarterEnd, 'yyyy-MM-dd'),
+      start_date: format(addDays(new Date(), -30), 'yyyy-MM-dd'),
+      end_date: format(addDays(new Date(), 60), 'yyyy-MM-dd'),
     };
   };
 
@@ -158,26 +132,20 @@ export default function DashboardPage() {
           coverageRate: statsData?.stats?.coverageRate ? `${statsData.stats.coverageRate}%` : '0%',
         });
 
-        // Transform shifts data to match expected format
+        // Transform shifts data to match expected format (aligned with schedule page)
         const transformedShifts = (shiftsData.shifts || [])
           .filter((shift: any) => shift && (shift.date || shift.start_time))
-          .map((shift: any) => {
-            // Safely parse dates
-            const startDate = shift.start_time ? new Date(shift.start_time) : null;
-            const endDate = shift.end_time ? new Date(shift.end_time) : null;
-
-            return {
-              id: shift.id,
-              employee: shift.employee || shift.users?.full_name || 'Unassigned',
-              employee_id: shift.employee_id || null,
-              role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
-              bureau: shift.bureau || shift.bureaus?.name || 'Milan',
-              date: shift.date || (startDate ? format(startDate, 'yyyy-MM-dd') : ''),
-              startTime: shift.startTime || (startDate ? format(startDate, 'HH:mm') : '00:00'),
-              endTime: shift.endTime || (endDate ? format(endDate, 'HH:mm') : '00:00'),
-              status: shift.status || 'pending',
-            };
-          });
+          .map((shift: any) => ({
+            id: shift.id,
+            employee: shift.employee || shift.users?.full_name || 'Unassigned',
+            employee_id: shift.employee_id || null,
+            role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
+            bureau: shift.bureau || shift.bureaus?.name || 'Milan',
+            date: new Date(shift.date || shift.start_time), // Store as Date object like schedule page
+            startTime: shift.startTime || format(new Date(shift.start_time), 'HH:mm'),
+            endTime: shift.endTime || format(new Date(shift.end_time), 'HH:mm'),
+            status: shift.status || 'pending',
+          }));
 
         // Update shifts
         setUpcomingShifts(transformedShifts);
@@ -232,10 +200,9 @@ export default function DashboardPage() {
   ];
 
   const getShiftsForDate = (date: Date) => {
-    return upcomingShifts.filter((shift) => {
-      const shiftDate = shift.date;
-      return format(new Date(shiftDate), 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd');
-    });
+    return upcomingShifts.filter(
+      (shift) => format(shift.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+    );
   };
 
   if (isLoading) {
