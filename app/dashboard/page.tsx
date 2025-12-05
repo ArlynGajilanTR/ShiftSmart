@@ -234,28 +234,32 @@ export default function DashboardPage() {
       value: stats.totalEmployees.toString(),
       icon: Users,
       change: 'Breaking News Team',
-      color: 'border-l-4 border-l-charcoal',
+      color: 'border-l-4 border-l-black',
+      progressColor: 'bg-black',
     },
     {
       label: 'Active Shifts',
       value: stats.activeShifts.toString(),
       icon: CalendarIcon,
       change: 'This week',
-      color: 'border-l-4 border-l-primary',
+      color: 'border-l-4 border-l-black',
+      progressColor: 'bg-black',
     },
     {
       label: 'Open Conflicts',
       value: stats.openConflicts.toString(),
       icon: AlertCircle,
-      change: 'Needs attention',
-      color: 'border-l-4 border-l-red-500',
+      change: stats.openConflicts === 0 ? 'All clear' : 'Needs attention',
+      color: `border-l-4 ${stats.openConflicts === 0 ? 'border-l-green-500' : 'border-l-red-500'}`,
+      progressColor: stats.openConflicts === 0 ? 'bg-green-500' : 'bg-red-500',
     },
     {
       label: 'Coverage Rate',
       value: stats.coverageRate,
       icon: Clock,
       change: 'Milan & Rome',
-      color: 'border-l-4 border-l-green-500',
+      color: `border-l-4 ${stats.coverageRate === '100%' ? 'border-l-green-500' : 'border-l-red-500'}`,
+      progressColor: stats.coverageRate === '100%' ? 'bg-green-500' : 'bg-red-500',
     },
   ];
 
@@ -608,7 +612,7 @@ export default function DashboardPage() {
               </div>
               <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-primary transition-all duration-500"
+                  className={`h-full ${stat.progressColor} transition-all duration-500`}
                   style={{ width: stat.label === 'Coverage Rate' ? stat.value : '75%' }}
                 />
               </div>
