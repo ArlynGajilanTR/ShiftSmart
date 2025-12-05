@@ -182,13 +182,28 @@ export const api = {
       return apiCall<{ shifts: any[] }>(`/api/shifts/upcoming?days=${days}`);
     },
 
+    // Validate a shift before creating (checks for conflicts)
+    validate: async (shiftData: {
+      bureau: string;
+      date: string;
+      start_time: string;
+      end_time: string;
+      employee_id?: string;
+    }) => {
+      return apiCall<{ valid: boolean; conflicts: any[] }>('/api/shifts', {
+        method: 'POST',
+        body: JSON.stringify({ ...shiftData, validate_only: true }),
+      });
+    },
+
     create: async (shiftData: {
-      bureau_id: string;
+      bureau: string;
+      date: string;
       start_time: string;
       end_time: string;
       employee_id?: string;
       status?: string;
-      notes?: string;
+      force?: boolean; // If true, create even if conflicts exist
     }) => {
       return apiCall('/api/shifts', {
         method: 'POST',
@@ -203,13 +218,36 @@ export const api = {
       });
     },
 
-    move: async (id: string, newDate: string, startTime?: string, endTime?: string) => {
+    // Validate a move before applying (checks for conflicts)
+    validateMove: async (id: string, newDate: string, startTime?: string, endTime?: string) => {
+      return apiCall<{ valid: boolean; conflicts: any[]; current: any; proposed: any }>(
+        `/api/shifts/${id}`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({
+            date: newDate,
+            start_time: startTime,
+            end_time: endTime,
+            validate_only: true,
+          }),
+        }
+      );
+    },
+
+    move: async (
+      id: string,
+      newDate: string,
+      startTime?: string,
+      endTime?: string,
+      force: boolean = false
+    ) => {
       return apiCall(`/api/shifts/${id}`, {
         method: 'PATCH',
         body: JSON.stringify({
           date: newDate,
           start_time: startTime,
           end_time: endTime,
+          force,
         }),
       });
     },
@@ -258,6 +296,70 @@ export const api = {
     dismiss: async (id: string) => {
       return apiCall(`/api/conflicts/${id}`, {
         method: 'DELETE',
+      });
+    },
+
+    // Get AI-powered resolution suggestions
+    getAIResolution: async (conflictId: string) => {
+      return apiCall<{
+        success: boolean;
+        conflict_id: string;
+        conflict_details: any;
+        resolution: {
+          conflict_analysis: any;
+          solutions: Array<{
+            option: number;
+            description: string;
+            steps: string[];
+            pros: string[];
+            cons: string[];
+            feasibility_score: number;
+            disruption_score: number;
+            who_affected: string[];
+            suggested_action?: {
+              type: 'reassign' | 'remove' | 'swap' | 'adjust_time';
+              shift_id?: string;
+              new_employee_id?: string;
+              new_employee_name?: string;
+            };
+            can_auto_apply: boolean;
+          }>;
+          recommended_solution: any;
+        };
+        available_employees: Array<{
+          employee_id: string;
+          employee_name: string;
+          shift_role: string;
+          current_weekly_hours: number;
+          can_cover: boolean;
+        }>;
+      }>('/api/ai/resolve-conflict', {
+        method: 'POST',
+        body: JSON.stringify({ conflict_id: conflictId }),
+      });
+    },
+
+    // Apply an AI-suggested resolution action
+    applyResolution: async (
+      conflictId: string,
+      action: {
+        type: 'reassign' | 'remove' | 'swap' | 'adjust_time';
+        shift_id?: string;
+        new_employee_id?: string;
+        swap_with_shift_id?: string;
+        new_start_time?: string;
+        new_end_time?: string;
+      }
+    ) => {
+      return apiCall<{
+        success: boolean;
+        conflict_id: string;
+        action_applied: string;
+        message: string;
+        details?: any;
+      }>('/api/ai/resolve-conflict', {
+        method: 'POST',
+        body: JSON.stringify({ conflict_id: conflictId, apply_action: action }),
       });
     },
   },

@@ -5,6 +5,51 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-12-05
+
+### Added
+
+- **Schedule Health Dashboard**: Transformed Conflicts page into proactive monitoring system
+  - Real-time metrics showing conflicts prevented by AI validation
+  - Active issues counter with severity filtering (High/Medium/Low)
+  - History tab showing resolved conflicts and their resolutions
+  - User Overrides tab for manually approved conflicts
+
+- **AI-Powered Conflict Prevention**: Proactive conflict detection before they occur
+  - Post-AI validation catches conflicts before saving AI-generated schedules
+  - Pre-save conflict warnings for manual shift creation (drag-and-drop)
+  - AI scheduler now validates all generated shifts before database insertion
+
+- **AI-Powered Conflict Resolution**: Intelligent resolution suggestions
+  - "Resolve" button now uses AI to suggest actual fixes (not just status changes)
+  - AI analyzes conflict type and suggests specific actions:
+    - Reassign shift to available employee
+    - Adjust shift times to remove overlap
+    - Remove conflicting assignments
+  - One-click apply for AI-recommended resolutions
+
+- **Enhanced Conflict Dialog**: Improved user experience
+  - Loading states for resolve/acknowledge actions
+  - Auto-close dialogs after successful actions
+  - Read-only mode for resolved conflicts
+  - Expanded suggested actions for all conflict types
+
+### Changed
+
+- **Navigation**: "Conflicts" renamed to "Schedule Health" with Shield icon
+- **API Enhancements**:
+  - `POST /api/shifts` now returns `409 Conflict` with detected issues (use `force: true` to override)
+  - `PUT/PATCH /api/shifts/:id` includes pre-save conflict validation
+  - `POST /api/ai/resolve-conflict` now applies recommended resolution automatically
+  - New `api.shifts.validate()` method for pre-checking conflicts
+
+### Fixed
+
+- Dialog state propagation: Resolve/Acknowledge actions now properly update parent component state
+- "View Details" buttons now functional for acknowledged and resolved conflicts
+- Date field normalization handles both `camelCase` and `snake_case` from API
+- Empty states added for all conflict tabs
+
 ## [1.3.9] - 2025-12-05
 
 ### Added
@@ -293,6 +338,7 @@ Reference: [Claude 4.5 Documentation](https://docs.claude.com/en/docs/about-clau
 - Comprehensive test coverage (332+ tests)
 - Production-ready deployment
 
+[1.4.0]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.9...v1.4.0
 [1.3.9]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.8...v1.3.9
 [1.3.8]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.7...v1.3.8
 [1.3.7]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.6...v1.3.7

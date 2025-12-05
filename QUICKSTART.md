@@ -109,20 +109,19 @@ Two bureaus are already set up:
 - **Quarter**: Long-term planning
 - **Event**: Custom date ranges
 
-### 4. Conflict Management
+### 4. Schedule Health (formerly Conflicts)
 
-**🔴 Red = Hard Conflict** (Must fix):
+The **Schedule Health** dashboard provides AI-powered conflict prevention and resolution.
 
-- Double booking
-- No rest period
-- All-junior shifts
-- Understaffed
+**🛡️ Conflicts Prevented**: Shows conflicts caught by AI before they were saved
 
-**🟡 Yellow = Soft Warning** (Review):
+**⚠️ Active Issues**: Current conflicts requiring attention
 
-- User unavailable
-- Overtime risk
-- Preference violation
+- **High** (Red): Double booking, no rest period, understaffed
+- **Medium** (Yellow): Overtime risk, all-junior shifts
+- **Low** (Orange): Preference violations
+
+**AI Resolution**: Click "Resolve" to get AI-powered suggestions that actually fix the issue (not just mark it resolved)
 
 ### 5. Save
 
@@ -175,15 +174,16 @@ Two bureaus are already set up:
 
 ## Features at a Glance
 
-| Feature                  | Status |
-| ------------------------ | ------ |
-| 📅 Multi-view scheduling | ✅     |
-| 👥 Role-based balancing  | ✅     |
-| 🖱️ Drag & drop           | ✅     |
-| ⚠️ Conflict detection    | ✅     |
-| 🏢 Bureau management     | ✅     |
-| 📊 CSV import/export     | ✅     |
-| 🔐 Secure auth           | ✅     |
+| Feature                   | Status |
+| ------------------------- | ------ |
+| 📅 Multi-view scheduling  | ✅     |
+| 👥 Role-based balancing   | ✅     |
+| 🖱️ Drag & drop            | ✅     |
+| 🛡️ AI conflict prevention | ✅     |
+| 🤖 AI conflict resolution | ✅     |
+| 🏢 Bureau management      | ✅     |
+| 📊 CSV import/export      | ✅     |
+| 🔐 Secure auth            | ✅     |
 
 ## Resources
 

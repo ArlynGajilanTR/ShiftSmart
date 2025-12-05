@@ -1,8 +1,8 @@
-# ShiftSmart v1.3.6
+# ShiftSmart v1.4.0
 
 Unified fullstack application for Reuters Breaking News shift scheduling system.
 
-**Version:** 1.3.6 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 332+
+**Version:** 1.4.0 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 332+
 
 ## Overview
 
@@ -26,10 +26,17 @@ ShiftSmart is an internal scheduling application for Reuters Breaking News edito
 🤖 **AI Scheduling** - Claude Haiku 4.5 generates optimized schedules (near-frontier performance, 2x+ faster)  
 👥 **Employee Management** - CRUD operations with preferences  
 📅 **Smart Scheduling** - Drag-and-drop with conflict detection  
-⚠️ **Conflict Resolution** - Automatic detection and AI suggestions  
+🛡️ **Schedule Health** - AI-powered conflict prevention and resolution  
 📊 **Real-time Dashboard** - Statistics and upcoming shifts  
 🔐 **Secure Authentication** - Session-based with bcrypt hashing  
 📱 **Reuters Branding** - Professional UI with Knowledge2017 font
+
+### AI-Powered Schedule Health (NEW in v1.4.0)
+
+- **Conflict Prevention**: AI validates schedules before saving—conflicts are caught before they exist
+- **Pre-Save Warnings**: Manual shift changes (drag-and-drop) show warnings before creating conflicts
+- **AI Resolution**: The "Resolve" button uses AI to suggest and apply actual fixes, not just status changes
+- **Health Dashboard**: Real-time metrics showing prevented conflicts, active issues, and resolution history
 
 ## Project Structure
 
@@ -95,11 +102,13 @@ shiftsmart-v1/
 - `PATCH /api/shifts/:id` - Move shift (drag-and-drop)
 - `DELETE /api/shifts/:id` - Delete shift
 
-### Conflicts (3 endpoints)
+### Schedule Health / Conflicts (3 endpoints)
 
 - `GET /api/conflicts` - List conflicts (filters: status, severity, limit)
 - `PATCH /api/conflicts/:id` - Resolve or acknowledge (body: `{action: 'resolve'|'acknowledge'}`)
 - `DELETE /api/conflicts/:id` - Dismiss conflict
+
+> **Note:** The Shifts API now includes pre-save conflict validation. Creating or updating a shift that would cause a conflict returns `409 Conflict` with details. Use `force: true` to override.
 
 ### Dashboard (1 endpoint)
 
@@ -107,8 +116,8 @@ shiftsmart-v1/
 
 ### AI Scheduling (4 endpoints) - Claude Haiku 4.5
 
-- `POST /api/ai/generate-schedule` - Generate AI-powered schedule
-- `POST /api/ai/resolve-conflict` - Get AI suggestions for conflict resolution
+- `POST /api/ai/generate-schedule` - Generate AI-powered schedule (with post-generation conflict validation)
+- `POST /api/ai/resolve-conflict` - Get AI suggestions and auto-apply conflict resolution
 - `GET /api/ai/status` - Check AI configuration status
 - `GET /api/ai/debug-last-response` - Debug failed AI responses (v1.3.2+)
 
@@ -350,7 +359,7 @@ Password: changeme
 
 ## Version
 
-**Current Version:** 1.3.6  
+**Current Version:** 1.4.0  
 **Release Date:** December 5, 2025  
 **Status:** ✅ Production Ready - 332+ Tests Passing  
 **Database:** ShiftSmart-v2 (Supabase, us-west-2)

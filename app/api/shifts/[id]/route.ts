@@ -307,8 +307,121 @@ export async function DELETE(
 }
 
 /**
+ * Check conflicts for a potential shift move (before actually moving)
+ */
+async function checkMoveConflicts(
+  supabase: any,
+  shiftId: string,
+  employeeId: string,
+  startTime: string,
+  endTime: string,
+  bureauName: string
+): Promise<any[]> {
+  const conflicts: any[] = [];
+  const shiftDate = format(parseISO(startTime), 'yyyy-MM-dd');
+
+  // Get employee name
+  const { data: employee } = await supabase
+    .from('users')
+    .select('full_name')
+    .eq('id', employeeId)
+    .single();
+
+  const employeeName = employee?.full_name || 'Employee';
+
+  // Check for existing shifts that would conflict (excluding current shift)
+  const { data: existingAssignments } = await supabase
+    .from('shift_assignments')
+    .select('*, shifts!inner(start_time, end_time, bureaus(name))')
+    .eq('user_id', employeeId)
+    .neq('shift_id', shiftId);
+
+  if (existingAssignments) {
+    for (const assignment of existingAssignments) {
+      const existingStart = parseISO(assignment.shifts.start_time);
+      const existingEnd = parseISO(assignment.shifts.end_time);
+      const newStart = parseISO(startTime);
+      const newEnd = parseISO(endTime);
+
+      // Check for overlap
+      const hasOverlap =
+        (newStart >= existingStart && newStart < existingEnd) ||
+        (newEnd > existingStart && newEnd <= existingEnd) ||
+        (newStart <= existingStart && newEnd >= existingEnd);
+
+      if (hasOverlap) {
+        conflicts.push({
+          type: 'Double Booking',
+          severity: 'high',
+          shift_id: shiftId,
+          user_id: employeeId,
+          employee: employeeName,
+          description: `${employeeName} is already scheduled for ${format(existingStart, 'HH:mm')} - ${format(existingEnd, 'HH:mm')} on ${format(existingStart, 'MMM dd')}`,
+          date: shiftDate,
+          details: {
+            shifts: [
+              {
+                time: `${format(newStart, 'HH:mm')} - ${format(newEnd, 'HH:mm')}`,
+                bureau: bureauName,
+                label: 'Moved shift',
+              },
+              {
+                time: `${format(existingStart, 'HH:mm')} - ${format(existingEnd, 'HH:mm')}`,
+                bureau: assignment.shifts.bureaus?.name,
+                label: 'Existing shift',
+              },
+            ],
+          },
+        });
+      }
+
+      // Check rest period violations
+      const hoursAfterExisting = differenceInHours(newStart, existingEnd);
+      if (hoursAfterExisting >= 0 && hoursAfterExisting < 11) {
+        conflicts.push({
+          type: 'Rest Period Violation',
+          severity: 'high',
+          shift_id: shiftId,
+          user_id: employeeId,
+          employee: employeeName,
+          description: `${employeeName} would have only ${hoursAfterExisting.toFixed(0)}h rest (minimum 11h required)`,
+          date: shiftDate,
+          details: {
+            hours_between: hoursAfterExisting,
+            minimum_required: 11,
+          },
+        });
+      }
+
+      const hoursBeforeExisting = differenceInHours(existingStart, newEnd);
+      if (hoursBeforeExisting >= 0 && hoursBeforeExisting < 11) {
+        conflicts.push({
+          type: 'Rest Period Violation',
+          severity: 'high',
+          shift_id: shiftId,
+          user_id: employeeId,
+          employee: employeeName,
+          description: `${employeeName} would have only ${hoursBeforeExisting.toFixed(0)}h rest before next shift (minimum 11h required)`,
+          date: shiftDate,
+          details: {
+            hours_between: hoursBeforeExisting,
+            minimum_required: 11,
+          },
+        });
+      }
+    }
+  }
+
+  return conflicts;
+}
+
+/**
  * PATCH /api/shifts/:id
  * Move a shift (drag-and-drop) - updates date/time only
+ *
+ * SAFEGUARD: By default, rejects moves that would create conflicts.
+ * Use validate_only=true to check without moving.
+ * Use force=true to move despite conflicts (logs as user-confirmed override).
  */
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -319,7 +432,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     const body = await request.json();
-    const { date, start_time, end_time } = body;
+    const {
+      date,
+      start_time,
+      end_time,
+      validate_only = false, // If true, only check for conflicts without moving
+      force = false, // If true, move even if conflicts exist (user confirmed)
+    } = body;
 
     if (!date) {
       return NextResponse.json({ error: 'Date is required' }, { status: 400 });
@@ -339,19 +458,74 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: 'Shift not found' }, { status: 404 });
     }
 
+    // Fetch current assignment
+    const { data: assignment } = await supabase
+      .from('shift_assignments')
+      .select('*, user:users!user_id(full_name, title, shift_role)')
+      .eq('shift_id', id)
+      .maybeSingle();
+
     // Use existing times if not provided
     const existingStartTime = format(new Date(existingShift.start_time), 'HH:mm');
     const existingEndTime = format(new Date(existingShift.end_time), 'HH:mm');
 
     const newStartTime = start_time || existingStartTime;
     const newEndTime = end_time || existingEndTime;
+    const newStartTimestamp = `${date}T${newStartTime}:00`;
+    const newEndTimestamp = `${date}T${newEndTime}:00`;
+
+    // SAFEGUARD 2: Check for conflicts BEFORE moving
+    let potentialConflicts: any[] = [];
+    if (assignment?.user_id) {
+      potentialConflicts = await checkMoveConflicts(
+        supabase,
+        id,
+        assignment.user_id,
+        newStartTimestamp,
+        newEndTimestamp,
+        existingShift.bureaus?.name || ''
+      );
+    }
+
+    // If validate_only, return conflicts without moving
+    if (validate_only) {
+      return NextResponse.json(
+        {
+          valid: potentialConflicts.length === 0,
+          conflicts: potentialConflicts,
+          current: {
+            date: format(new Date(existingShift.start_time), 'yyyy-MM-dd'),
+            startTime: existingStartTime,
+            endTime: existingEndTime,
+          },
+          proposed: {
+            date,
+            startTime: newStartTime,
+            endTime: newEndTime,
+          },
+        },
+        { status: 200 }
+      );
+    }
+
+    // If conflicts exist and not forced, reject the move
+    if (potentialConflicts.length > 0 && !force) {
+      return NextResponse.json(
+        {
+          error: 'Move would create conflicts',
+          conflicts: potentialConflicts,
+          message: 'This move would create scheduling conflicts. Set force=true to move anyway.',
+        },
+        { status: 409 }
+      ); // 409 Conflict
+    }
 
     // Update shift
     const { data: updatedShift, error: updateError } = await supabase
       .from('shifts')
       .update({
-        start_time: `${date}T${newStartTime}:00`,
-        end_time: `${date}T${newEndTime}:00`,
+        start_time: newStartTimestamp,
+        end_time: newEndTimestamp,
       })
       .eq('id', id)
       .select('*, bureaus(name)')
@@ -362,27 +536,42 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: 'Failed to move shift' }, { status: 500 });
     }
 
-    // Fetch assignment
-    const { data: assignment } = await supabase
-      .from('shift_assignments')
-      .select('*, user:users!user_id(full_name, title, shift_role)')
-      .eq('shift_id', id)
-      .maybeSingle();
-
-    // Run conflict detection if there's an assigned employee
-    let detectedConflicts: any[] = [];
-    if (assignment?.user_id) {
-      detectedConflicts = await detectConflicts(
-        supabase,
-        id,
-        assignment.user_id,
-        updatedShift.start_time,
-        updatedShift.end_time,
-        updatedShift.bureaus?.name || ''
+    // If conflicts exist but were forced, log them as user-confirmed overrides
+    if (potentialConflicts.length > 0 && force) {
+      console.log(
+        `[Override] User ${user.id} moved shift despite ${potentialConflicts.length} conflicts`
       );
 
-      // Update conflicts in database (resolve old, insert new)
-      await updateConflicts(supabase, id, detectedConflicts);
+      // Resolve old conflicts for this shift first
+      await supabase
+        .from('conflicts')
+        .update({ status: 'resolved', resolved_at: new Date().toISOString() })
+        .eq('shift_id', id)
+        .eq('status', 'unresolved');
+
+      // Insert new conflicts with "acknowledged" status
+      const conflictsToInsert = potentialConflicts.map((c) => ({
+        type: c.type,
+        severity: c.severity,
+        status: 'acknowledged',
+        shift_id: id,
+        user_id: c.user_id,
+        description: `[User Override] ${c.description}`,
+        date: c.date,
+        details: { ...c.details, forced_by: user.id, forced_at: new Date().toISOString() },
+        detected_at: new Date().toISOString(),
+        acknowledged_at: new Date().toISOString(),
+        acknowledged_by: user.id,
+      }));
+
+      await supabase.from('conflicts').insert(conflictsToInsert);
+    } else if (assignment?.user_id) {
+      // Normal case - resolve any old conflicts since move was clean
+      await supabase
+        .from('conflicts')
+        .update({ status: 'resolved', resolved_at: new Date().toISOString() })
+        .eq('shift_id', id)
+        .eq('status', 'unresolved');
     }
 
     // Format response
@@ -398,11 +587,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       startTime: format(new Date(updatedShift.start_time), 'HH:mm'),
       endTime: format(new Date(updatedShift.end_time), 'HH:mm'),
       status: assignment?.status || updatedShift.status,
-      conflicts: detectedConflicts.map((c) => ({
-        type: c.type,
-        severity: c.severity,
-        description: c.description,
-      })),
+      forced: force && potentialConflicts.length > 0,
+      conflicts_overridden: force ? potentialConflicts.length : 0,
     };
 
     return NextResponse.json(response, { status: 200 });

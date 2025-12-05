@@ -6,7 +6,11 @@ export type ShiftRole = 'editor' | 'senior' | 'correspondent';
 
 export type SchedulePeriodType = 'week' | 'month' | 'quarter' | 'special_event';
 
-export type ConflictSeverity = 'soft' | 'hard';
+// Internal conflict severity (used by validation logic)
+export type ConflictSeverityInternal = 'soft' | 'hard';
+
+// Database/UI conflict severity (matches schema CHECK constraint)
+export type ConflictSeverity = 'high' | 'medium' | 'low';
 
 export interface User {
   id: string;
@@ -87,10 +91,37 @@ export interface SchedulePeriod {
   updated_at: string;
 }
 
-export interface Conflict {
+// Conflict type stored in database (matches schema CHECK constraint)
+export type ConflictTypeDB =
+  | 'Double Booking'
+  | 'Rest Period Violation'
+  | 'Skill Gap'
+  | 'Understaffed'
+  | 'Overtime Warning'
+  | 'Cross-Bureau Conflict'
+  | 'Preference Violation';
+
+// Internal conflict type (used by validation logic)
+export type ConflictTypeInternal =
+  | 'double_booking'
+  | 'preference_violation'
+  | 'role_imbalance'
+  | 'overtime_risk'
+  | 'insufficient_coverage'
+  | 'rest_period_violation'
+  | 'skill_gap';
+
+// Alias for backward compatibility in validation code
+export type ConflictType = ConflictTypeInternal;
+
+// Conflict status (matches schema CHECK constraint)
+export type ConflictStatus = 'unresolved' | 'acknowledged' | 'resolved';
+
+// Internal conflict interface (used by validation logic)
+export interface ConflictInternal {
   id: string;
-  type: ConflictType;
-  severity: ConflictSeverity;
+  type: ConflictTypeInternal;
+  severity: ConflictSeverityInternal;
   shift_id: string;
   user_id?: string;
   message: string;
@@ -99,14 +130,27 @@ export interface Conflict {
   created_at: string;
 }
 
-export type ConflictType =
-  | 'double_booking'
-  | 'preference_violation'
-  | 'role_imbalance'
-  | 'overtime_risk'
-  | 'insufficient_coverage'
-  | 'rest_period_violation'
-  | 'skill_gap';
+// Alias for backward compatibility in validation code
+export interface Conflict extends ConflictInternal {}
+
+// Database conflict interface (matches schema)
+export interface ConflictDB {
+  id: string;
+  type: ConflictTypeDB;
+  severity: ConflictSeverity;
+  status: ConflictStatus;
+  shift_id?: string;
+  user_id?: string;
+  description: string;
+  date: string;
+  details: Record<string, any>;
+  detected_at: string;
+  acknowledged_at?: string;
+  acknowledged_by?: string;
+  resolved_at?: string;
+  resolved_by?: string;
+  created_at: string;
+}
 
 export interface DragDropShiftData {
   shiftId: string;

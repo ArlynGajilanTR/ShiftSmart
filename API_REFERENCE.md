@@ -429,7 +429,7 @@ Authorization: Bearer YOUR_TOKEN
 
 ### POST /api/shifts
 
-Create a new shift with optional employee assignment.
+Create a new shift with optional employee assignment. Includes pre-save conflict validation.
 
 **Request:**
 
@@ -444,9 +444,14 @@ Content-Type: application/json
   "end_time": "2025-11-01T16:00:00Z",
   "employee_id": "uuid",
   "status": "draft",
-  "notes": "Morning shift"
+  "notes": "Morning shift",
+  "force": false
 }
 ```
+
+**Body Parameters:**
+
+- `force` (boolean, optional) - If `true`, creates shift even if conflicts are detected
 
 **Response (201 Created):**
 
@@ -459,6 +464,22 @@ Content-Type: application/json
     "end_time": "2025-11-01T16:00:00Z",
     "status": "draft"
   }
+}
+```
+
+**Response (409 Conflict):** - When conflicts detected and `force` is not `true`
+
+```json
+{
+  "error": "Conflict detected",
+  "conflicts": [
+    {
+      "type": "Double Booking",
+      "severity": "high",
+      "description": "Employee is already scheduled for this time"
+    }
+  ],
+  "message": "Set force: true to create anyway"
 }
 ```
 
@@ -583,9 +604,9 @@ Authorization: Bearer YOUR_TOKEN
 
 ---
 
-## Conflicts API
+## Schedule Health / Conflicts API
 
-Manage scheduling conflicts and warnings.
+Manage scheduling conflicts, warnings, and AI-powered resolution.
 
 ### GET /api/conflicts
 
@@ -811,7 +832,7 @@ Content-Type: application/json
 
 ### POST /api/ai/resolve-conflict
 
-Get AI suggestions for resolving a conflict.
+Get AI suggestions for resolving a conflict and optionally auto-apply the recommended fix.
 
 **Request:**
 
@@ -821,9 +842,15 @@ Authorization: Bearer YOUR_TOKEN
 Content-Type: application/json
 
 {
-  "conflict_id": "uuid"
+  "conflict_id": "uuid",
+  "apply": true
 }
 ```
+
+**Body Parameters:**
+
+- `conflict_id` (string, required) - UUID of the conflict to resolve
+- `apply` (boolean, optional) - If `true`, automatically applies the recommended resolution
 
 **Response (200 OK):**
 
@@ -838,13 +865,19 @@ Content-Type: application/json
       "impact": "low"
     },
     {
-      "action": "split_shift",
-      "description": "Split 12-hour shift into two 6-hour shifts",
-      "rationale": "Reduces overtime and allows two employees to cover",
-      "impact": "medium"
+      "action": "adjust_time",
+      "description": "Adjust shift end time to avoid overlap",
+      "rationale": "Minimal change that removes the conflict",
+      "impact": "low"
     }
   ],
-  "ai_recommendation": "Reassign to Andrea Mandala' - minimal disruption"
+  "ai_recommendation": "Reassign to Andrea Mandala' - minimal disruption",
+  "applied": true,
+  "resolution_details": {
+    "action_taken": "reassign",
+    "old_employee": "Gianluca Semeraro",
+    "new_employee": "Andrea Mandala'"
+  }
 }
 ```
 

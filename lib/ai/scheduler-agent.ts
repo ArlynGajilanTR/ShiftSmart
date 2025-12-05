@@ -3,7 +3,15 @@
 import { callClaude, isConfigured } from './client';
 import { SYSTEM_PROMPT, buildUserPrompt } from './prompts/schedule-generation';
 import { createClient } from '@/lib/supabase/server';
-import { format, parseISO, isWeekend, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
+import {
+  format,
+  parseISO,
+  isWeekend,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  differenceInHours,
+} from 'date-fns';
 
 // Debug storage for failed responses (in-memory for debugging)
 interface DebugResponse {
@@ -579,14 +587,141 @@ export function parseScheduleResponse(
 }
 
 /**
+ * Detected conflict from AI schedule validation
+ */
+interface DetectedConflict {
+  type: 'Double Booking' | 'Rest Period Violation';
+  severity: 'high';
+  employee: string;
+  description: string;
+  shift1: { date: string; start: string; end: string };
+  shift2: { date: string; start: string; end: string };
+}
+
+/**
+ * Validate AI-generated schedule for conflicts BEFORE saving
+ * Returns any conflicts found so they can be fixed before committing to database
+ */
+export function validateScheduleForConflicts(scheduleData: ScheduleResponse): {
+  valid: boolean;
+  conflicts: DetectedConflict[];
+} {
+  const conflicts: DetectedConflict[] = [];
+
+  // Group shifts by employee
+  const shiftsByEmployee = new Map<string, typeof scheduleData.shifts>();
+
+  for (const shift of scheduleData.shifts) {
+    const existing = shiftsByEmployee.get(shift.assigned_to) || [];
+    existing.push(shift);
+    shiftsByEmployee.set(shift.assigned_to, existing);
+  }
+
+  // Check each employee's shifts for conflicts
+  for (const [employeeName, shifts] of shiftsByEmployee) {
+    // Sort by date and time
+    const sortedShifts = [...shifts].sort((a, b) => {
+      const dateA = `${a.date}T${a.start_time}`;
+      const dateB = `${b.date}T${b.start_time}`;
+      return dateA.localeCompare(dateB);
+    });
+
+    for (let i = 0; i < sortedShifts.length; i++) {
+      for (let j = i + 1; j < sortedShifts.length; j++) {
+        const shift1 = sortedShifts[i];
+        const shift2 = sortedShifts[j];
+
+        // Parse times
+        const start1 = parseISO(`${shift1.date}T${shift1.start_time}`);
+        let end1 = parseISO(`${shift1.date}T${shift1.end_time}`);
+        // Handle midnight crossing
+        if (shift1.end_time === '00:00' || shift1.end_time === '24:00') {
+          end1 = parseISO(`${shift1.date}T23:59`);
+          end1.setMinutes(end1.getMinutes() + 1);
+        }
+
+        const start2 = parseISO(`${shift2.date}T${shift2.start_time}`);
+        let end2 = parseISO(`${shift2.date}T${shift2.end_time}`);
+        if (shift2.end_time === '00:00' || shift2.end_time === '24:00') {
+          end2 = parseISO(`${shift2.date}T23:59`);
+          end2.setMinutes(end2.getMinutes() + 1);
+        }
+
+        // Check for overlap (double booking)
+        const hasOverlap =
+          (start1 >= start2 && start1 < end2) ||
+          (end1 > start2 && end1 <= end2) ||
+          (start1 <= start2 && end1 >= end2);
+
+        if (hasOverlap) {
+          conflicts.push({
+            type: 'Double Booking',
+            severity: 'high',
+            employee: employeeName,
+            description: `${employeeName} has overlapping shifts`,
+            shift1: { date: shift1.date, start: shift1.start_time, end: shift1.end_time },
+            shift2: { date: shift2.date, start: shift2.start_time, end: shift2.end_time },
+          });
+        }
+
+        // Check for rest period violation (less than 11 hours between shifts)
+        const hoursBetween = differenceInHours(start2, end1);
+        if (hoursBetween >= 0 && hoursBetween < 11) {
+          conflicts.push({
+            type: 'Rest Period Violation',
+            severity: 'high',
+            employee: employeeName,
+            description: `${employeeName} has only ${hoursBetween}h rest between shifts (minimum 11h required)`,
+            shift1: { date: shift1.date, start: shift1.start_time, end: shift1.end_time },
+            shift2: { date: shift2.date, start: shift2.start_time, end: shift2.end_time },
+          });
+        }
+      }
+    }
+  }
+
+  console.log(
+    `[Validation] Checked ${scheduleData.shifts.length} shifts, found ${conflicts.length} conflicts`
+  );
+
+  return {
+    valid: conflicts.length === 0,
+    conflicts,
+  };
+}
+
+/**
  * Save AI-generated schedule to database (OPTIMIZED with bulk operations)
  * Performance: 270 sequential queries → 3 bulk queries (90x faster)
+ * Now includes pre-save conflict validation!
  */
 export async function saveSchedule(
   scheduleData: ScheduleResponse,
-  userId: string
-): Promise<{ success: boolean; shift_ids?: string[]; error?: string }> {
+  userId: string,
+  skipValidation: boolean = false
+): Promise<{
+  success: boolean;
+  shift_ids?: string[];
+  error?: string;
+  conflicts?: DetectedConflict[];
+}> {
   try {
+    // SAFEGUARD 1: Validate for conflicts before saving
+    if (!skipValidation) {
+      const validation = validateScheduleForConflicts(scheduleData);
+      if (!validation.valid) {
+        console.error(
+          `[Save Blocked] Found ${validation.conflicts.length} conflicts in AI schedule`
+        );
+        return {
+          success: false,
+          error: `AI generated ${validation.conflicts.length} conflict(s). Please regenerate or fix manually.`,
+          conflicts: validation.conflicts,
+        };
+      }
+      console.log('[Validation] AI schedule passed conflict check');
+    }
+
     const supabase = await createClient();
     console.log(`[Save Performance] Starting bulk save for ${scheduleData.shifts.length} shifts`);
     const startTime = Date.now();

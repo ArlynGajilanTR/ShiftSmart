@@ -3,7 +3,7 @@
 import type React from 'react';
 import { useState, useEffect } from 'react';
 
-import { Calendar, Users, AlertCircle, Settings, LogOut } from 'lucide-react';
+import { Calendar, Users, Shield, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -29,7 +29,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Calendar },
   { name: 'Schedule', href: '/dashboard/schedule', icon: Calendar },
   { name: 'Employees', href: '/dashboard/employees', icon: Users },
-  { name: 'Conflicts', href: '/dashboard/conflicts', icon: AlertCircle },
+  { name: 'Schedule Health', href: '/dashboard/conflicts', icon: Shield },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
