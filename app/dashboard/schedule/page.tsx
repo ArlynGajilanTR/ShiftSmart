@@ -302,19 +302,24 @@ export default function SchedulePage() {
         end_date: format(addDays(new Date(), 60), 'yyyy-MM-dd'),
       });
 
-      // Defensive check: ensure shifts array exists
+      // Defensive check: ensure shifts array exists and filter invalid entries
       const shiftsArray = response?.shifts || [];
-      const shiftData = shiftsArray.map((shift: any) => ({
-        id: shift.id,
-        employee: shift.employee || shift.users?.full_name || 'Unassigned',
-        employee_id: shift.employee_id || null,
-        role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
-        bureau: shift.bureau || shift.bureaus?.name || 'Milan',
-        date: new Date(shift.date || shift.start_time),
-        startTime: shift.startTime || format(new Date(shift.start_time), 'HH:mm'),
-        endTime: shift.endTime || format(new Date(shift.end_time), 'HH:mm'),
-        status: shift.status || 'pending',
-      }));
+      const shiftData = shiftsArray
+        .filter((shift: any) => shift && (shift.date || shift.start_time))
+        .map((shift: any) => ({
+          id: shift.id,
+          employee: shift.employee || shift.users?.full_name || 'Unassigned',
+          employee_id: shift.employee_id || null,
+          role: shift.role || shift.users?.title || shift.users?.shift_role || 'Unknown',
+          bureau: shift.bureau || shift.bureaus?.name || 'Milan',
+          date: new Date(shift.date || shift.start_time),
+          startTime:
+            shift.startTime ||
+            (shift.start_time ? format(new Date(shift.start_time), 'HH:mm') : '00:00'),
+          endTime:
+            shift.endTime || (shift.end_time ? format(new Date(shift.end_time), 'HH:mm') : '00:00'),
+          status: shift.status || 'pending',
+        }));
 
       setShifts(shiftData);
     } catch (error: any) {
