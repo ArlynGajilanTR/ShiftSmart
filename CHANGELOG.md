@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.6] - 2025-12-05
+
+### Fixed
+
+- **Node.js Version Constraint**: Updated `engines.node` from `>=16.0.0` to `22.x`
+  - Fixes Vercel warning about Node.js version override
+  - Ensures consistent Node.js 22.x LTS across local development and production
+  - Prevents Vercel from auto-upgrading to Node.js 24.x
+
+### Documentation
+
+- Updated README with explicit Node.js 22.x requirement in Setup section
+- Updated version numbers throughout documentation
+
 ## [1.3.5] - 2025-12-02
 
 ### Added
@@ -207,6 +221,8 @@ Reference: [Claude 4.5 Documentation](https://docs.claude.com/en/docs/about-clau
 - Comprehensive test coverage (332+ tests)
 - Production-ready deployment
 
+[1.3.6]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.5...v1.3.6
+[1.3.5]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.4...v1.3.5
 [1.3.4]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.3...v1.3.4
 [1.3.3]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.2...v1.3.3
 [1.3.2]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.1...v1.3.2

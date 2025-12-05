@@ -1,8 +1,8 @@
-# ShiftSmart v1.3.4
+# ShiftSmart v1.3.6
 
 Unified fullstack application for Reuters Breaking News shift scheduling system.
 
-**Version:** 1.3.4 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 332+
+**Version:** 1.3.6 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 332+
 
 ## Overview
 
@@ -113,6 +113,8 @@ shiftsmart-v1/
 - `GET /api/ai/debug-last-response` - Debug failed AI responses (v1.3.2+)
 
 ## Setup
+
+**Requirements:** Node.js 22.x (LTS)
 
 1. **Install dependencies:**
 
@@ -348,8 +350,8 @@ Password: changeme
 
 ## Version
 
-**Current Version:** 1.3.5  
-**Release Date:** December 2, 2025  
+**Current Version:** 1.3.6  
+**Release Date:** December 5, 2025  
 **Status:** ✅ Production Ready - 332+ Tests Passing  
 **Database:** ShiftSmart-v2 (Supabase, us-west-2)
 
@@ -412,4 +414,4 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ---
 
 **Maintained by:** Reuters Breaking News Team  
-**Last Updated:** December 2, 2025
+**Last Updated:** December 5, 2025
