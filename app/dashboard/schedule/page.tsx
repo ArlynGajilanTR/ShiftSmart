@@ -73,7 +73,18 @@ import {
   AlertCircle,
   ShieldAlert,
   RotateCcw,
+  X,
 } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from '@/components/ui/sheet';
 import {
   format,
   addDays,
@@ -306,6 +317,81 @@ export default function SchedulePage() {
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
+
+  // Filter state
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    bureau: 'all' as 'all' | 'Milan' | 'Rome',
+    status: 'all' as 'all' | 'confirmed' | 'pending' | 'draft' | 'published',
+    shiftType: 'all' as 'all' | 'morning' | 'afternoon' | 'evening',
+    employee: '',
+  });
+  const [employeeList, setEmployeeList] = useState<any[]>([]);
+
+  // Fetch employees for filter dropdown
+  useEffect(() => {
+    async function fetchEmployees() {
+      try {
+        const response = await api.employees.list();
+        setEmployeeList(response.employees || []);
+      } catch (error) {
+        console.error('Failed to fetch employees for filter:', error);
+      }
+    }
+    fetchEmployees();
+  }, []);
+
+  // Count active filters
+  const activeFilterCount = [
+    filters.bureau !== 'all',
+    filters.status !== 'all',
+    filters.shiftType !== 'all',
+    filters.employee !== '',
+  ].filter(Boolean).length;
+
+  // Apply filters to shifts
+  const filteredShifts = shifts.filter((shift) => {
+    // Bureau filter
+    if (filters.bureau !== 'all' && shift.bureau !== filters.bureau) {
+      return false;
+    }
+
+    // Status filter
+    if (filters.status !== 'all' && shift.status !== filters.status) {
+      return false;
+    }
+
+    // Shift type filter (based on start time)
+    if (filters.shiftType !== 'all') {
+      const hour = parseInt(shift.startTime?.split(':')[0] || '0');
+      if (filters.shiftType === 'morning' && (hour < 6 || hour >= 12)) {
+        return false;
+      }
+      if (filters.shiftType === 'afternoon' && (hour < 12 || hour >= 18)) {
+        return false;
+      }
+      if (filters.shiftType === 'evening' && hour >= 6 && hour < 18) {
+        return false;
+      }
+    }
+
+    // Employee filter
+    if (filters.employee && shift.employee_id !== filters.employee) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Clear all filters
+  const clearFilters = () => {
+    setFilters({
+      bureau: 'all',
+      status: 'all',
+      shiftType: 'all',
+      employee: '',
+    });
+  };
 
   // Check if running on localhost (dev mode)
   useEffect(() => {
@@ -641,14 +727,15 @@ export default function SchedulePage() {
   const quarterMonths = [quarterStart, addMonths(quarterStart, 1), addMonths(quarterStart, 2)];
 
   const getShiftsForDate = (date: Date) => {
-    return shifts.filter(
+    return filteredShifts.filter(
       (shift) => format(shift.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
     );
   };
 
   const getShiftCountForDate = (date: Date) => {
-    return shifts.filter((shift) => format(shift.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd'))
-      .length;
+    return filteredShifts.filter(
+      (shift) => format(shift.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+    ).length;
   };
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -833,10 +920,140 @@ export default function SchedulePage() {
                 DEV: Reset
               </Button>
             )}
-            <Button variant="outline">
-              <Filter className="mr-2 h-4 w-4" />
-              Filter
-            </Button>
+            <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="relative">
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filter
+                  {activeFilterCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Filter Shifts</SheetTitle>
+                  <SheetDescription>
+                    Narrow down the shifts displayed on the schedule
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="space-y-6 py-6">
+                  {/* Bureau Filter */}
+                  <div className="space-y-2">
+                    <Label>Bureau</Label>
+                    <Select
+                      value={filters.bureau}
+                      onValueChange={(value: 'all' | 'Milan' | 'Rome') =>
+                        setFilters({ ...filters, bureau: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All bureaus" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Bureaus</SelectItem>
+                        <SelectItem value="Milan">Milan</SelectItem>
+                        <SelectItem value="Rome">Rome</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Status Filter */}
+                  <div className="space-y-2">
+                    <Label>Status</Label>
+                    <Select
+                      value={filters.status}
+                      onValueChange={(
+                        value: 'all' | 'confirmed' | 'pending' | 'draft' | 'published'
+                      ) => setFilters({ ...filters, status: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All statuses" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="confirmed">Confirmed</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="published">Published</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Shift Type Filter */}
+                  <div className="space-y-2">
+                    <Label>Shift Type</Label>
+                    <Select
+                      value={filters.shiftType}
+                      onValueChange={(value: 'all' | 'morning' | 'afternoon' | 'evening') =>
+                        setFilters({ ...filters, shiftType: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All shift types" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Shift Types</SelectItem>
+                        <SelectItem value="morning">Morning (6AM - 12PM)</SelectItem>
+                        <SelectItem value="afternoon">Afternoon (12PM - 6PM)</SelectItem>
+                        <SelectItem value="evening">Evening/Night (6PM - 6AM)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Employee Filter */}
+                  <div className="space-y-2">
+                    <Label>Employee</Label>
+                    <Select
+                      value={filters.employee}
+                      onValueChange={(value) => setFilters({ ...filters, employee: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All employees" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">All Employees</SelectItem>
+                        {employeeList.map((emp) => (
+                          <SelectItem key={emp.id} value={emp.id}>
+                            {emp.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Active Filters Summary */}
+                  {activeFilterCount > 0 && (
+                    <div className="rounded-lg bg-muted p-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">
+                          {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''} active
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          Showing {filteredShifts.length} of {shifts.length} shifts
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <SheetFooter className="flex-row gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={clearFilters}
+                    disabled={activeFilterCount === 0}
+                    className="flex-1"
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Clear Filters
+                  </Button>
+                  <SheetClose asChild>
+                    <Button className="flex-1">Apply Filters</Button>
+                  </SheetClose>
+                </SheetFooter>
+              </SheetContent>
+            </Sheet>
             <Button variant="outline" onClick={() => setIsGenerateDialogOpen(true)}>
               <Sparkles className="mr-2 h-4 w-4" />
               Generate Schedule
@@ -1518,122 +1735,174 @@ export default function SchedulePage() {
           <TabsContent value="list" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>All Shifts</CardTitle>
-                <CardDescription>Complete list of scheduled shifts</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>All Shifts</CardTitle>
+                    <CardDescription>
+                      {activeFilterCount > 0
+                        ? `Showing ${filteredShifts.length} of ${shifts.length} shifts`
+                        : 'Complete list of scheduled shifts'}
+                    </CardDescription>
+                  </div>
+                  {activeFilterCount > 0 && (
+                    <Button variant="ghost" size="sm" onClick={clearFilters}>
+                      <X className="mr-1 h-3 w-3" />
+                      Clear filters
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Employee</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Bureau</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Time</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {shifts.map((shift) => (
-                      <TableRow key={shift.id}>
-                        <TableCell className="font-medium">{shift.employee}</TableCell>
-                        <TableCell>{shift.role}</TableCell>
-                        <TableCell>{shift.bureau}</TableCell>
-                        <TableCell>{format(shift.date, 'MMM dd, yyyy')}</TableCell>
-                        <TableCell>
-                          {shift.startTime} - {shift.endTime}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={shift.status === 'confirmed' ? 'default' : 'secondary'}>
-                            {shift.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => openEditDialog(shift)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Copy className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-destructive"
-                              onClick={() => openDeleteDialog(shift)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                {filteredShifts.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Filter className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium">No shifts match your filters</p>
+                    <p className="text-sm mt-1">
+                      {shifts.length > 0
+                        ? 'Try adjusting your filter criteria'
+                        : 'No shifts scheduled yet'}
+                    </p>
+                    {activeFilterCount > 0 && (
+                      <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                        Clear all filters
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Employee</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Bureau</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Time</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredShifts.map((shift) => (
+                        <TableRow key={shift.id}>
+                          <TableCell className="font-medium">{shift.employee}</TableCell>
+                          <TableCell>{shift.role}</TableCell>
+                          <TableCell>{shift.bureau}</TableCell>
+                          <TableCell>{format(shift.date, 'MMM dd, yyyy')}</TableCell>
+                          <TableCell>
+                            {shift.startTime} - {shift.endTime}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={shift.status === 'confirmed' ? 'default' : 'secondary'}>
+                              {shift.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => openEditDialog(shift)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive"
+                                onClick={() => openDeleteDialog(shift)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="grid" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {shifts.map((shift) => (
-                <Card key={shift.id}>
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-base">{shift.employee}</CardTitle>
-                        <CardDescription>{shift.role}</CardDescription>
+            {filteredShifts.length === 0 ? (
+              <Card>
+                <CardContent className="py-12">
+                  <div className="text-center text-muted-foreground">
+                    <Filter className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium">No shifts match your filters</p>
+                    <p className="text-sm mt-1">
+                      {shifts.length > 0
+                        ? 'Try adjusting your filter criteria'
+                        : 'No shifts scheduled yet'}
+                    </p>
+                    {activeFilterCount > 0 && (
+                      <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                        Clear all filters
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {filteredShifts.map((shift) => (
+                  <Card key={shift.id}>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-base">{shift.employee}</CardTitle>
+                          <CardDescription>{shift.role}</CardDescription>
+                        </div>
+                        <Badge variant={shift.status === 'confirmed' ? 'default' : 'secondary'}>
+                          {shift.status}
+                        </Badge>
                       </div>
-                      <Badge variant={shift.status === 'confirmed' ? 'default' : 'secondary'}>
-                        {shift.status}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Bureau:</span>
-                      <span className="font-medium">{shift.bureau}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Date:</span>
-                      <span className="font-medium">{format(shift.date, 'MMM dd, yyyy')}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Time:</span>
-                      <span className="font-medium">
-                        {shift.startTime} - {shift.endTime}
-                      </span>
-                    </div>
-                    <div className="flex gap-2 pt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 bg-transparent"
-                        onClick={() => openEditDialog(shift)}
-                      >
-                        <Edit className="mr-2 h-3 w-3" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 bg-transparent text-destructive"
-                        onClick={() => openDeleteDialog(shift)}
-                      >
-                        <Trash2 className="mr-2 h-3 w-3" />
-                        Delete
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Bureau:</span>
+                        <span className="font-medium">{shift.bureau}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Date:</span>
+                        <span className="font-medium">{format(shift.date, 'MMM dd, yyyy')}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Time:</span>
+                        <span className="font-medium">
+                          {shift.startTime} - {shift.endTime}
+                        </span>
+                      </div>
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 bg-transparent"
+                          onClick={() => openEditDialog(shift)}
+                        >
+                          <Edit className="mr-2 h-3 w-3" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 bg-transparent text-destructive"
+                          onClick={() => openDeleteDialog(shift)}
+                        >
+                          <Trash2 className="mr-2 h-3 w-3" />
+                          Delete
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 
