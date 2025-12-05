@@ -151,18 +151,31 @@ const employees = [
   { id: 5, name: 'Alessandro Conti', role: 'Junior Editor', bureau: 'Milan' },
 ];
 
-function DraggableShift({ shift, view = 'week' }: { shift: any; view?: string }) {
+function DraggableShift({
+  shift,
+  view = 'week',
+  justMoved = false,
+}: {
+  shift: any;
+  view?: string;
+  justMoved?: boolean;
+}) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `shift-${shift.id}`,
     data: { shift },
   });
 
-  const style = transform
+  const baseStyle: React.CSSProperties = transform
     ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
         opacity: isDragging ? 0.5 : 1,
       }
-    : undefined;
+    : {};
+
+  const style: React.CSSProperties = baseStyle;
+
+  // CSS class for the settle animation (defined in globals.css)
+  const settleClass = justMoved ? 'shift-just-moved' : '';
 
   if (view === 'month') {
     return (
@@ -171,7 +184,7 @@ function DraggableShift({ shift, view = 'week' }: { shift: any; view?: string })
         style={style}
         {...listeners}
         {...attributes}
-        className="bg-primary/10 border border-primary/20 rounded px-1.5 py-1 text-[10px] cursor-grab active:cursor-grabbing hover:bg-primary/20 transition-all hover:shadow-sm"
+        className={`bg-primary/10 border border-primary/20 rounded px-1.5 py-1 text-[10px] cursor-grab active:cursor-grabbing hover:bg-primary/20 hover:shadow-sm ${settleClass}`}
       >
         <div className="flex items-center gap-1">
           <GripVertical className="h-2 w-2 text-muted-foreground flex-shrink-0" />
@@ -192,7 +205,7 @@ function DraggableShift({ shift, view = 'week' }: { shift: any; view?: string })
         style={style}
         {...listeners}
         {...attributes}
-        className="bg-white border-l-4 border-l-[#FF6600] rounded-lg p-4 shadow-sm hover:shadow-md transition-all hover:scale-[1.01] cursor-grab active:cursor-grabbing"
+        className={`bg-white border-l-4 border-l-[#FF6600] rounded-lg p-4 shadow-sm hover:shadow-md hover:scale-[1.01] cursor-grab active:cursor-grabbing ${settleClass}`}
       >
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-2">
@@ -230,7 +243,7 @@ function DraggableShift({ shift, view = 'week' }: { shift: any; view?: string })
       style={style}
       {...listeners}
       {...attributes}
-      className="bg-primary/10 border border-primary/20 rounded p-2 text-xs cursor-grab active:cursor-grabbing hover:bg-primary/20 transition-all hover:shadow-md group"
+      className={`bg-primary/10 border border-primary/20 rounded p-2 text-xs cursor-grab active:cursor-grabbing hover:bg-primary/20 hover:shadow-md group ${settleClass}`}
     >
       <div className="flex items-start gap-1">
         <GripVertical className="h-3 w-3 text-muted-foreground mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -346,6 +359,9 @@ export default function SchedulePage() {
     conflicts: any[];
   } | null>(null);
   const [isForceMoving, setIsForceMoving] = useState(false);
+
+  // Track recently moved shifts for settle animation
+  const [recentlyMovedShiftId, setRecentlyMovedShiftId] = useState<string | null>(null);
 
   // Fetch shifts from API
   const refetchShifts = async () => {
@@ -673,8 +689,14 @@ export default function SchedulePage() {
 
         // Success - update local state
         setShifts((prevShifts) =>
-          prevShifts.map((s) => (s.id === shiftId ? { ...s, date: new Date(newDate) } : s))
+          prevShifts.map((s) =>
+            String(s.id) === String(shiftId) ? { ...s, date: new Date(newDate) } : s
+          )
         );
+
+        // Trigger settle animation
+        setRecentlyMovedShiftId(String(shiftId));
+        setTimeout(() => setRecentlyMovedShiftId(null), 2500); // Clear after animation
 
         toast({
           title: 'Shift moved',
@@ -726,10 +748,15 @@ export default function SchedulePage() {
 
     setIsForceMoving(true);
     try {
+      // Capture values before API call
+      const movedShiftId = pendingMove.shiftId;
+      const conflictCount = pendingMove.conflicts.length;
+      const newDate = pendingMove.newDate;
+
       // Call move with force=true to override conflict warnings
       await api.shifts.move(
-        pendingMove.shiftId,
-        pendingMove.newDate,
+        movedShiftId,
+        newDate,
         pendingMove.shift.startTime,
         pendingMove.shift.endTime,
         true // force = true
@@ -738,19 +765,30 @@ export default function SchedulePage() {
       // Update local state
       setShifts((prevShifts) =>
         prevShifts.map((s) =>
-          s.id === pendingMove.shiftId ? { ...s, date: new Date(pendingMove.newDate) } : s
+          String(s.id) === String(movedShiftId) ? { ...s, date: new Date(newDate) } : s
         )
       );
 
+      // Close dialog and reset state FIRST
+      setIsConflictDialogOpen(false);
+      setPendingMove(null);
+
+      // Trigger settle animation AFTER dialog closes (small delay for React to re-render)
+      const shiftIdForAnimation = String(movedShiftId);
+      setTimeout(() => {
+        setRecentlyMovedShiftId(shiftIdForAnimation);
+        // Clear animation after it completes
+        setTimeout(() => setRecentlyMovedShiftId(null), 2500);
+      }, 200);
+
       toast({
         title: 'Shift moved with override',
-        description: `Shift moved despite ${pendingMove.conflicts.length} conflict(s). These have been logged for review.`,
+        description: `Shift moved despite ${conflictCount} conflict(s). These have been logged for review.`,
         variant: 'default',
       });
 
-      // Close dialog and reset state
-      setIsConflictDialogOpen(false);
-      setPendingMove(null);
+      // Refetch shifts to ensure sync with database
+      setTimeout(() => refetchShifts(), 500);
     } catch (error: any) {
       toast({
         title: 'Failed to move shift',
@@ -1213,7 +1251,12 @@ export default function SchedulePage() {
                         {shiftList.length > 0 ? (
                           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                             {shiftList.map((shift) => (
-                              <DraggableShift key={shift.id} shift={shift} view="today" />
+                              <DraggableShift
+                                key={shift.id}
+                                shift={shift}
+                                view="today"
+                                justMoved={recentlyMovedShiftId === String(shift.id)}
+                              />
                             ))}
                           </div>
                         ) : (
@@ -1291,7 +1334,12 @@ export default function SchedulePage() {
                         </div>
                         <div className="space-y-2">
                           {dayShifts.map((shift) => (
-                            <DraggableShift key={shift.id} shift={shift} view="week" />
+                            <DraggableShift
+                              key={shift.id}
+                              shift={shift}
+                              view="week"
+                              justMoved={recentlyMovedShiftId === String(shift.id)}
+                            />
                           ))}
                         </div>
                       </DroppableDay>
@@ -1358,7 +1406,12 @@ export default function SchedulePage() {
                         <div className="font-semibold text-sm mb-2">{format(day, 'd')}</div>
                         <div className="space-y-1">
                           {dayShifts.slice(0, 3).map((shift) => (
-                            <DraggableShift key={shift.id} shift={shift} view="month" />
+                            <DraggableShift
+                              key={shift.id}
+                              shift={shift}
+                              view="month"
+                              justMoved={recentlyMovedShiftId === String(shift.id)}
+                            />
                           ))}
                           {dayShifts.length > 3 && (
                             <div className="text-[10px] text-muted-foreground text-center">

@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.4] - 2025-12-05
+
+### Added
+
+- **Drag-and-Drop Conflict Handling**: Complete conflict detection and resolution flow for schedule management
+  - Conflict confirmation dialog appears when moving shifts that create scheduling conflicts
+  - Shows conflict details (type, description, employee affected)
+  - "Move Anyway" button to force move with conflicts acknowledged
+  - "Cancel" button to abort the move
+  - Conflicts logged to database with `acknowledged` status when forced
+
+- **Settle Animation for Moved Shifts**: Visual feedback when shifts are successfully moved
+  - Green pulsing glow effect (`.shift-just-moved` CSS class)
+  - Animation triggers after successful move or conflict override
+  - 2.5 second fade-out duration
+
+- **Comprehensive E2E Test Suite for Drag-and-Drop**: New test file `drag-drop-conflict.spec.ts`
+  - `Drag and drop shift updates database (verify with refresh)` - verifies database persistence
+  - `Move shift triggers API call` - verifies PATCH requests to `/api/shifts/:id`
+  - `Conflict dialog or success feedback when moving shifts` - verifies conflict detection
+  - `Shift views are synced (week, month, list)` - verifies view consistency
+  - `Database persistence - shift survives page refresh` - verifies data integrity
+
+### Fixed
+
+- **Type Safety in Shift ID Comparisons**: All shift ID comparisons now use `String()` to prevent type mismatches
+- **Animation Timing**: Increased delay for animation trigger after conflict dialog closes to ensure React re-render
+
+### Changed
+
+- **Force Move API Integration**: Updated to use `api.shifts.move()` with `force=true` parameter
+- **Database Sync**: Added automatic refetch after force move to ensure UI reflects database state
+
 ## [1.4.3] - 2025-12-05
 
 ### Fixed

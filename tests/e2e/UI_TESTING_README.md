@@ -76,8 +76,10 @@ tests/e2e/
     ├── ui-02-dashboard.spec.ts        # Dashboard page
     ├── ui-03-employees.spec.ts        # Employees & Employee Detail
     ├── ui-04-schedule.spec.ts         # Schedule page
-    ├── ui-05-conflicts.spec.ts         # Conflicts page
-    └── ui-06-settings.spec.ts          # Settings page
+    ├── ui-05-conflicts.spec.ts        # Conflicts page
+    ├── ui-06-settings.spec.ts         # Settings page
+    ├── drag-drop-conflict.spec.ts     # Drag-and-drop with conflict handling
+    └── api-integration.spec.ts        # API integration tests
 ```
 
 ## 🔍 What Tests Verify
@@ -111,7 +113,9 @@ For each button/test, we verify:
 
 - `GET /api/shifts`
 - `GET /api/shifts/upcoming`
-- `PATCH /api/shifts/{id}` (drag-drop)
+- `PATCH /api/shifts/{id}` (drag-drop move)
+- `PATCH /api/shifts/{id}?validate_only=true` (conflict validation)
+- `PATCH /api/shifts/{id}` with `force=true` (force move despite conflicts)
 
 ### Conflicts
 
