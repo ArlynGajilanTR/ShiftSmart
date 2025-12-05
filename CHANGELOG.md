@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.7] - 2025-12-05
+
+### Added
+
+- **Today View in Dashboard**: New default view in Schedule Overview
+  - Shows all shifts scheduled for the current day
+  - Groups shifts by time slot (Morning 6AM-12PM, Afternoon 12PM-6PM, Evening/Night 6PM-6AM)
+  - Displays shift count and individual shift cards with employee details, role, bureau, and status
+  - Empty state with friendly message when no shifts scheduled
+
+### Changed
+
+- **Dashboard Schedule Overview**: Improved data fetching and navigation
+  - Now fetches shifts using `api.shifts.list()` with proper date range (start of week to end of quarter)
+  - Week view navigation now properly uses week increments instead of month increments
+  - "Today" is now the default tab in Schedule Overview
+- **Removed Upcoming Shifts Table**: Consolidated shift information into Schedule Overview tabs
+
+### Fixed
+
+- **Dashboard shifts not displaying**: Fixed issue where shifts visible on Schedule page weren't showing on Dashboard
+  - Changed from `api.shifts.upcoming(7)` to `api.shifts.list()` with correct date range
+  - Added proper data transformation to match expected shift format
+
 ## [1.3.6] - 2025-12-05
 
 ### Fixed
@@ -221,6 +245,7 @@ Reference: [Claude 4.5 Documentation](https://docs.claude.com/en/docs/about-clau
 - Comprehensive test coverage (332+ tests)
 - Production-ready deployment
 
+[1.3.7]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.6...v1.3.7
 [1.3.6]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.5...v1.3.6
 [1.3.5]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.4...v1.3.5
 [1.3.4]: https://github.com/ArlynGajilanTR/ShiftSmart/compare/v1.3.3...v1.3.4

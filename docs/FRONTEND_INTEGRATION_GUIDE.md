@@ -421,31 +421,59 @@ export default function LoginPage() {
 
 **File:** `app/dashboard/page.tsx`
 
+The dashboard includes a **Schedule Overview** component with multiple views:
+
+- **Today View** (default): Shows all shifts for the current day grouped by time slot
+- **Week View**: 7-day calendar grid with shift cards
+- **Month View**: Full month calendar with shift indicators
+- **Quarter View**: 3-month overview with shift counts
+
 ```typescript
 'use client';
 
 import { useEffect, useState } from 'react';
+import { format, startOfWeek, endOfQuarter } from 'date-fns';
 import { api } from '@/lib/api-client';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
-  const [upcomingShifts, setUpcomingShifts] = useState<any[]>([]);
+  const [shifts, setShifts] = useState<any[]>([]);
   const [conflicts, setConflicts] = useState<any[]>([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        // Fetch dashboard stats
-        const statsData = await api.dashboard.getStats();
+        // Calculate date range for fetching shifts (covers all views)
+        const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+        const quarterEnd = endOfQuarter(currentDate);
+
+        // Fetch all data in parallel
+        const [statsData, shiftsData, conflictsData] = await Promise.all([
+          api.dashboard.getStats(),
+          api.shifts.list({
+            start_date: format(weekStart, 'yyyy-MM-dd'),
+            end_date: format(quarterEnd, 'yyyy-MM-dd'),
+          }),
+          api.conflicts.list({ status: 'unresolved', limit: 5 }),
+        ]);
+
         setStats(statsData.stats);
 
-        // Fetch upcoming shifts
-        const shiftsData = await api.shifts.upcoming(7);
-        setUpcomingShifts(shiftsData.shifts);
+        // Transform shifts to expected format
+        const transformedShifts = (shiftsData.shifts || []).map((shift: any) => ({
+          id: shift.id,
+          employee: shift.employee || shift.users?.full_name || 'Unassigned',
+          role: shift.role || shift.users?.title || 'Unknown',
+          bureau: shift.bureau || shift.bureaus?.name || 'Milan',
+          date: shift.date || format(new Date(shift.start_time), 'yyyy-MM-dd'),
+          startTime: shift.startTime || format(new Date(shift.start_time), 'HH:mm'),
+          endTime: shift.endTime || format(new Date(shift.end_time), 'HH:mm'),
+          status: shift.status || 'pending',
+        }));
+        setShifts(transformedShifts);
 
-        // Fetch unresolved conflicts
-        const conflictsData = await api.conflicts.list({ status: 'unresolved', limit: 5 });
         setConflicts(conflictsData.conflicts);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
@@ -455,7 +483,14 @@ export default function DashboardPage() {
     }
 
     fetchData();
-  }, []);
+  }, [currentDate]);
+
+  // Helper to get shifts for a specific date
+  const getShiftsForDate = (date: Date) => {
+    return shifts.filter(
+      (shift) => format(new Date(shift.date), 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+    );
+  };
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -479,15 +514,14 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Upcoming Shifts */}
+      {/* Schedule Overview with Today/Week/Month/Quarter tabs */}
       <section>
-        <h2>Upcoming Shifts</h2>
-        {upcomingShifts.map((shift) => (
-          <div key={shift.id} className="shift-card">
-            <p>{shift.employee} - {shift.date}</p>
-            <p>{shift.startTime} - {shift.endTime}</p>
-          </div>
-        ))}
+        <h2>Schedule Overview</h2>
+        {/* Tab navigation: Today | Week | Month | Quarter */}
+        {/* Today View shows shifts grouped by time slot */}
+        {/* Week View shows 7-day grid */}
+        {/* Month View shows full calendar */}
+        {/* Quarter View shows 3-month overview */}
       </section>
 
       {/* Conflicts */}
@@ -505,6 +539,14 @@ export default function DashboardPage() {
   );
 }
 ```
+
+#### Today View Time Slots
+
+The Today view groups shifts into three time periods:
+
+- 🌅 **Morning** (6AM - 12PM)
+- ☀️ **Afternoon** (12PM - 6PM)
+- 🌙 **Evening/Night** (6PM - 6AM)
 
 ---
 
