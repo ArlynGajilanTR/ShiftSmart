@@ -596,9 +596,7 @@ export default function DashboardPage() {
         <CardHeader>
           <div>
             <CardTitle className="text-xl font-bold">Schedule Overview</CardTitle>
-            <CardDescription className="font-medium">
-              View and manage shift assignments
-            </CardDescription>
+            <CardDescription className="font-medium">View shift assignments</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
