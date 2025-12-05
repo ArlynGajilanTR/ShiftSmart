@@ -677,6 +677,45 @@ Authorization: Bearer YOUR_TOKEN
 
 ---
 
+### DELETE /api/shifts/reset
+
+**DEV ONLY**: Delete all shifts, assignments, and conflicts. Only available on localhost.
+
+**Request:**
+
+```http
+DELETE /api/shifts/reset
+Authorization: Bearer YOUR_TOKEN
+Host: localhost:3000
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "message": "Schedule reset successfully",
+  "deleted": {
+    "shifts": true,
+    "assignments": true,
+    "conflicts": true
+  }
+}
+```
+
+**Errors:**
+
+- `403` - "This endpoint is only available in development mode on localhost"
+- `401` - Unauthorized
+
+**Notes:**
+
+- This endpoint is restricted to `localhost` and `127.0.0.1` only
+- Will not work in production deployments
+- Useful for clearing test data during development
+- A "DEV: Reset" button is available in the Schedule page UI on localhost
+
+---
+
 ## Schedule Health / Conflicts API
 
 Manage scheduling conflicts, warnings, and AI-powered resolution.

@@ -1,7 +1,7 @@
 # ShiftSmart Development Guide
 
-**Version:** 1.3.5  
-**Last Updated:** December 2, 2025  
+**Version:** 1.4.6  
+**Last Updated:** December 5, 2025  
 **Database:** ShiftSmart-v2 (Supabase, us-west-2)
 
 ---
@@ -415,6 +415,41 @@ export default function ProtectedPage() {
 
 ---
 
+## 🛠️ Development Tools (Localhost Only)
+
+### Reset Schedule Button
+
+When running on `localhost:3000`, a **"DEV: Reset"** button appears in the Schedule page header. This button:
+
+- Deletes all shifts from the database
+- Deletes all shift assignments
+- Clears all scheduling conflicts
+- Provides a clean slate for testing
+
+**How to use:**
+
+1. Start dev server: `npm run dev`
+2. Navigate to Schedule page: `http://localhost:3000/dashboard/schedule`
+3. Click the orange dashed "DEV: Reset" button in the header
+4. Confirm the action in the dialog
+
+**API Endpoint:**
+
+```bash
+# Delete all shifts (localhost only)
+curl -X DELETE http://localhost:3000/api/shifts/reset \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+**Notes:**
+
+- This button/endpoint is **completely hidden** in production
+- Only works when host contains `localhost` or `127.0.0.1`
+- Requires authentication (must be logged in)
+- Action is logged with user ID for audit purposes
+
+---
+
 ## 📊 Monitoring & Debugging
 
 ### Checking Test Status
@@ -670,7 +705,7 @@ For questions or issues, see documentation in `/docs` or check test examples.
 
 ---
 
-**Last Updated:** December 2, 2025  
-**Version:** 1.3.5  
+**Last Updated:** December 5, 2025  
+**Version:** 1.4.6  
 **Database:** ShiftSmart-v2 (Supabase)  
 **Maintained by:** Reuters Breaking News Team
