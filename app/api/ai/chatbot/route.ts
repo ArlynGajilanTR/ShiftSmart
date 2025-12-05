@@ -140,9 +140,9 @@ export async function POST(request: NextRequest) {
       content: question,
     });
 
-    // Call Claude Haiku 4.5 (fast, cost-effective)
+    // Call Claude Haiku 4.5 (fast, cost-effective, near-frontier)
     const response = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: 'claude-haiku-4-5',
       max_tokens: 300,
       system: SHIFTSMART_KNOWLEDGE,
       messages,

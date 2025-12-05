@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.8] - 2025-12-05
+
+### Fixed
+
+- **AI Model Configuration**: Fixed Claude model identifier
+  - Updated to use `claude-haiku-4-5` (Claude Haiku 4.5) as per [Anthropic documentation](https://www.anthropic.com/news/claude-haiku-4-5)
+  - Increased max output tokens from 8K to 64K to support full month and quarterly schedules
+  - Fixed JSON truncation issues when generating large schedules (178+ shifts)
+
+### Performance
+
+- **Parallel Bureau Generation**: Added parallel AI generation for "Both Bureaus" mode
+  - Milan and Rome schedules now generate simultaneously instead of sequentially
+  - Reduces generation time by ~50% (from ~70s to ~35-40s for monthly schedules)
+  - Added `mergeScheduleResponses()` to combine parallel results
+
+### Changed
+
+- **AI Scheduling**: Updated model references throughout codebase
+  - `lib/ai/client.ts`: Using `claude-haiku-4-5` with 64K token limit
+  - `lib/ai/scheduler-agent.ts`: Parallel generation for both bureaus
+  - `app/api/ai/chatbot/route.ts`: Updated chatbot to use Haiku 4.5
+  - Updated UI text to reference Claude Haiku 4.5
+
 ## [1.3.7] - 2025-12-05
 
 ### Added

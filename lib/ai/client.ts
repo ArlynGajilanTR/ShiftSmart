@@ -7,10 +7,10 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || '',
 });
 
-// Claude Sonnet 4.5: Best balance of intelligence, speed, and cost
-// More reliable JSON output, better reasoning for schedule optimization
-// Max output: 8192 tokens
-export const MODEL = 'claude-sonnet-4-5-20241022';
+// Claude Haiku 4.5: Fast, cost-effective, near-frontier performance
+// Good JSON output, optimized for speed (2x faster than Sonnet)
+// Max output: 64K tokens (for quarterly schedules)
+export const MODEL = 'claude-haiku-4-5';
 
 // Retry configuration
 const MAX_RETRIES = 3;
@@ -24,7 +24,7 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Call Claude Sonnet 4.5 for AI scheduling (reliable, intelligent)
+ * Call Claude Haiku 4.5 for AI scheduling (fast, cost-effective)
  * Enhanced with retry logic for transient failures
  */
 export async function callClaude(
@@ -44,8 +44,8 @@ export async function callClaude(
 
     // Use streaming for large token requests to avoid 10-minute timeout
     // OPTIMIZATION: Enable prompt caching for system prompt (saves cost on repeated calls)
-    // Sonnet 4.5 supports up to 200K context window, 8K max output tokens
-    const effectiveMaxTokens = Math.min(maxTokens, 8192);
+    // Claude Haiku 4.5 supports up to 200K context window, 64K max output tokens
+    const effectiveMaxTokens = Math.min(maxTokens, 64000);
 
     const stream = await anthropic.messages.stream({
       model: MODEL,

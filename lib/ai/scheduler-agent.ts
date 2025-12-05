@@ -144,22 +144,105 @@ async function calculateRecentHistoryBulk(
 }
 
 /**
- * Main AI Scheduling Agent
+ * Generate schedule for a single bureau (used for parallel execution)
+ */
+async function generateScheduleForBureau(
+  request: ScheduleRequest,
+  bureau: 'Milan' | 'Rome'
+): Promise<{ success: boolean; data?: ScheduleResponse; error?: string }> {
+  const singleBureauRequest = { ...request, bureau };
+  return generateScheduleSingle(singleBureauRequest);
+}
+
+/**
+ * Merge two schedule responses into one
+ */
+function mergeScheduleResponses(milan: ScheduleResponse, rome: ScheduleResponse): ScheduleResponse {
+  return {
+    shifts: [...milan.shifts, ...rome.shifts],
+    fairness_metrics: {
+      weekend_shifts_per_person: {
+        ...milan.fairness_metrics.weekend_shifts_per_person,
+        ...rome.fairness_metrics.weekend_shifts_per_person,
+      },
+      night_shifts_per_person: {
+        ...milan.fairness_metrics.night_shifts_per_person,
+        ...rome.fairness_metrics.night_shifts_per_person,
+      },
+      total_shifts_per_person: {
+        ...milan.fairness_metrics.total_shifts_per_person,
+        ...rome.fairness_metrics.total_shifts_per_person,
+      },
+      preference_satisfaction_rate:
+        (milan.fairness_metrics.preference_satisfaction_rate +
+          rome.fairness_metrics.preference_satisfaction_rate) /
+        2,
+      hard_constraint_violations: [
+        ...milan.fairness_metrics.hard_constraint_violations,
+        ...rome.fairness_metrics.hard_constraint_violations,
+      ],
+    },
+    recommendations: [...milan.recommendations, ...rome.recommendations],
+  };
+}
+
+/**
+ * Main AI Scheduling Agent - with parallel bureau support
  */
 export async function generateSchedule(request: ScheduleRequest): Promise<{
   success: boolean;
   data?: ScheduleResponse;
   error?: string;
 }> {
-  try {
-    // Check if API key is configured
-    if (!isConfigured()) {
-      return {
-        success: false,
-        error: 'AI scheduling not configured. Please set ANTHROPIC_API_KEY environment variable.',
-      };
+  // Check if API key is configured
+  if (!isConfigured()) {
+    return {
+      success: false,
+      error: 'AI scheduling not configured. Please set ANTHROPIC_API_KEY environment variable.',
+    };
+  }
+
+  // OPTIMIZATION: Parallel generation for both bureaus
+  if (request.bureau === 'both') {
+    console.log('[Parallel] Generating schedules for Milan and Rome simultaneously...');
+    const startTime = Date.now();
+
+    const [milanResult, romeResult] = await Promise.all([
+      generateScheduleForBureau(request, 'Milan'),
+      generateScheduleForBureau(request, 'Rome'),
+    ]);
+
+    const elapsed = Date.now() - startTime;
+    console.log(
+      `[Parallel] Both bureaus completed in ${elapsed}ms (vs ~${elapsed * 2}ms sequential)`
+    );
+
+    if (!milanResult.success || !milanResult.data) {
+      return { success: false, error: `Milan: ${milanResult.error}` };
+    }
+    if (!romeResult.success || !romeResult.data) {
+      return { success: false, error: `Rome: ${romeResult.error}` };
     }
 
+    return {
+      success: true,
+      data: mergeScheduleResponses(milanResult.data, romeResult.data),
+    };
+  }
+
+  // Single bureau generation
+  return generateScheduleSingle(request);
+}
+
+/**
+ * Generate schedule for a single bureau
+ */
+async function generateScheduleSingle(request: ScheduleRequest): Promise<{
+  success: boolean;
+  data?: ScheduleResponse;
+  error?: string;
+}> {
+  try {
     const supabase = await createClient();
 
     // 1. Fetch employees
@@ -261,9 +344,9 @@ export async function generateSchedule(request: ScheduleRequest): Promise<{
 
     // 6. Call Claude with optimized settings
     console.log('Calling Claude Haiku 4.5 for schedule generation...');
-    // Claude Haiku 4.5 max output: 8K tokens
-    // Ultra-brief reasoning keeps output under 8K even for 100+ employee teams
-    const response = await callClaude(SYSTEM_PROMPT, userPrompt, 8192);
+    // Claude Haiku 4.5 max output: 64K tokens for quarterly schedules
+    // Ultra-brief reasoning keeps output manageable even for 100+ employee teams
+    const response = await callClaude(SYSTEM_PROMPT, userPrompt, 64000);
 
     // 7. Parse response with request context for debugging
     const scheduleData = parseScheduleResponse(response, {
