@@ -65,6 +65,10 @@ import {
   ChevronRight,
   GripVertical,
   Sparkles,
+  Clock,
+  Sunrise,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import {
   format,
@@ -74,6 +78,7 @@ import {
   endOfMonth,
   eachDayOfInterval,
   isSameMonth,
+  isToday,
   addMonths,
   startOfQuarter,
   endOfQuarter,
@@ -1007,12 +1012,145 @@ export default function SchedulePage() {
         {/* View Tabs */}
         <Tabs value={selectedView} onValueChange={setSelectedView}>
           <TabsList>
+            <TabsTrigger value="today">Today</TabsTrigger>
             <TabsTrigger value="week">Week View</TabsTrigger>
             <TabsTrigger value="month">Monthly View</TabsTrigger>
             <TabsTrigger value="quarter">Quarterly View</TabsTrigger>
             <TabsTrigger value="list">List View</TabsTrigger>
             <TabsTrigger value="grid">Grid View</TabsTrigger>
           </TabsList>
+
+          {/* Today View */}
+          <TabsContent value="today" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-center gap-3">
+                  <CardTitle className="text-2xl">
+                    {format(new Date(), 'EEEE, MMMM d, yyyy')}
+                  </CardTitle>
+                  <Badge className="bg-[#FF6600] hover:bg-[#e55a00]">Today</Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  const today = new Date();
+                  const todayShifts = getShiftsForDate(today);
+
+                  // Group shifts by time slot
+                  const morningShifts = todayShifts.filter(
+                    (s) => parseInt(s.startTime.split(':')[0]) < 12
+                  );
+                  const afternoonShifts = todayShifts.filter(
+                    (s) =>
+                      parseInt(s.startTime.split(':')[0]) >= 12 &&
+                      parseInt(s.startTime.split(':')[0]) < 18
+                  );
+                  const eveningShifts = todayShifts.filter(
+                    (s) =>
+                      parseInt(s.startTime.split(':')[0]) >= 18 ||
+                      parseInt(s.startTime.split(':')[0]) < 6
+                  );
+
+                  const TimeSlotSection = ({
+                    title,
+                    shiftList,
+                    icon: Icon,
+                  }: {
+                    title: string;
+                    shiftList: typeof todayShifts;
+                    icon: React.ComponentType<{ className?: string }>;
+                  }) => (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-5 w-5 text-[#FF6600]" />
+                        <h4 className="font-bold text-gray-700">{title}</h4>
+                        <Badge variant="outline" className="ml-auto">
+                          {shiftList.length} shift{shiftList.length !== 1 ? 's' : ''}
+                        </Badge>
+                      </div>
+                      {shiftList.length > 0 ? (
+                        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                          {shiftList.map((shift) => (
+                            <div
+                              key={shift.id}
+                              className="bg-white border-l-4 border-l-[#FF6600] rounded-lg p-4 shadow-sm hover:shadow-md transition-all hover:scale-[1.01]"
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="space-y-1">
+                                  <div className="font-bold text-[#FF6600] text-lg">
+                                    {shift.employee}
+                                  </div>
+                                  <div className="text-gray-600 font-medium">{shift.role}</div>
+                                </div>
+                                <Badge variant="secondary" className="text-sm font-semibold">
+                                  {shift.bureau}
+                                </Badge>
+                              </div>
+                              <div className="mt-3 flex items-center gap-4">
+                                <div className="flex items-center gap-2 text-gray-700">
+                                  <Clock className="h-4 w-4" />
+                                  <span className="font-semibold">
+                                    {shift.startTime} - {shift.endTime}
+                                  </span>
+                                </div>
+                                <Badge
+                                  variant={shift.status === 'confirmed' ? 'default' : 'secondary'}
+                                  className="font-semibold"
+                                >
+                                  {shift.status}
+                                </Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-lg">
+                          No shifts scheduled
+                        </div>
+                      )}
+                    </div>
+                  );
+
+                  if (todayShifts.length === 0) {
+                    return (
+                      <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg">
+                        <Clock className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                        <p className="text-lg font-medium">No shifts scheduled for today</p>
+                        <p className="text-sm mt-1">Enjoy your day off!</p>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="space-y-6">
+                      <div className="text-center">
+                        <span className="text-3xl font-bold text-[#FF6600]">
+                          {todayShifts.length}
+                        </span>
+                        <span className="text-gray-600 ml-2">total shifts today</span>
+                      </div>
+
+                      <TimeSlotSection
+                        title="Morning (6AM - 12PM)"
+                        shiftList={morningShifts}
+                        icon={Sunrise}
+                      />
+                      <TimeSlotSection
+                        title="Afternoon (12PM - 6PM)"
+                        shiftList={afternoonShifts}
+                        icon={Sun}
+                      />
+                      <TimeSlotSection
+                        title="Evening/Night (6PM - 6AM)"
+                        shiftList={eveningShifts}
+                        icon={Moon}
+                      />
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Week View */}
           <TabsContent value="week" className="space-y-4">

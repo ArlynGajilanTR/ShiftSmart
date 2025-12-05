@@ -1,0 +1,219 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { MessageCircle, X, Send, Sparkles, ChevronUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+
+// FAQ chips for quick access
+const faqChips = [
+  { label: 'Create a shift', question: 'How do I create a new shift?' },
+  { label: 'AI scheduling', question: 'How does AI schedule generation work?' },
+  { label: 'View conflicts', question: 'How do I view and resolve conflicts?' },
+  { label: 'Add employee', question: 'How do I add a new employee?' },
+  { label: 'Drag & drop', question: 'How does drag and drop work for shifts?' },
+  { label: 'Filter employees', question: 'How do I filter employees by bureau or role?' },
+];
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export function ChatbotGuide() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const sendMessage = async (question: string) => {
+    if (!question.trim()) return;
+
+    const userMessage: Message = { role: 'user', content: question };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/ai/chatbot', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+        body: JSON.stringify({
+          question,
+          history: messages.slice(-6), // Send last 6 messages for context
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get response');
+      }
+
+      const data = await response.json();
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: data.answer,
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Chatbot error:', error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: "Sorry, I couldn't process that request. Please try again.",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChipClick = (question: string) => {
+    sendMessage(question);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendMessage(input);
+  };
+
+  return (
+    <div className="relative">
+      {/* Collapsed state - just the button */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-sidebar-accent rounded-md transition-colors"
+        >
+          <Sparkles className="h-4 w-4 text-primary" />
+          <span>Ask ShiftSmart</span>
+        </button>
+      )}
+
+      {/* Expanded chat panel */}
+      {isOpen && (
+        <div className="bg-background border rounded-lg shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-3 py-2 bg-primary/5 border-b">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold">ShiftSmart Guide</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() => setIsOpen(false)}
+            >
+              <ChevronUp className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Messages area */}
+          <div className="h-[200px] overflow-y-auto p-3 space-y-3">
+            {messages.length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-xs text-muted-foreground mb-3">
+                  Ask me anything about ShiftSmart!
+                </p>
+                {/* FAQ Chips */}
+                <div className="flex flex-wrap gap-1.5 justify-center">
+                  {faqChips.slice(0, 4).map((chip) => (
+                    <button
+                      key={chip.label}
+                      onClick={() => handleChipClick(chip.question)}
+                      className="px-2 py-1 text-[10px] bg-primary/10 hover:bg-primary/20 text-primary rounded-full transition-colors"
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <>
+                {messages.map((msg, idx) => (
+                  <div
+                    key={idx}
+                    className={cn(
+                      'text-xs p-2 rounded-lg max-w-[90%]',
+                      msg.role === 'user'
+                        ? 'bg-primary text-primary-foreground ml-auto'
+                        : 'bg-muted'
+                    )}
+                  >
+                    {msg.content}
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="bg-muted text-xs p-2 rounded-lg max-w-[90%]">
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" />
+                      <div
+                        className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce"
+                        style={{ animationDelay: '0.1s' }}
+                      />
+                      <div
+                        className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce"
+                        style={{ animationDelay: '0.2s' }}
+                      />
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </>
+            )}
+          </div>
+
+          {/* Quick chips when there are messages */}
+          {messages.length > 0 && (
+            <div className="px-3 pb-2">
+              <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-hide">
+                {faqChips.slice(0, 3).map((chip) => (
+                  <button
+                    key={chip.label}
+                    onClick={() => handleChipClick(chip.question)}
+                    disabled={isLoading}
+                    className="px-2 py-0.5 text-[9px] bg-muted hover:bg-muted/80 rounded-full whitespace-nowrap transition-colors disabled:opacity-50"
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Input */}
+          <form onSubmit={handleSubmit} className="p-2 border-t">
+            <div className="flex gap-1.5">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask a question..."
+                className="h-8 text-xs"
+                disabled={isLoading}
+              />
+              <Button
+                type="submit"
+                size="icon"
+                className="h-8 w-8 shrink-0"
+                disabled={isLoading || !input.trim()}
+              >
+                <Send className="h-3 w-3" />
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}

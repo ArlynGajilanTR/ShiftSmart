@@ -23,6 +23,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
+import { ChatbotGuide } from '@/components/chatbot-guide';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Calendar },
@@ -119,6 +120,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          {/* Chatbot Guide */}
+          <SidebarGroup className="mt-auto">
+            <SidebarGroupContent>
+              <ChatbotGuide />
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
