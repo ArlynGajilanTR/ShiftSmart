@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.5] - 2025-12-05
+
+### Removed
+
+- **Mock Data Fallbacks**: Removed all mock/fake data from Dashboard and Schedule pages
+  - Removed `mockUpcomingShifts` array from Dashboard page
+  - Removed `mockShifts` and `employees` arrays from Schedule page
+  - Error states now show empty schedules instead of fake data
+  - Users will always see their actual schedule data, never fake shifts
+
+### Fixed
+
+- **Data Integrity for MVP**: Scheduling app must only show real data
+  - API errors now result in empty state with error toast, not mock data
+  - Prevents user confusion between real and fake schedule entries
+  - Clean/blank state is expected behavior for new users
+
 ## [1.4.4] - 2025-12-05
 
 ### Added

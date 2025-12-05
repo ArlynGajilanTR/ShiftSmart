@@ -51,43 +51,6 @@ interface Shift {
   status: string;
 }
 
-// Mock data as fallback - uses Date objects to align with schedule page
-const mockUpcomingShifts: Shift[] = [
-  {
-    id: '1',
-    employee: 'Marco Rossi',
-    employee_id: '1',
-    role: 'Senior Editor',
-    bureau: 'Milan',
-    date: new Date(),
-    startTime: '07:00',
-    endTime: '15:00',
-    status: 'confirmed',
-  },
-  {
-    id: '2',
-    employee: 'Sofia Romano',
-    employee_id: '2',
-    role: 'Junior Editor',
-    bureau: 'Rome',
-    date: new Date(),
-    startTime: '15:00',
-    endTime: '23:00',
-    status: 'confirmed',
-  },
-  {
-    id: '3',
-    employee: 'Luca Ferrari',
-    employee_id: '3',
-    role: 'Lead Editor',
-    bureau: 'Milan',
-    date: new Date(),
-    startTime: '23:00',
-    endTime: '07:00',
-    status: 'pending',
-  },
-];
-
 export default function DashboardPage() {
   const { toast } = useToast();
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -153,11 +116,11 @@ export default function DashboardPage() {
         console.error('Failed to fetch dashboard data:', error);
         toast({
           title: 'Failed to load dashboard',
-          description: error.message || 'Using cached data',
+          description: error.message || 'Please try again',
           variant: 'destructive',
         });
-        // Use mock data as fallback
-        setUpcomingShifts(mockUpcomingShifts as any);
+        // Keep empty state - never show fake data in a scheduling app
+        setUpcomingShifts([]);
       } finally {
         setIsLoading(false);
       }

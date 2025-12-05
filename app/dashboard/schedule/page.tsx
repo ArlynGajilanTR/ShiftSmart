@@ -89,68 +89,6 @@ import {
 import { api } from '@/lib/api-client';
 import { useToast } from '@/hooks/use-toast';
 
-// Mock data for shifts as fallback
-const mockShifts = [
-  {
-    id: 1,
-    employee: 'Marco Rossi',
-    role: 'Senior Editor',
-    bureau: 'Milan',
-    date: new Date(2025, 9, 30),
-    startTime: '08:00',
-    endTime: '16:00',
-    status: 'confirmed',
-  },
-  {
-    id: 2,
-    employee: 'Sofia Romano',
-    role: 'Junior Editor',
-    bureau: 'Rome',
-    date: new Date(2025, 9, 30),
-    startTime: '16:00',
-    endTime: '00:00',
-    status: 'confirmed',
-  },
-  {
-    id: 3,
-    employee: 'Luca Ferrari',
-    role: 'Lead Editor',
-    bureau: 'Milan',
-    date: new Date(2025, 9, 31),
-    startTime: '00:00',
-    endTime: '08:00',
-    status: 'pending',
-  },
-  {
-    id: 4,
-    employee: 'Giulia Bianchi',
-    role: 'Senior Editor',
-    bureau: 'Rome',
-    date: new Date(2025, 9, 31),
-    startTime: '08:00',
-    endTime: '16:00',
-    status: 'confirmed',
-  },
-  {
-    id: 5,
-    employee: 'Alessandro Conti',
-    role: 'Junior Editor',
-    bureau: 'Milan',
-    date: new Date(2025, 9, 31),
-    startTime: '16:00',
-    endTime: '00:00',
-    status: 'confirmed',
-  },
-];
-
-const employees = [
-  { id: 1, name: 'Marco Rossi', role: 'Senior Editor', bureau: 'Milan' },
-  { id: 2, name: 'Sofia Romano', role: 'Junior Editor', bureau: 'Rome' },
-  { id: 3, name: 'Luca Ferrari', role: 'Lead Editor', bureau: 'Milan' },
-  { id: 4, name: 'Giulia Bianchi', role: 'Senior Editor', bureau: 'Rome' },
-  { id: 5, name: 'Alessandro Conti', role: 'Junior Editor', bureau: 'Milan' },
-];
-
 function DraggableShift({
   shift,
   view = 'week',
@@ -395,11 +333,11 @@ export default function SchedulePage() {
       console.error('Failed to fetch shifts:', error);
       toast({
         title: 'Failed to load shifts',
-        description: error.message || 'Using cached data',
+        description: error.message || 'Please try again',
         variant: 'destructive',
       });
-      // Fallback to mock data
-      setShifts(mockShifts);
+      // Keep empty state - never show fake data in a scheduling app
+      setShifts([]);
     } finally {
       setIsLoading(false);
     }
