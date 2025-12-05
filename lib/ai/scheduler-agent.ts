@@ -463,17 +463,30 @@ export function parseScheduleResponse(
     console.log('[AI Response] Length:', response.length, 'chars');
     console.log('[AI Response] First 500 chars:', response.substring(0, 500));
 
-    // Detect if response is conversational instead of JSON
-    const conversationalPatterns = [
-      /^(I|Let me|I'll|I can|I would|I need|To create|Before)/i,
-      /^(What|Which|How|Could you|Can you|Would you)/i,
-      /question|clarify|need more information|missing information/i,
-    ];
+    const trimmedResponse = response.trim();
 
-    for (const pattern of conversationalPatterns) {
-      if (pattern.test(response.trim())) {
-        logFailure('Claude returned conversational response instead of JSON', response);
-        return null;
+    // First, check if response starts with JSON indicators - if so, skip conversational check
+    const startsWithJSON =
+      trimmedResponse.startsWith('{') ||
+      trimmedResponse.startsWith('[') ||
+      trimmedResponse.startsWith('```json') ||
+      trimmedResponse.startsWith('```');
+
+    // Only check for conversational response if it doesn't look like JSON
+    if (!startsWithJSON) {
+      // Detect if response is conversational instead of JSON
+      // Note: All patterns are anchored to start (^) to avoid false positives from JSON content
+      const conversationalPatterns = [
+        /^(I|Let me|I'll|I can|I would|I need|To create|Before)/i,
+        /^(What|Which|How|Could you|Can you|Would you)/i,
+        /^(Thank you|Here's|Here is|Based on|Looking at)/i,
+      ];
+
+      for (const pattern of conversationalPatterns) {
+        if (pattern.test(trimmedResponse)) {
+          logFailure('Claude returned conversational response instead of JSON', response);
+          return null;
+        }
       }
     }
 

@@ -393,6 +393,29 @@ export const api = {
       });
     },
 
+    saveSchedule: async (params: { schedule: any; skip_conflict_check?: boolean }) => {
+      const response = await fetch('/api/ai/save-schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+        body: JSON.stringify(params),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Include conflict details in the error for the UI to parse
+        const error = new Error(data.error || 'Failed to save schedule') as any;
+        error.conflicts = data.conflicts || [];
+        error.conflict_count = data.conflict_count || 0;
+        throw error;
+      }
+
+      return data;
+    },
+
     resolveConflict: async (conflictId: string) => {
       return apiCall('/api/ai/resolve-conflict', {
         method: 'POST',

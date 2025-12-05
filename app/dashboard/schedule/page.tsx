@@ -671,38 +671,66 @@ export default function SchedulePage() {
     }
   };
 
+  // State for conflict handling
+  const [saveConflicts, setSaveConflicts] = useState<any[]>([]);
+  const [showConflictWarning, setShowConflictWarning] = useState(false);
+
   // Handle saving generated schedule to database
-  const handleSaveSchedule = async () => {
+  const handleSaveSchedule = async (forceWithConflicts: boolean = false) => {
+    if (!generatedSchedule) {
+      toast({
+        title: 'No schedule to save',
+        description: 'Please generate a schedule first',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSaving(true);
     try {
-      const response = (await api.ai.generateSchedule({
-        start_date: generationConfig.start_date,
-        end_date: generationConfig.end_date,
-        type: generationConfig.type,
-        bureau: generationConfig.bureau,
-        preserve_existing: generationConfig.preserve_existing,
-        save_to_database: true, // Save mode
+      // Save the ALREADY GENERATED schedule (don't regenerate!)
+      const response = (await api.ai.saveSchedule({
+        schedule: generatedSchedule,
+        skip_conflict_check: forceWithConflicts, // Skip check if forcing
       })) as any;
 
       toast({
         title: 'Schedule saved successfully',
-        description: `Successfully added ${response.shift_ids?.length || 0} shifts to calendar`,
+        description: `Successfully added ${response.saved_shifts || 0} shifts to calendar${forceWithConflicts ? ' (conflicts logged for review)' : ''}`,
       });
 
       // Close dialog and reset state
       setIsGenerateDialogOpen(false);
       setShowPreview(false);
       setGeneratedSchedule(null);
+      setSaveConflicts([]);
+      setShowConflictWarning(false);
 
       // Refresh the calendar
       await refetchShifts();
     } catch (error: any) {
       console.error('Failed to save schedule:', error);
-      toast({
-        title: 'Failed to save schedule',
-        description: error.message || 'Please try again',
-        variant: 'destructive',
-      });
+
+      // Get conflict details from error object (set by api client)
+      const conflicts = error.conflicts || [];
+      const conflictCount = error.conflict_count || conflicts.length;
+
+      // Check if it's a conflict error
+      if (error.message?.includes('conflict') || conflictCount > 0) {
+        setSaveConflicts(conflicts);
+        setShowConflictWarning(true);
+        toast({
+          title: 'Schedule has conflicts',
+          description: `Found ${conflictCount} scheduling conflict(s). These are typically rest period violations (less than 11h between shifts). You can save anyway or regenerate.`,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Failed to save schedule',
+          description: error.message || 'Please try again',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setIsSaving(false);
     }
@@ -1255,24 +1283,87 @@ export default function SchedulePage() {
                       </CardContent>
                     </Card>
 
+                    {/* Conflict Warning */}
+                    {showConflictWarning && saveConflicts.length > 0 && (
+                      <Alert variant="destructive">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Scheduling Conflicts Detected</AlertTitle>
+                        <AlertDescription>
+                          <p className="mb-2">
+                            The AI generated {saveConflicts.length} conflict(s). These are typically
+                            rest period violations (less than 11 hours between shifts) which can
+                            happen with 24/7 coverage.
+                          </p>
+                          <details className="mt-2">
+                            <summary className="cursor-pointer text-sm font-medium">
+                              View conflict details
+                            </summary>
+                            <ul className="mt-2 space-y-1 text-xs">
+                              {saveConflicts.slice(0, 5).map((c: any, i: number) => (
+                                <li key={i} className="bg-destructive/10 p-2 rounded">
+                                  <strong>{c.type}</strong>: {c.description}
+                                  <br />
+                                  Shift 1: {c.shift1?.date} {c.shift1?.start}-{c.shift1?.end}
+                                  <br />
+                                  Shift 2: {c.shift2?.date} {c.shift2?.start}-{c.shift2?.end}
+                                </li>
+                              ))}
+                              {saveConflicts.length > 5 && (
+                                <li className="text-muted-foreground">
+                                  ... and {saveConflicts.length - 5} more
+                                </li>
+                              )}
+                            </ul>
+                          </details>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+
                     <div className="flex justify-end gap-2 pt-4">
                       <Button
                         variant="outline"
-                        onClick={() => setShowPreview(false)}
+                        onClick={() => {
+                          setShowPreview(false);
+                          setShowConflictWarning(false);
+                          setSaveConflicts([]);
+                        }}
                         disabled={isSaving}
                       >
                         Back
                       </Button>
-                      <Button onClick={handleSaveSchedule} disabled={isSaving}>
-                        {isSaving ? (
-                          <>
-                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-foreground" />
-                            Saving...
-                          </>
-                        ) : (
-                          'Approve & Save to Calendar'
-                        )}
-                      </Button>
+                      {showConflictWarning ? (
+                        <>
+                          <Button
+                            variant="outline"
+                            onClick={() => handleSaveSchedule(true)}
+                            disabled={isSaving}
+                          >
+                            {isSaving ? 'Saving...' : 'Save Anyway (Log Conflicts)'}
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setShowPreview(false);
+                              setShowConflictWarning(false);
+                              setSaveConflicts([]);
+                              handleGenerateSchedule();
+                            }}
+                            disabled={isSaving}
+                          >
+                            Regenerate Schedule
+                          </Button>
+                        </>
+                      ) : (
+                        <Button onClick={() => handleSaveSchedule(false)} disabled={isSaving}>
+                          {isSaving ? (
+                            <>
+                              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-foreground" />
+                              Saving...
+                            </>
+                          ) : (
+                            'Approve & Save to Calendar'
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </>
                 )}

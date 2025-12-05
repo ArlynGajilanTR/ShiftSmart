@@ -1,6 +1,6 @@
 # ShiftSmart API Reference
 
-**Version:** 1.4.3  
+**Version:** 1.4.9  
 **Base URL:** `https://your-api-domain.vercel.app`  
 **Last Updated:** December 5, 2025
 
@@ -992,6 +992,83 @@ Content-Type: application/json
   }
 }
 ```
+
+---
+
+### POST /api/ai/save-schedule
+
+Save a pre-generated AI schedule to the database. This endpoint allows saving a schedule that was already generated (via preview), without re-generating it.
+
+**Request:**
+
+```http
+POST /api/ai/save-schedule
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
+  "schedule": {
+    "shifts": [
+      {
+        "date": "2025-12-05",
+        "start_time": "08:00",
+        "end_time": "16:00",
+        "bureau": "Milan",
+        "assigned_to": "Gianluca Semeraro",
+        "role_level": "senior",
+        "shift_type": "Morning",
+        "reasoning": "Sr-cover"
+      }
+    ],
+    "fairness_metrics": { ... },
+    "recommendations": [ ... ]
+  },
+  "skip_conflict_check": false
+}
+```
+
+**Body Parameters:**
+
+- `schedule` (object, required) - The generated schedule object containing shifts array
+- `skip_conflict_check` (boolean, optional) - If `true`, saves even if conflicts exist (default: `false`)
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "saved_shifts": 172,
+  "shift_ids": ["uuid1", "uuid2", "..."]
+}
+```
+
+**Response (409 Conflict):**
+
+If conflicts are detected and `skip_conflict_check` is `false`:
+
+```json
+{
+  "error": "Schedule has 10 conflict(s). Use skip_conflict_check: true to save anyway.",
+  "conflicts": [
+    {
+      "type": "Rest Period Violation",
+      "severity": "high",
+      "employee": "Gianluca Semeraro",
+      "description": "Gianluca Semeraro has only 8h rest between shifts (minimum 11h required)",
+      "shift1": { "date": "2025-12-05", "start": "16:00", "end": "00:00" },
+      "shift2": { "date": "2025-12-06", "start": "08:00", "end": "16:00" }
+    }
+  ],
+  "conflict_count": 10
+}
+```
+
+**Errors:**
+
+- `400` - Invalid schedule data
+- `401` - Unauthorized
+- `409` - Schedule has conflicts (can override with `skip_conflict_check: true`)
+- `500` - Failed to save schedule
 
 ---
 

@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.9] - 2025-12-05
+
+### Added
+
+- **New API Endpoint: `POST /api/ai/save-schedule`**: Saves a pre-generated schedule without re-generating
+  - Accepts schedule object from preview and saves directly to database
+  - Validates for conflicts before saving (can be skipped with `skip_conflict_check: true`)
+  - Returns saved shift count and IDs
+  - Proper 409 response with conflict details when conflicts detected
+
+- **Conflict Handling UI in Schedule Preview**: Better user experience when AI generates conflicts
+  - Shows detailed conflict information (type, employee, shift times)
+  - "Save Anyway (Log Conflicts)" button to force save with conflicts
+  - "Regenerate Schedule" button to try again
+  - Expandable conflict details section
+
+### Fixed
+
+- **Critical: AI Schedule JSON Parsing False Positives**
+  - Fixed regex pattern that incorrectly flagged valid JSON as "conversational response"
+  - The third pattern `/question|clarify|need more information|missing information/i` matched anywhere in JSON content
+  - Now checks if response starts with JSON indicators before applying conversational check
+  - All patterns properly anchored to avoid matching within JSON data
+
+- **Critical: Save Button Re-generating Instead of Saving**
+  - "Approve & Save to Calendar" button was calling `generateSchedule` again with `save_to_database: true`
+  - This caused a completely NEW schedule to be generated (different from preview)
+  - New schedule could have different conflicts than the previewed one
+  - Now correctly saves the ALREADY GENERATED schedule using new `/api/ai/save-schedule` endpoint
+
+### Changed
+
+- **API Client**: `api.ai.saveSchedule()` now returns conflict details in error object for UI display
+- **Schedule Page**: Save flow properly preserves generated schedule state
+
+### Documentation
+
+- Updated API Reference with new `/api/ai/save-schedule` endpoint
+- Version bumped to 1.4.9
+
 ## [1.4.8] - 2025-12-05
 
 ### Added
