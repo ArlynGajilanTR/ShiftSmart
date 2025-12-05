@@ -10,7 +10,6 @@ import {
   Users,
   AlertCircle,
   Clock,
-  Plus,
   ChevronLeft,
   ChevronRight,
   Sunrise,
@@ -587,17 +586,11 @@ export default function DashboardPage() {
       {/* Schedule Overview */}
       <Card className="shadow-sm hover:shadow-md transition-shadow">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-xl font-bold">Schedule Overview</CardTitle>
-              <CardDescription className="font-medium">
-                View and manage shift assignments
-              </CardDescription>
-            </div>
-            <Button className="hover:scale-105 transition-transform">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Shift
-            </Button>
+          <div>
+            <CardTitle className="text-xl font-bold">Schedule Overview</CardTitle>
+            <CardDescription className="font-medium">
+              View and manage shift assignments
+            </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
