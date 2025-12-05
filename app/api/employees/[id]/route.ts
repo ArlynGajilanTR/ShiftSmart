@@ -38,7 +38,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Calculate shifts this month
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    // Set to end of last day of month (23:59:59.999)
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
     const { data: shifts } = await supabase
       .from('shift_assignments')
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       .eq('user_id', id)
       .gte('shifts.start_time', monthStart.toISOString())
       .lte('shifts.start_time', monthEnd.toISOString())
-      .eq('status', 'confirmed');
+      .in('status', ['assigned', 'confirmed', 'completed']);
 
     // Format response
     const nameParts = employee.full_name.split(' ');

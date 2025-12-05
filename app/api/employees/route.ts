@@ -65,15 +65,20 @@ export async function GET(request: NextRequest) {
     // Calculate shifts this month for each employee
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    // Set to end of last day of month (23:59:59.999)
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-    // Get shift counts
-    const { data: shiftCounts } = await supabase
+    // Get shift counts - include assigned, confirmed, and completed statuses
+    const { data: shiftCounts, error: shiftCountError } = await supabase
       .from('shift_assignments')
-      .select('user_id, shifts!inner(start_time)')
+      .select('user_id, status, shifts!inner(start_time)')
       .gte('shifts.start_time', monthStart.toISOString())
       .lte('shifts.start_time', monthEnd.toISOString())
-      .eq('status', 'confirmed');
+      .in('status', ['assigned', 'confirmed', 'completed']);
+
+    if (shiftCountError) {
+      console.error('Error fetching shift counts:', shiftCountError);
+    }
 
     // Count shifts per user
     const shiftsMap = new Map<string, number>();
