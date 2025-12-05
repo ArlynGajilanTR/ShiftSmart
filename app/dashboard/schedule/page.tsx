@@ -93,6 +93,7 @@ import {
   isSameMonth,
   isToday,
   addMonths,
+  addWeeks,
   startOfQuarter,
   endOfQuarter,
 } from 'date-fns';
@@ -310,6 +311,82 @@ export default function SchedulePage() {
 
   // Track recently moved shifts for settle animation
   const [recentlyMovedShiftId, setRecentlyMovedShiftId] = useState<string | null>(null);
+
+  // Navigation state for Today and Week views
+  const [currentDay, setCurrentDay] = useState(new Date());
+  const [currentWeek, setCurrentWeek] = useState(new Date());
+
+  // Animation state for smooth transitions
+  const [dayAnimationKey, setDayAnimationKey] = useState(0);
+  const [dayAnimationDirection, setDayAnimationDirection] = useState<'next' | 'prev' | null>(null);
+  const [weekAnimationKey, setWeekAnimationKey] = useState(0);
+  const [weekAnimationDirection, setWeekAnimationDirection] = useState<'next' | 'prev' | null>(
+    null
+  );
+  const [monthAnimationKey, setMonthAnimationKey] = useState(0);
+  const [monthAnimationDirection, setMonthAnimationDirection] = useState<'next' | 'prev' | null>(
+    null
+  );
+  const [quarterAnimationKey, setQuarterAnimationKey] = useState(0);
+  const [quarterAnimationDirection, setQuarterAnimationDirection] = useState<
+    'next' | 'prev' | null
+  >(null);
+
+  // Navigation handlers with animation triggers
+  const navigateDay = (direction: 'next' | 'prev') => {
+    setDayAnimationDirection(direction);
+    setDayAnimationKey((prev) => prev + 1);
+    setCurrentDay((prev) => addDays(prev, direction === 'next' ? 1 : -1));
+  };
+
+  const navigateToToday = () => {
+    setDayAnimationDirection('next');
+    setDayAnimationKey((prev) => prev + 1);
+    setCurrentDay(new Date());
+  };
+
+  const navigateWeek = (direction: 'next' | 'prev') => {
+    setWeekAnimationDirection(direction);
+    setWeekAnimationKey((prev) => prev + 1);
+    setCurrentWeek((prev) => addWeeks(prev, direction === 'next' ? 1 : -1));
+  };
+
+  const navigateToThisWeek = () => {
+    setWeekAnimationDirection('next');
+    setWeekAnimationKey((prev) => prev + 1);
+    setCurrentWeek(new Date());
+  };
+
+  const navigateMonth = (direction: 'next' | 'prev') => {
+    setMonthAnimationDirection(direction);
+    setMonthAnimationKey((prev) => prev + 1);
+    setCurrentMonth((prev) => addMonths(prev, direction === 'next' ? 1 : -1));
+  };
+
+  const navigateToThisMonth = () => {
+    setMonthAnimationDirection('next');
+    setMonthAnimationKey((prev) => prev + 1);
+    setCurrentMonth(new Date());
+  };
+
+  const navigateQuarter = (direction: 'next' | 'prev') => {
+    setQuarterAnimationDirection(direction);
+    setQuarterAnimationKey((prev) => prev + 1);
+    setCurrentQuarter((prev) => addMonths(prev, direction === 'next' ? 3 : -3));
+  };
+
+  const navigateToThisQuarter = () => {
+    setQuarterAnimationDirection('next');
+    setQuarterAnimationKey((prev) => prev + 1);
+    setCurrentQuarter(new Date());
+  };
+
+  // Helper to get animation class
+  const getAnimationClass = (direction: 'next' | 'prev' | null) => {
+    if (direction === 'next') return 'schedule-slide-next';
+    if (direction === 'prev') return 'schedule-slide-prev';
+    return '';
+  };
 
   // DEV ONLY: Reset schedule state
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
@@ -754,7 +831,7 @@ export default function SchedulePage() {
     })
   );
 
-  const weekStart = startOfWeek(new Date());
+  const weekStart = startOfWeek(currentWeek);
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   const monthStart = startOfMonth(currentMonth);
@@ -1397,110 +1474,131 @@ export default function SchedulePage() {
           <TabsContent value="today" className="space-y-4">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-center gap-3">
-                  <CardTitle className="text-2xl">
-                    {format(new Date(), 'EEEE, MMMM d, yyyy')}
-                  </CardTitle>
-                  <Badge className="bg-[#FF6600] hover:bg-[#e55a00]">Today</Badge>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1" />
+                  <div className="flex items-center gap-3">
+                    <Button variant="outline" size="icon" onClick={() => navigateDay('prev')}>
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <div className="flex items-center gap-3">
+                      <CardTitle className="text-2xl">
+                        {format(currentDay, 'EEEE, MMMM d, yyyy')}
+                      </CardTitle>
+                      {isToday(currentDay) && (
+                        <Badge className="bg-[#FF6600] hover:bg-[#e55a00]">Today</Badge>
+                      )}
+                    </div>
+                    <Button variant="outline" size="icon" onClick={() => navigateDay('next')}>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex-1 flex justify-end">
+                    {!isToday(currentDay) && (
+                      <Button variant="outline" onClick={navigateToToday}>
+                        Today
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <DroppableDay date={new Date()}>
-                  {(() => {
-                    const today = new Date();
-                    const todayShifts = getShiftsForDate(today);
+                <div key={dayAnimationKey} className={getAnimationClass(dayAnimationDirection)}>
+                  <DroppableDay date={currentDay}>
+                    {(() => {
+                      const todayShifts = getShiftsForDate(currentDay);
 
-                    // Group shifts by time slot
-                    const morningShifts = todayShifts.filter(
-                      (s) => parseInt(s.startTime.split(':')[0]) < 12
-                    );
-                    const afternoonShifts = todayShifts.filter(
-                      (s) =>
-                        parseInt(s.startTime.split(':')[0]) >= 12 &&
-                        parseInt(s.startTime.split(':')[0]) < 18
-                    );
-                    const eveningShifts = todayShifts.filter(
-                      (s) =>
-                        parseInt(s.startTime.split(':')[0]) >= 18 ||
-                        parseInt(s.startTime.split(':')[0]) < 6
-                    );
+                      // Group shifts by time slot
+                      const morningShifts = todayShifts.filter(
+                        (s) => parseInt(s.startTime.split(':')[0]) < 12
+                      );
+                      const afternoonShifts = todayShifts.filter(
+                        (s) =>
+                          parseInt(s.startTime.split(':')[0]) >= 12 &&
+                          parseInt(s.startTime.split(':')[0]) < 18
+                      );
+                      const eveningShifts = todayShifts.filter(
+                        (s) =>
+                          parseInt(s.startTime.split(':')[0]) >= 18 ||
+                          parseInt(s.startTime.split(':')[0]) < 6
+                      );
 
-                    const TimeSlotSection = ({
-                      title,
-                      shiftList,
-                      icon: Icon,
-                    }: {
-                      title: string;
-                      shiftList: typeof todayShifts;
-                      icon: React.ComponentType<{ className?: string }>;
-                    }) => (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                          <Icon className="h-5 w-5 text-[#FF6600]" />
-                          <h4 className="font-bold text-gray-700">{title}</h4>
-                          <Badge variant="outline" className="ml-auto">
-                            {shiftList.length} shift{shiftList.length !== 1 ? 's' : ''}
-                          </Badge>
-                        </div>
-                        {shiftList.length > 0 ? (
-                          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                            {shiftList.map((shift) => (
-                              <DraggableShift
-                                key={shift.id}
-                                shift={shift}
-                                view="today"
-                                justMoved={recentlyMovedShiftId === String(shift.id)}
-                              />
-                            ))}
+                      const TimeSlotSection = ({
+                        title,
+                        shiftList,
+                        icon: Icon,
+                      }: {
+                        title: string;
+                        shiftList: typeof todayShifts;
+                        icon: React.ComponentType<{ className?: string }>;
+                      }) => (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <Icon className="h-5 w-5 text-[#FF6600]" />
+                            <h4 className="font-bold text-gray-700">{title}</h4>
+                            <Badge variant="outline" className="ml-auto">
+                              {shiftList.length} shift{shiftList.length !== 1 ? 's' : ''}
+                            </Badge>
                           </div>
-                        ) : (
-                          <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-lg">
-                            No shifts scheduled
-                          </div>
-                        )}
-                      </div>
-                    );
-
-                    if (todayShifts.length === 0) {
-                      return (
-                        <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg">
-                          <Clock className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                          <p className="text-lg font-medium">No shifts scheduled for today</p>
-                          <p className="text-sm mt-1">
-                            Drag shifts from other views or enjoy your day off!
-                          </p>
+                          {shiftList.length > 0 ? (
+                            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                              {shiftList.map((shift) => (
+                                <DraggableShift
+                                  key={shift.id}
+                                  shift={shift}
+                                  view="today"
+                                  justMoved={recentlyMovedShiftId === String(shift.id)}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-lg">
+                              No shifts scheduled
+                            </div>
+                          )}
                         </div>
                       );
-                    }
 
-                    return (
-                      <div className="space-y-6">
-                        <div className="text-center">
-                          <span className="text-3xl font-bold text-[#FF6600]">
-                            {todayShifts.length}
-                          </span>
-                          <span className="text-gray-600 ml-2">total shifts today</span>
+                      if (todayShifts.length === 0) {
+                        return (
+                          <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg">
+                            <Clock className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                            <p className="text-lg font-medium">No shifts scheduled for today</p>
+                            <p className="text-sm mt-1">
+                              Drag shifts from other views or enjoy your day off!
+                            </p>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="space-y-6">
+                          <div className="text-center">
+                            <span className="text-3xl font-bold text-[#FF6600]">
+                              {todayShifts.length}
+                            </span>
+                            <span className="text-gray-600 ml-2">total shifts today</span>
+                          </div>
+
+                          <TimeSlotSection
+                            title="Morning (6AM - 12PM)"
+                            shiftList={morningShifts}
+                            icon={Sunrise}
+                          />
+                          <TimeSlotSection
+                            title="Afternoon (12PM - 6PM)"
+                            shiftList={afternoonShifts}
+                            icon={Sun}
+                          />
+                          <TimeSlotSection
+                            title="Evening/Night (6PM - 6AM)"
+                            shiftList={eveningShifts}
+                            icon={Moon}
+                          />
                         </div>
-
-                        <TimeSlotSection
-                          title="Morning (6AM - 12PM)"
-                          shiftList={morningShifts}
-                          icon={Sunrise}
-                        />
-                        <TimeSlotSection
-                          title="Afternoon (12PM - 6PM)"
-                          shiftList={afternoonShifts}
-                          icon={Sun}
-                        />
-                        <TimeSlotSection
-                          title="Evening/Night (6PM - 6AM)"
-                          shiftList={eveningShifts}
-                          icon={Moon}
-                        />
-                      </div>
-                    );
-                  })()}
-                </DroppableDay>
+                      );
+                    })()}
+                  </DroppableDay>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -1509,36 +1607,54 @@ export default function SchedulePage() {
           <TabsContent value="week" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Weekly Schedule</CardTitle>
-                <CardDescription>
-                  {format(weekStart, 'MMMM dd')} - {format(addDays(weekStart, 6), 'MMMM dd, yyyy')}
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Weekly Schedule</CardTitle>
+                    <CardDescription>
+                      {format(weekStart, 'MMMM dd')} -{' '}
+                      {format(addDays(weekStart, 6), 'MMMM dd, yyyy')}
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="icon" onClick={() => navigateWeek('prev')}>
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" onClick={navigateToThisWeek}>
+                      This Week
+                    </Button>
+                    <Button variant="outline" size="icon" onClick={() => navigateWeek('next')}>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-7 gap-2">
-                  {weekDays.map((day) => {
-                    const dayShifts = getShiftsForDate(day);
-                    return (
-                      <DroppableDay key={day.toISOString()} date={day}>
-                        <div className="font-semibold text-sm mb-2">
-                          {format(day, 'EEE')}
-                          <div className="text-xs text-muted-foreground">
-                            {format(day, 'MMM dd')}
+                <div key={weekAnimationKey} className={getAnimationClass(weekAnimationDirection)}>
+                  <div className="grid grid-cols-7 gap-2">
+                    {weekDays.map((day) => {
+                      const dayShifts = getShiftsForDate(day);
+                      return (
+                        <DroppableDay key={day.toISOString()} date={day}>
+                          <div className="font-semibold text-sm mb-2">
+                            {format(day, 'EEE')}
+                            <div className="text-xs text-muted-foreground">
+                              {format(day, 'MMM dd')}
+                            </div>
                           </div>
-                        </div>
-                        <div className="space-y-2">
-                          {dayShifts.map((shift) => (
-                            <DraggableShift
-                              key={shift.id}
-                              shift={shift}
-                              view="week"
-                              justMoved={recentlyMovedShiftId === String(shift.id)}
-                            />
-                          ))}
-                        </div>
-                      </DroppableDay>
-                    );
-                  })}
+                          <div className="space-y-2">
+                            {dayShifts.map((shift) => (
+                              <DraggableShift
+                                key={shift.id}
+                                shift={shift}
+                                view="week"
+                                justMoved={recentlyMovedShiftId === String(shift.id)}
+                              />
+                            ))}
+                          </div>
+                        </DroppableDay>
+                      );
+                    })}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -1553,69 +1669,63 @@ export default function SchedulePage() {
                     <CardDescription>{format(currentMonth, 'MMMM yyyy')}</CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setCurrentMonth(addMonths(currentMonth, -1))}
-                    >
+                    <Button variant="outline" size="icon" onClick={() => navigateMonth('prev')}>
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" onClick={() => setCurrentMonth(new Date())}>
+                    <Button variant="outline" onClick={navigateToThisMonth}>
                       Today
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                    >
+                    <Button variant="outline" size="icon" onClick={() => navigateMonth('next')}>
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-7 gap-2">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                    <div key={day} className="text-center font-semibold text-sm py-2">
-                      {day}
-                    </div>
-                  ))}
-                  {monthCalendarDays.map((day, index) => {
-                    if (!day) {
+                <div key={monthAnimationKey} className={getAnimationClass(monthAnimationDirection)}>
+                  <div className="grid grid-cols-7 gap-2">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                      <div key={day} className="text-center font-semibold text-sm py-2">
+                        {day}
+                      </div>
+                    ))}
+                    {monthCalendarDays.map((day, index) => {
+                      if (!day) {
+                        return (
+                          <div
+                            key={`empty-${index}`}
+                            className="border rounded-lg p-2 min-h-[120px] bg-muted/20"
+                          />
+                        );
+                      }
+                      const dayShifts = getShiftsForDate(day);
+                      const isCurrentMonth = isSameMonth(day, currentMonth);
                       return (
-                        <div
-                          key={`empty-${index}`}
-                          className="border rounded-lg p-2 min-h-[120px] bg-muted/20"
-                        />
+                        <DroppableMonthDay
+                          key={day.toISOString()}
+                          day={day}
+                          isCurrentMonth={isCurrentMonth}
+                        >
+                          <div className="font-semibold text-sm mb-2">{format(day, 'd')}</div>
+                          <div className="space-y-1">
+                            {dayShifts.slice(0, 3).map((shift) => (
+                              <DraggableShift
+                                key={shift.id}
+                                shift={shift}
+                                view="month"
+                                justMoved={recentlyMovedShiftId === String(shift.id)}
+                              />
+                            ))}
+                            {dayShifts.length > 3 && (
+                              <div className="text-[10px] text-muted-foreground text-center">
+                                +{dayShifts.length - 3} more
+                              </div>
+                            )}
+                          </div>
+                        </DroppableMonthDay>
                       );
-                    }
-                    const dayShifts = getShiftsForDate(day);
-                    const isCurrentMonth = isSameMonth(day, currentMonth);
-                    return (
-                      <DroppableMonthDay
-                        key={day.toISOString()}
-                        day={day}
-                        isCurrentMonth={isCurrentMonth}
-                      >
-                        <div className="font-semibold text-sm mb-2">{format(day, 'd')}</div>
-                        <div className="space-y-1">
-                          {dayShifts.slice(0, 3).map((shift) => (
-                            <DraggableShift
-                              key={shift.id}
-                              shift={shift}
-                              view="month"
-                              justMoved={recentlyMovedShiftId === String(shift.id)}
-                            />
-                          ))}
-                          {dayShifts.length > 3 && (
-                            <div className="text-[10px] text-muted-foreground text-center">
-                              +{dayShifts.length - 3} more
-                            </div>
-                          )}
-                        </div>
-                      </DroppableMonthDay>
-                    );
-                  })}
+                    })}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -1633,80 +1743,82 @@ export default function SchedulePage() {
                     </CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setCurrentQuarter(addMonths(currentQuarter, -3))}
-                    >
+                    <Button variant="outline" size="icon" onClick={() => navigateQuarter('prev')}>
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" onClick={() => setCurrentQuarter(new Date())}>
+                    <Button variant="outline" onClick={navigateToThisQuarter}>
                       Current Quarter
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setCurrentQuarter(addMonths(currentQuarter, 3))}
-                    >
+                    <Button variant="outline" size="icon" onClick={() => navigateQuarter('next')}>
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-3 gap-4">
-                  {quarterMonths.map((month) => {
-                    const monthStart = startOfMonth(month);
-                    const monthEnd = endOfMonth(month);
-                    const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
-                    const firstDay = monthStart.getDay();
-                    const calendarDays = [...Array(firstDay).fill(null), ...monthDays];
+                <div
+                  key={quarterAnimationKey}
+                  className={getAnimationClass(quarterAnimationDirection)}
+                >
+                  <div className="grid grid-cols-3 gap-4">
+                    {quarterMonths.map((month) => {
+                      const monthStart = startOfMonth(month);
+                      const monthEnd = endOfMonth(month);
+                      const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
+                      const firstDay = monthStart.getDay();
+                      const calendarDays = [...Array(firstDay).fill(null), ...monthDays];
 
-                    return (
-                      <Card key={month.toISOString()}>
-                        <CardHeader className="pb-3">
-                          <CardTitle className="text-base">{format(month, 'MMMM yyyy')}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid grid-cols-7 gap-1">
-                            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                              <div
-                                key={`${month}-${day}-${i}`}
-                                className="text-center text-[10px] font-semibold py-1"
-                              >
-                                {day}
-                              </div>
-                            ))}
-                            {calendarDays.map((day, index) => {
-                              if (!day) {
-                                return (
-                                  <div key={`empty-${month}-${index}`} className="aspect-square" />
-                                );
-                              }
-                              const shiftCount = getShiftCountForDate(day);
-                              return (
+                      return (
+                        <Card key={month.toISOString()}>
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-base">
+                              {format(month, 'MMMM yyyy')}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-7 gap-1">
+                              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
                                 <div
-                                  key={day.toISOString()}
-                                  className={`aspect-square flex items-center justify-center text-[10px] rounded cursor-pointer hover:bg-muted transition-colors ${
-                                    shiftCount > 0
-                                      ? 'bg-primary/10 border border-primary/20 font-semibold'
-                                      : 'border'
-                                  }`}
+                                  key={`${month}-${day}-${i}`}
+                                  className="text-center text-[10px] font-semibold py-1"
                                 >
-                                  <div className="text-center">
-                                    <div>{format(day, 'd')}</div>
-                                    {shiftCount > 0 && (
-                                      <div className="text-[8px] text-primary">{shiftCount}</div>
-                                    )}
-                                  </div>
+                                  {day}
                                 </div>
-                              );
-                            })}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                              ))}
+                              {calendarDays.map((day, index) => {
+                                if (!day) {
+                                  return (
+                                    <div
+                                      key={`empty-${month}-${index}`}
+                                      className="aspect-square"
+                                    />
+                                  );
+                                }
+                                const shiftCount = getShiftCountForDate(day);
+                                return (
+                                  <div
+                                    key={day.toISOString()}
+                                    className={`aspect-square flex items-center justify-center text-[10px] rounded cursor-pointer hover:bg-muted transition-colors ${
+                                      shiftCount > 0
+                                        ? 'bg-primary/10 border border-primary/20 font-semibold'
+                                        : 'border'
+                                    }`}
+                                  >
+                                    <div className="text-center">
+                                      <div>{format(day, 'd')}</div>
+                                      {shiftCount > 0 && (
+                                        <div className="text-[8px] text-primary">{shiftCount}</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
                 </div>
               </CardContent>
             </Card>

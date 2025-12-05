@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-12-05
+
+### Added
+
+- **Schedule Navigation Controls**: Navigate through time periods in Today and Week views
+  - Today View: Navigate to previous/next day with chevron buttons
+  - Week View: Navigate to previous/next week with chevron buttons
+  - "Today" button to quickly return to current day
+  - "This Week" button to quickly return to current week
+
+- **Smooth Transition Animations**: Elegant animations when navigating between time periods
+  - Slide-in-from-right animation when navigating forward (next day/week/month/quarter)
+  - Slide-in-from-left animation when navigating backward (previous day/week/month/quarter)
+  - Smooth cubic-bezier easing curve for polished feel
+  - Applied consistently across Today, Week, Month, and Quarter views
+
+### Changed
+
+- Month View: Unified navigation handler functions for consistency
+- Quarter View: Unified navigation handler functions for consistency
+- CSS: Added new keyframe animations (`slide-in-from-right`, `slide-in-from-left`, `fade-scale-in`)
+
 ## [1.4.9] - 2025-12-05
 
 ### Added
