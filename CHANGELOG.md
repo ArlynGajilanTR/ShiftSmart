@@ -5,7 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.6] - 2025-12-05
+## [1.4.8] - 2025-12-05
+
+### Added
+
+- **Inline Filter Pills**: Modern filter UI with inline filter pills
+  - New `Filters` component (`components/ui/filters.tsx`) for reusable inline filtering
+  - New `DropdownMenu` component (`components/ui/dropdown-menu.tsx`) using Radix UI
+  - Filter by **Bureau** (Milan/Rome)
+  - Filter by **Status** (Confirmed/Pending/Draft/Published)
+  - Filter by **Shift Type** (Morning/Afternoon/Evening) with icons
+  - Filter by **Employee** (dropdown populated from API)
+  - "Add Filter" button to add new filter criteria
+  - Each filter displays as a pill: `Field | Value` with dropdown to change
+  - Remove individual filters with X button
+  - "Clear all" button to reset all filters
+  - Shows "Showing X of Y shifts" summary when filters active
+  - Filters apply to all views (Today, Week, Month, Quarter, List, Grid)
+
+### Changed
+
+- Replaced Sheet-based filter panel with inline filter pills for better UX
+- More compact filter UI that doesn't obscure the schedule
+
+## [1.4.7] - 2025-12-05
 
 ### Added
 
@@ -20,22 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sidebar Header Alignment**: Horizontal rules now align between Reuters logo and ShiftSmart header
   - Set sidebar header to fixed height (`h-16`) matching main header
   - Replaced `<Separator />` with `border-b` for consistent styling
-
-## [1.4.7] - 2025-12-05
-
-### Added
-
-- **Schedule Filtering**: Comprehensive filter system for the Schedule page
-  - Filter by **Bureau** (Milan/Rome/All)
-  - Filter by **Status** (Confirmed/Pending/Draft/Published/All)
-  - Filter by **Shift Type** (Morning 6AM-12PM / Afternoon 12PM-6PM / Evening 6PM-6AM / All)
-  - Filter by **Employee** (dropdown with all team members)
-  - Slide-out filter panel using Sheet component
-  - Active filter count badge on Filter button
-  - "Clear Filters" button to reset all filters
-  - Filter summary showing "X of Y shifts" when filters active
-  - Empty state with helpful message when no shifts match filters
-  - Filters apply to all views (Today, Week, Month, Quarter, List, Grid)
 
 ## [1.4.6] - 2025-12-05
 
