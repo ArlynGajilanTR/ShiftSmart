@@ -1,22 +1,23 @@
 # ShiftSmart API Reference
 
-**Version:** 1.4.9  
+**Version:** 1.5.2  
 **Base URL:** `https://your-api-domain.vercel.app`  
-**Last Updated:** December 5, 2025
+**Last Updated:** December 8, 2025
 
 ---
 
 ## Table of Contents
 
 1. [Authentication](#authentication)
-2. [Employees API](#employees-api)
-3. [Shifts API](#shifts-api)
-4. [Conflicts API](#conflicts-api)
-5. [Dashboard API](#dashboard-api)
-6. [AI Scheduling API](#ai-scheduling-api)
-7. [Error Handling](#error-handling)
-8. [Rate Limiting](#rate-limiting)
-9. [Versioning](#versioning)
+2. [User Profile API](#user-profile-api)
+3. [Employees API](#employees-api)
+4. [Shifts API](#shifts-api)
+5. [Conflicts API](#conflicts-api)
+6. [Dashboard API](#dashboard-api)
+7. [AI Scheduling API](#ai-scheduling-api)
+8. [Error Handling](#error-handling)
+9. [Rate Limiting](#rate-limiting)
+10. [Versioning](#versioning)
 
 ---
 
@@ -144,6 +145,139 @@ Authorization: Bearer YOUR_TOKEN
   }
 }
 ```
+
+---
+
+## User Profile API
+
+Manage the current authenticated user's profile and password.
+
+### GET /api/users/me
+
+Get the current authenticated user's profile.
+
+**Request:**
+
+```http
+GET /api/users/me
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "user": {
+    "id": "uuid",
+    "email": "user@thomsonreuters.com",
+    "full_name": "User Name",
+    "phone": "+39 02 1234 5678",
+    "title": "Breaking News Correspondent, Italy",
+    "shift_role": "correspondent",
+    "bureau": "Milan",
+    "bureau_id": "uuid",
+    "team": "Breaking News",
+    "status": "active",
+    "role": "staff"
+  }
+}
+```
+
+**Errors:**
+
+- `401` - No authentication token provided / Invalid or expired session
+
+---
+
+### PUT /api/users/me
+
+Update the current authenticated user's profile (full_name and phone only).
+
+**Request:**
+
+```http
+PUT /api/users/me
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
+  "full_name": "Updated Name",
+  "phone": "+39 06 9876 5432"
+}
+```
+
+**Request Body:**
+
+| Field       | Type           | Required | Description                    |
+| ----------- | -------------- | -------- | ------------------------------ |
+| `full_name` | string         | No       | User's full name (min 2 chars) |
+| `phone`     | string \| null | No       | Phone number (null to clear)   |
+
+**Response (200 OK):**
+
+```json
+{
+  "message": "Profile updated successfully",
+  "user": {
+    "id": "uuid",
+    "email": "user@thomsonreuters.com",
+    "full_name": "Updated Name",
+    "phone": "+39 06 9876 5432",
+    "title": "Breaking News Correspondent, Italy",
+    "shift_role": "correspondent",
+    "bureau": "Milan",
+    "bureau_id": "uuid",
+    "team": "Breaking News",
+    "status": "active",
+    "role": "staff"
+  }
+}
+```
+
+**Errors:**
+
+- `400` - Full name cannot be empty / Full name must be at least 2 characters long
+- `401` - No authentication token provided / Invalid or expired session
+
+---
+
+### PUT /api/users/me/password
+
+Change the current authenticated user's password.
+
+**Request:**
+
+```http
+PUT /api/users/me/password
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
+  "current_password": "old_password",
+  "new_password": "new_secure_password"
+}
+```
+
+**Request Body:**
+
+| Field              | Type   | Required | Description                         |
+| ------------------ | ------ | -------- | ----------------------------------- |
+| `current_password` | string | Yes      | User's current password             |
+| `new_password`     | string | Yes      | New password (minimum 8 characters) |
+
+**Response (200 OK):**
+
+```json
+{
+  "message": "Password updated successfully"
+}
+```
+
+**Errors:**
+
+- `400` - Current password is required / New password is required / New password must be at least 8 characters long
+- `401` - No authentication token provided / Current password is incorrect
+- `403` - Account not set up properly
 
 ---
 
