@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { verifyAuth, isAdminOrManager } from '@/lib/auth/verify';
+import { createServiceClient } from '@/lib/supabase/service';
+import { verifyAuth, isAdminOrManager, canDeleteEmployees } from '@/lib/auth/verify';
 
 /**
  * GET /api/employees/:id
@@ -218,7 +219,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 /**
  * DELETE /api/employees/:id
  * Delete an employee
- * Requires: admin or manager role
+ * Requires: admin, manager, or team leader
  */
 export async function DELETE(
   request: NextRequest,
@@ -231,15 +232,16 @@ export async function DELETE(
       return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
-    // Only admin or manager can delete employees
-    if (!isAdminOrManager(user)) {
+    // Admin, manager, or team leader can delete employees
+    if (!canDeleteEmployees(user)) {
       return NextResponse.json(
-        { error: 'Only administrators and managers can delete employees' },
+        { error: 'Only administrators, managers, and team leaders can delete employees' },
         { status: 403 }
       );
     }
 
-    const supabase = await createClient();
+    // Use service client for delete operations (authorization already verified above)
+    const supabase = createServiceClient();
     const { id } = await params;
 
     // Check if employee exists

@@ -291,15 +291,15 @@ Manage Breaking News team members.
 
 ### Authorization Requirements
 
-| Endpoint                             | Required Role                                   |
-| ------------------------------------ | ----------------------------------------------- |
-| `GET /api/employees`                 | Any authenticated user                          |
-| `POST /api/employees`                | `admin`, `manager`, or `scheduler`              |
-| `GET /api/employees/:id`             | Any authenticated user                          |
-| `PUT /api/employees/:id`             | `admin`, `manager`, `scheduler`, or self-update |
-| `DELETE /api/employees/:id`          | `admin` or `manager` only                       |
-| `GET /api/employees/:id/preferences` | Any authenticated user                          |
-| `PUT /api/employees/:id/preferences` | Any authenticated user                          |
+| Endpoint                             | Required Role                                     |
+| ------------------------------------ | ------------------------------------------------- |
+| `GET /api/employees`                 | Any authenticated user                            |
+| `POST /api/employees`                | `admin`, `manager`, `scheduler`, or `team_leader` |
+| `GET /api/employees/:id`             | Any authenticated user                            |
+| `PUT /api/employees/:id`             | `admin`, `manager`, `scheduler`, or self-update   |
+| `DELETE /api/employees/:id`          | `admin`, `manager`, or `team_leader`              |
+| `GET /api/employees/:id/preferences` | Any authenticated user                            |
+| `PUT /api/employees/:id/preferences` | Any authenticated user                            |
 
 ### GET /api/employees
 
@@ -348,7 +348,7 @@ Authorization: Bearer YOUR_TOKEN
 
 Create a new employee.
 
-**Required Role:** `admin`, `manager`, or `scheduler`
+**Required Role:** `admin`, `manager`, `scheduler`, or `team_leader`
 
 **Request:**
 
@@ -458,7 +458,7 @@ Content-Type: application/json
 
 Delete an employee (soft delete recommended).
 
-**Required Role:** `admin` or `manager` only
+**Required Role:** `admin`, `manager`, or `team_leader`
 
 **Request:**
 
@@ -477,7 +477,7 @@ Authorization: Bearer YOUR_TOKEN
 
 **Errors:**
 
-- `403` - "Only administrators and managers can delete employees"
+- `403` - "Only administrators, managers, and team leaders can delete employees"
 - `404` - Employee not found
 
 ---

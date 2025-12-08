@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.2] - 2025-12-08
+
+### Added
+
+- **Team Leader Employee Management** - Team leaders can now create and delete employees
+  - New authorization helpers: `canManageEmployees()` and `canDeleteEmployees()` in `lib/auth/verify.ts`
+  - Team leaders can create employees (same permissions as admin, manager, scheduler)
+  - Team leaders can delete employees (same permissions as admin, manager)
+  - New service client (`lib/supabase/service.ts`) for write operations that bypass RLS after API authorization
+
+### Changed
+
+- **Employee API Authorization:**
+  - `POST /api/employees` - Now allows `team_leader` role (previously: admin, manager, scheduler only)
+  - `DELETE /api/employees/:id` - Now allows `team_leader` role (previously: admin, manager only)
+  - Both endpoints now use service role client to bypass RLS after API-layer authorization
+
+### Fixed
+
+- **RLS Policy Issue:** Fixed Row-Level Security blocking employee creation/deletion
+  - Created migration `003_users_rls_policies.sql` with permissive policies
+  - Employee write operations now use service role client (bypasses RLS after authorization)
+  - Authorization remains enforced at API layer via `canManageEmployees()` and `canDeleteEmployees()`
+
+### Documentation
+
+- Updated `API_REFERENCE.md` with new authorization requirements
+- Updated migration documentation explaining authorization strategy
+
+---
+
 ## [1.6.1] - 2025-12-08
 
 ### Added

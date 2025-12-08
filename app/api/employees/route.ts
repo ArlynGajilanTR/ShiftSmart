@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { verifyAuth, isAdminOrManager } from '@/lib/auth/verify';
+import { createServiceClient } from '@/lib/supabase/service';
+import { verifyAuth, canManageEmployees } from '@/lib/auth/verify';
 
 /**
  * GET /api/employees
@@ -121,7 +122,7 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/employees
  * Create a new employee
- * Requires: admin, manager, or scheduler role
+ * Requires: admin, manager, scheduler, or team leader
  */
 export async function POST(request: NextRequest) {
   try {
@@ -131,8 +132,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
     }
 
-    // Only admin, manager, or scheduler can create employees
-    if (!isAdminOrManager(user) && user.role !== 'scheduler') {
+    // Admin, manager, scheduler, or team leader can create employees
+    if (!canManageEmployees(user)) {
       return NextResponse.json(
         { error: 'You do not have permission to create employees' },
         { status: 403 }
@@ -147,7 +148,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    // Use service client for write operations (authorization already verified above)
+    const supabase = createServiceClient();
 
     // Check if email already exists
     const { data: existingUser } = await supabase

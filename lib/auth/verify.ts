@@ -134,3 +134,19 @@ export function canConfirmPreferences(user: AuthUser): boolean {
 export function isAdmin(user: AuthUser): boolean {
   return user.role === 'admin';
 }
+
+/**
+ * Check if user can manage employees (create/delete)
+ * Allowed: admin, manager, scheduler, or team leader
+ */
+export function canManageEmployees(user: AuthUser): boolean {
+  return isAdminOrManager(user) || user.role === 'scheduler' || user.is_team_leader;
+}
+
+/**
+ * Check if user can delete employees
+ * Allowed: admin, manager, or team leader
+ */
+export function canDeleteEmployees(user: AuthUser): boolean {
+  return isAdminOrManager(user) || user.is_team_leader;
+}

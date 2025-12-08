@@ -485,12 +485,13 @@ export default function Page() {
 
 ### System Roles (Access Control)
 
-| Role        | Permissions                                           |
-| ----------- | ----------------------------------------------------- |
-| `admin`     | Full access, bureau management, user management       |
-| `manager`   | Bureau-level scheduling, reports, employee management |
-| `scheduler` | Create/modify schedules, view employees               |
-| `staff`     | View own schedule, set preferences                    |
+| Role          | Permissions                                                      |
+| ------------- | ---------------------------------------------------------------- |
+| `admin`       | Full access, bureau management, user management                  |
+| `manager`     | Bureau-level scheduling, reports, employee management            |
+| `scheduler`   | Create/modify schedules, view employees, create employees        |
+| `team_leader` | Generate schedules, confirm preferences, create/delete employees |
+| `staff`       | View own schedule, set preferences                               |
 
 ### Shift Roles (Scheduling)
 
