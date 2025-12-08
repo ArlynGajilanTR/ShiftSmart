@@ -465,15 +465,19 @@ export function parseScheduleResponse(
 
     const trimmedResponse = response.trim();
 
-    // First, check if response starts with JSON indicators - if so, skip conversational check
+    // Check if response contains JSON - either starts with it, or has markdown code blocks
     const startsWithJSON =
       trimmedResponse.startsWith('{') ||
       trimmedResponse.startsWith('[') ||
       trimmedResponse.startsWith('```json') ||
       trimmedResponse.startsWith('```');
 
-    // Only check for conversational response if it doesn't look like JSON
-    if (!startsWithJSON) {
+    // Also check if response contains markdown JSON blocks anywhere (not just at start)
+    const containsMarkdownJSON = /```json[\s\S]*?```/.test(trimmedResponse);
+    const containsJSONObject = /\{[\s\S]*"shifts"[\s\S]*\}/.test(trimmedResponse);
+
+    // Only check for conversational response if it doesn't contain extractable JSON
+    if (!startsWithJSON && !containsMarkdownJSON && !containsJSONObject) {
       // Detect if response is conversational instead of JSON
       // Note: All patterns are anchored to start (^) to avoid false positives from JSON content
       const conversationalPatterns = [
@@ -493,11 +497,15 @@ export function parseScheduleResponse(
     // Try multiple JSON extraction strategies
     let jsonString: string | null = null;
 
-    // Strategy 1: Markdown JSON code block
-    let jsonMatch = response.match(/```json\s*(\{[\s\S]*?\})\s*```/);
+    // Strategy 1: Markdown JSON code block - extract content between ```json and ``` (first block only)
+    let jsonMatch = response.match(/```json\s*([\s\S]*?)\s*```/);
     if (jsonMatch) {
-      jsonString = jsonMatch[1];
-      console.log('[Parse] Extracted JSON from markdown code block');
+      // Trim and verify it looks like JSON
+      const extracted = jsonMatch[1].trim();
+      if (extracted.startsWith('{') || extracted.startsWith('[')) {
+        jsonString = extracted;
+        console.log('[Parse] Extracted JSON from markdown code block');
+      }
     }
 
     // Strategy 2: Plain JSON object (greedy match)

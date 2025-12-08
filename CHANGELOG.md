@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2025-12-08
+
+### Fixed
+
+- **BUG-001: Signup API Parameter Mismatch** (Critical)
+  - Backend now accepts `bureau_id` parameter (was expecting `bureau`)
+  - Bureau lookup now uses `code` field (e.g., 'ITA-MILAN') instead of `name`
+  - Aligns API with frontend signup form and api-client.ts
+
+- **AI Response Parser - JSON Extraction**
+  - Fixed 3 failing unit tests for JSON extraction from AI responses
+  - Added `containsMarkdownJSON` and `containsJSONObject` checks before rejecting responses as conversational
+  - Fixed markdown code block regex to use non-greedy match, preventing cross-block matching
+
+### Changed
+
+- **Signup Page → Admin-Managed Access**
+  - Replaced self-service signup form with "Request Access" information page
+  - MVP decision: User accounts created by administrators via SQL seeding
+  - Added email link to contact bureau editor for access requests
+  - Signup API code preserved for future self-registration expansion
+
+### Security
+
+- **RLS Policy (Unchanged)**: Public user registration correctly blocked by Row-Level Security
+- Admin-only user creation via SQL/Supabase dashboard for MVP (5-10 users)
+
 ## [1.5.0] - 2025-12-05
 
 ### Added
