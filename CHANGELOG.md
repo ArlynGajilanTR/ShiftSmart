@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2] - 2025-12-08
+
+### Added
+
+- **BUG-002: Settings Page Implementation** (Phase 2)
+  - New API endpoint `GET /api/users/me` - Returns authenticated user's profile
+  - New API endpoint `PUT /api/users/me` - Updates user's `full_name` and `phone`
+  - New API endpoint `PUT /api/users/me/password` - Changes password with validation
+  - Settings page now fetches real user data on mount (with localStorage fallback)
+  - Profile changes persist to database via API
+  - Password change with proper validation (8+ characters, current password verification)
+
+- **API Client Methods**
+  - `api.users.getProfile()` - Get current user profile
+  - `api.users.updateProfile({ full_name, phone })` - Update profile (also updates localStorage)
+  - `api.users.changePassword({ current_password, new_password })` - Change password
+
+- **Settings Page UX Improvements**
+  - Loading spinner while fetching user data
+  - Toast notifications for success/error states
+  - Email, title, and bureau fields are now read-only (admin-controlled)
+  - Cancel button resets form to original values
+  - Client-side password validation (match check, length check)
+
+- **Test Infrastructure**
+  - Added vitest for API integration tests
+  - New test script: `npm run test:api:vitest`
+  - 20 comprehensive tests for user profile API endpoints
+
+### Documentation
+
+- Updated API Reference with new User Profile API section
+- Version bumped to 1.5.2
+
 ## [1.5.1] - 2025-12-08
 
 ### Fixed

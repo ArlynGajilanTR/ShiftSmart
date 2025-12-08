@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,15 +13,31 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { User, Lock, Mail, Phone, Briefcase, MapPin } from 'lucide-react';
+import { User, Lock, Mail, Phone, Briefcase, MapPin, Loader2 } from 'lucide-react';
+import { api, getCurrentUser } from '@/lib/api-client';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
   const [formData, setFormData] = useState({
-    name: 'John Smith',
-    email: 'john.smith@reuters.com',
-    phone: '+39 02 1234 5678',
-    title: 'senior-editor',
-    bureau: 'milan',
+    name: '',
+    email: '',
+    phone: '',
+    title: '',
+    bureau: '',
+  });
+
+  // Store original data to enable cancel/reset
+  const [originalData, setOriginalData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    title: '',
+    bureau: '',
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -30,15 +46,138 @@ export default function SettingsPage() {
     confirmPassword: '',
   });
 
-  const handleSave = () => {
-    // Handle save logic here
-    console.log('Saving settings:', formData);
+  // Load user data on mount
+  useEffect(() => {
+    const loadUserData = async () => {
+      setIsLoading(true);
+      try {
+        // First try to get fresh data from API
+        const { user } = await api.users.getProfile();
+        const userData = {
+          name: user.full_name || '',
+          email: user.email || '',
+          phone: user.phone || '',
+          title: user.title || '',
+          bureau: user.bureau || '', // Use bureau name, not bureau_id
+        };
+        setFormData(userData);
+        setOriginalData(userData);
+      } catch (error) {
+        // Fallback to localStorage if API fails
+        const localUser = getCurrentUser();
+        if (localUser) {
+          const userData = {
+            name: localUser.full_name || '',
+            email: localUser.email || '',
+            phone: localUser.phone || '',
+            title: localUser.title || '',
+            bureau: localUser.bureau || '', // Use bureau name, not bureau_id
+          };
+          setFormData(userData);
+          setOriginalData(userData);
+        }
+        console.error('Error loading user profile:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const { user } = await api.users.updateProfile({
+        full_name: formData.name,
+        phone: formData.phone || null,
+      });
+
+      // Update original data to reflect saved state
+      const updatedData = {
+        name: user.full_name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        title: user.title || '',
+        bureau: user.bureau || '', // Use bureau name, not bureau_id
+      };
+      setOriginalData(updatedData);
+      setFormData(updatedData);
+
+      toast({
+        title: 'Profile updated',
+        description: 'Your profile has been saved successfully.',
+      });
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to save profile',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handlePasswordChange = () => {
-    // Handle password change logic here
-    console.log('Changing password');
+  const handlePasswordChange = async () => {
+    // Validate passwords match
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast({
+        title: 'Error',
+        description: 'New passwords do not match',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate password length
+    if (passwordData.newPassword.length < 8) {
+      toast({
+        title: 'Error',
+        description: 'New password must be at least 8 characters',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      await api.users.changePassword({
+        current_password: passwordData.currentPassword,
+        new_password: passwordData.newPassword,
+      });
+
+      // Clear password fields on success
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+
+      toast({
+        title: 'Password updated',
+        description: 'Your password has been changed successfully.',
+      });
+    } catch (error) {
+      console.error('Error changing password:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to change password',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -79,9 +218,10 @@ export default function SettingsPage() {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="transition-all focus:ring-2 focus:ring-primary"
+                disabled
+                className="transition-all focus:ring-2 focus:ring-primary bg-muted"
               />
+              <p className="text-xs text-muted-foreground">Email cannot be changed</p>
             </div>
 
             <div className="space-y-2">
@@ -95,6 +235,7 @@ export default function SettingsPage() {
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="transition-all focus:ring-2 focus:ring-primary"
+                placeholder="+39 02 1234 5678"
               />
             </div>
 
@@ -103,19 +244,15 @@ export default function SettingsPage() {
                 <Briefcase className="h-4 w-4 text-muted-foreground" />
                 Title / Role
               </Label>
-              <Select
+              <Input
+                id="title"
                 value={formData.title}
-                onValueChange={(value) => setFormData({ ...formData, title: value })}
-              >
-                <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="editor">Editor</SelectItem>
-                  <SelectItem value="senior">Senior Correspondent</SelectItem>
-                  <SelectItem value="correspondent">Correspondent</SelectItem>
-                </SelectContent>
-              </Select>
+                disabled
+                className="transition-all bg-muted"
+              />
+              <p className="text-xs text-muted-foreground">
+                Contact your administrator to change your title
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -123,39 +260,42 @@ export default function SettingsPage() {
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 Bureau Location
               </Label>
-              <Select
+              <Input
+                id="bureau"
                 value={formData.bureau}
-                onValueChange={(value) => setFormData({ ...formData, bureau: value })}
-              >
-                <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="milan">Milan</SelectItem>
-                  <SelectItem value="rome">Rome</SelectItem>
-                </SelectContent>
-              </Select>
+                disabled
+                className="transition-all bg-muted"
+              />
+              <p className="text-xs text-muted-foreground">
+                Contact your administrator to change your bureau
+              </p>
             </div>
 
             <Separator className="my-4" />
 
             <div className="flex gap-3">
-              <Button onClick={handleSave} className="flex-1 hover:scale-105 transition-transform">
-                Save Changes
+              <Button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="flex-1 hover:scale-105 transition-transform"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
               </Button>
               <Button
                 variant="outline"
                 className="flex-1 hover:bg-gray-100 transition-colors bg-transparent"
                 onClick={() => {
-                  // Reset form
-                  setFormData({
-                    name: 'John Smith',
-                    email: 'john.smith@reuters.com',
-                    phone: '+39 02 1234 5678',
-                    title: 'senior-editor',
-                    bureau: 'milan',
-                  });
+                  // Reset to original data
+                  setFormData(originalData);
                 }}
+                disabled={isSaving}
               >
                 Cancel
               </Button>
@@ -222,9 +362,22 @@ export default function SettingsPage() {
             <div className="flex gap-3">
               <Button
                 onClick={handlePasswordChange}
+                disabled={
+                  isChangingPassword ||
+                  !passwordData.currentPassword ||
+                  !passwordData.newPassword ||
+                  !passwordData.confirmPassword
+                }
                 className="flex-1 bg-charcoal hover:bg-charcoal/90 hover:scale-105 transition-transform"
               >
-                Update Password
+                {isChangingPassword ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  'Update Password'
+                )}
               </Button>
               <Button
                 variant="outline"
@@ -236,6 +389,7 @@ export default function SettingsPage() {
                     confirmPassword: '',
                   });
                 }}
+                disabled={isChangingPassword}
               >
                 Cancel
               </Button>

@@ -375,6 +375,63 @@ export const api = {
   },
 
   // ============================================================================
+  // USER PROFILE
+  // ============================================================================
+
+  users: {
+    getProfile: async () => {
+      return apiCall<{
+        user: {
+          id: string;
+          email: string;
+          full_name: string;
+          phone: string | null;
+          title: string;
+          shift_role: string;
+          bureau: string | null;
+          bureau_id: string;
+          team: string;
+          status: string;
+          role: string;
+        };
+      }>('/api/users/me');
+    },
+
+    updateProfile: async (data: { full_name?: string; phone?: string | null }) => {
+      const response = await apiCall<{
+        message: string;
+        user: {
+          id: string;
+          email: string;
+          full_name: string;
+          phone: string | null;
+          title: string;
+          shift_role: string;
+          bureau: string | null;
+          bureau_id: string;
+          team: string;
+          status: string;
+          role: string;
+        };
+      }>('/api/users/me', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+
+      // Update localStorage with new user data
+      localStorage.setItem('user', JSON.stringify(response.user));
+      return response;
+    },
+
+    changePassword: async (data: { current_password: string; new_password: string }) => {
+      return apiCall<{ message: string }>('/api/users/me/password', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+  },
+
+  // ============================================================================
   // AI SCHEDULING
   // ============================================================================
 
