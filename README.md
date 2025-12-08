@@ -10,8 +10,8 @@ ShiftSmart is an internal scheduling application for Reuters Breaking News edito
 
 ## Tech Stack
 
-- **Next.js 16** - Fullstack framework (frontend + API routes)
-- **React 19** - UI components
+- **Next.js 15** - Fullstack framework (frontend + API routes)
+- **React 18** - UI components
 - **Supabase** - PostgreSQL database
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Styling

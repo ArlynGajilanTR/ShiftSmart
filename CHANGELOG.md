@@ -5,10 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.5.2] - 2025-12-08
+## [1.5.2] - 2024-12-08
+
+### Fixed
+
+- **BUG-001:** Fixed signup API parameter mismatch - backend now accepts `bureau_id` and looks up by code
+- **DOC-001:** Corrected README framework versions (Next.js 15, React 18)
 
 ### Added
 
+- User profile update API (`GET/PUT /api/users/me`)
+- Password change API (`PUT /api/users/me/password`)
+- Settings page now functional with real API integration
 - **BUG-002: Settings Page Implementation** (Phase 2)
   - New API endpoint `GET /api/users/me` - Returns authenticated user's profile
   - New API endpoint `PUT /api/users/me` - Updates user's `full_name` and `phone`
@@ -34,9 +42,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New test script: `npm run test:api:vitest`
   - 20 comprehensive tests for user profile API endpoints
 
+### Security
+
+- Documented chatbot API auth as future hardening item (UI already protected)
+
 ### Documentation
 
 - Updated API Reference with new User Profile API section
+- Created SECURITY_BACKLOG.md documenting deferred security items
 - Version bumped to 1.5.2
 
 ## [1.5.1] - 2025-12-08
