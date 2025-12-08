@@ -4,10 +4,11 @@ import { hashPassword, generateSessionToken, getSessionExpiration } from '@/lib/
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, full_name, phone, bureau, title, shift_role } = await request.json();
+    const { email, password, full_name, phone, bureau_id, title, shift_role } =
+      await request.json();
 
     // Validate required fields
-    if (!email || !password || !full_name || !bureau || !title || !shift_role) {
+    if (!email || !password || !full_name || !bureau_id || !title || !shift_role) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -32,11 +33,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email already registered' }, { status: 409 });
     }
 
-    // Get bureau ID
+    // Get bureau ID by code (e.g., 'ITA-MILAN', 'ITA-ROME')
     const { data: bureauData, error: bureauError } = await supabase
       .from('bureaus')
       .select('id, name')
-      .eq('name', bureau)
+      .eq('code', bureau_id)
       .single();
 
     if (bureauError || !bureauData) {
