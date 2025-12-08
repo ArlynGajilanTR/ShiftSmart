@@ -26,14 +26,16 @@ test.describe('ShiftSmart Authentication', () => {
     // Submit form
     await page.getByRole('button', { name: /log in/i }).click();
 
-    // Check for error message
-    await expect(page.getByText(/login failed/i)).toBeVisible();
+    // Check for error toast (appears in toast notification)
+    await expect(
+      page.locator('[data-sonner-toast]').filter({ hasText: /login failed/i })
+    ).toBeVisible({ timeout: 10000 });
   });
 
   test('should successfully login with valid credentials', async ({ page }) => {
     // Fill in valid credentials
     await page.getByLabel(/email/i).fill('gianluca.semeraro@thomsonreuters.com');
-    await page.getByLabel(/password/i).fill('changeme');
+    await page.getByLabel(/password/i).fill('shiftsmart2024');
 
     // Submit form
     await page.getByRole('button', { name: /log in/i }).click();
@@ -49,7 +51,7 @@ test.describe('ShiftSmart Authentication', () => {
   test('should store auth token in localStorage', async ({ page }) => {
     // Login
     await page.getByLabel(/email/i).fill('gianluca.semeraro@thomsonreuters.com');
-    await page.getByLabel(/password/i).fill('changeme');
+    await page.getByLabel(/password/i).fill('shiftsmart2024');
     await page.getByRole('button', { name: /log in/i }).click();
 
     // Wait for dashboard
@@ -64,12 +66,12 @@ test.describe('ShiftSmart Authentication', () => {
   test('should logout successfully', async ({ page }) => {
     // Login first
     await page.getByLabel(/email/i).fill('gianluca.semeraro@thomsonreuters.com');
-    await page.getByLabel(/password/i).fill('changeme');
+    await page.getByLabel(/password/i).fill('shiftsmart2024');
     await page.getByRole('button', { name: /log in/i }).click();
     await page.waitForURL('**/dashboard');
 
-    // Find and click logout button
-    await page.getByRole('button', { name: /logout/i }).click();
+    // Find and click logout button (it's in the sidebar)
+    await page.getByText(/log out/i).click();
 
     // Should redirect to login
     await page.waitForURL('**/login');
