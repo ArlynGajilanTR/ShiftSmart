@@ -16,6 +16,7 @@ export interface AuthUser {
   team: string;
   status: string;
   role: string;
+  is_team_leader: boolean;
 }
 
 export interface AuthResult {
@@ -93,6 +94,7 @@ export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
       team: user.team,
       status: user.status,
       role: user.role,
+      is_team_leader: user.is_team_leader || false,
     },
     error: null,
   };
@@ -110,4 +112,25 @@ export function hasRole(user: AuthUser, roles: string[]): boolean {
  */
 export function isAdminOrManager(user: AuthUser): boolean {
   return hasRole(user, ['admin', 'manager']);
+}
+
+/**
+ * Check if user can generate schedules (admin or team leader)
+ */
+export function canGenerateSchedule(user: AuthUser): boolean {
+  return user.role === 'admin' || user.is_team_leader;
+}
+
+/**
+ * Check if user can confirm/override employee preferences (admin or team leader)
+ */
+export function canConfirmPreferences(user: AuthUser): boolean {
+  return user.role === 'admin' || user.is_team_leader;
+}
+
+/**
+ * Check if user is admin
+ */
+export function isAdmin(user: AuthUser): boolean {
+  return user.role === 'admin';
 }

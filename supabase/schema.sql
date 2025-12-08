@@ -45,6 +45,8 @@ CREATE TABLE users (
     password_hash VARCHAR(255),
     session_token VARCHAR(255),
     session_expires_at TIMESTAMP WITH TIME ZONE,
+    -- Team leader designation (can confirm preferences and generate schedules)
+    is_team_leader BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
@@ -111,6 +113,10 @@ CREATE TABLE shift_preferences (
     preferred_shifts TEXT [] DEFAULT '{}',
     max_shifts_per_week INTEGER DEFAULT 5,
     notes TEXT, -- Additional preferences/constraints
+    -- Team leader confirmation tracking
+    confirmed BOOLEAN DEFAULT false,
+    confirmed_by UUID REFERENCES users (id),
+    confirmed_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
@@ -175,6 +181,8 @@ CREATE INDEX idx_schedule_periods_bureau ON schedule_periods (bureau_id);
 CREATE INDEX idx_schedule_periods_dates ON schedule_periods (
     start_date, end_date
 );
+CREATE INDEX idx_users_is_team_leader ON users (is_team_leader) WHERE is_team_leader = true;
+CREATE INDEX idx_shift_preferences_confirmed ON shift_preferences (confirmed);
 
 -- Updated timestamp trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()

@@ -14,7 +14,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Plus, Search, Edit, Trash2, Mail, Phone, MapPin } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Mail, Phone, MapPin, Shield } from 'lucide-react';
 import Link from 'next/link';
 import {
   Dialog,
@@ -163,6 +163,7 @@ export default function EmployeesPage() {
         bureau: emp.bureau || emp.bureaus?.name || 'Milan',
         status: emp.status || 'active',
         shiftsThisMonth: emp.shiftsThisMonth || 0,
+        is_team_leader: emp.is_team_leader || false,
         initials:
           emp.initials ||
           (emp.name || emp.full_name)
@@ -399,7 +400,18 @@ export default function EmployeesPage() {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className="font-medium">{employee.name}</div>
+                            <div className="font-medium flex items-center gap-2">
+                              {employee.name}
+                              {employee.is_team_leader && (
+                                <Badge
+                                  variant="outline"
+                                  className="bg-orange-50 text-orange-700 border-orange-200 text-xs"
+                                >
+                                  <Shield className="h-3 w-3 mr-1" />
+                                  Team Leader
+                                </Badge>
+                              )}
+                            </div>
                             <div className="text-sm text-muted-foreground">{employee.email}</div>
                           </div>
                         </div>
@@ -466,13 +478,30 @@ export default function EmployeesPage() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <CardTitle className="text-base">{employee.name}</CardTitle>
+                        <CardTitle className="text-base flex items-center gap-2">
+                          {employee.name}
+                          {employee.is_team_leader && (
+                            <span title="Team Leader">
+                              <Shield className="h-4 w-4 text-orange-500" />
+                            </span>
+                          )}
+                        </CardTitle>
                         <CardDescription>{employee.role}</CardDescription>
                       </div>
                     </div>
-                    <Badge variant={employee.status === 'active' ? 'default' : 'secondary'}>
-                      {employee.status}
-                    </Badge>
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge variant={employee.status === 'active' ? 'default' : 'secondary'}>
+                        {employee.status}
+                      </Badge>
+                      {employee.is_team_leader && (
+                        <Badge
+                          variant="outline"
+                          className="bg-orange-50 text-orange-700 border-orange-200 text-xs"
+                        >
+                          Team Leader
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">

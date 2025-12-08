@@ -3,7 +3,17 @@
 import type React from 'react';
 import { useState, useEffect } from 'react';
 
-import { Calendar, Users, Shield, ShieldCheck, ShieldAlert, Settings, LogOut } from 'lucide-react';
+import {
+  Calendar,
+  Users,
+  Shield,
+  ShieldCheck,
+  ShieldAlert,
+  Settings,
+  LogOut,
+  ClipboardList,
+  UsersRound,
+} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -38,6 +48,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [unresolvedConflictCount, setUnresolvedConflictCount] = useState<number | null>(null);
+  const [currentUser, setCurrentUser] = useState<{ role: string; is_team_leader: boolean } | null>(
+    null
+  );
 
   // Authentication guard - check for valid token
   useEffect(() => {
@@ -49,6 +62,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
     setIsCheckingAuth(false);
   }, [router]);
+
+  // Fetch current user data for role-based navigation
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const fetchCurrentUser = async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        const response = await fetch('/api/users/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setCurrentUser({
+            role: userData.role,
+            is_team_leader: userData.is_team_leader || false,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch current user:', error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [isAuthenticated]);
 
   // Fetch unresolved conflict count for dynamic icon
   useEffect(() => {
@@ -92,9 +130,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         ? 'text-green-500'
         : 'text-red-500';
 
-  // Build navigation with dynamic Schedule Health entry
+  // Check if user can access team availability
+  const canAccessTeamAvailability = currentUser?.role === 'admin' || currentUser?.is_team_leader;
+
+  // Build navigation with dynamic entries
   const navigation = [
     ...baseNavigation,
+    // My Availability - visible to all authenticated users
+    {
+      name: 'My Availability',
+      href: '/dashboard/my-availability',
+      icon: ClipboardList,
+    },
+    // Team Availability - only for team leaders and admins
+    ...(canAccessTeamAvailability
+      ? [
+          {
+            name: 'Team Availability',
+            href: '/dashboard/team',
+            icon: UsersRound,
+          },
+        ]
+      : []),
+    // Schedule Health with dynamic icon
     {
       name: 'Schedule Health',
       href: '/dashboard/conflicts',

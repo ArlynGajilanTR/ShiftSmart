@@ -1,8 +1,10 @@
 # ShiftSmart API Reference
 
-**Version:** 1.5.2  
+**Version:** 1.6.0  
 **Base URL:** `https://your-api-domain.vercel.app`  
 **Last Updated:** December 8, 2025
+
+> **v1.6.0 Changes:** Added Team Leader system with preference confirmation workflow. Team leaders and admins can now confirm employee shift preferences and control access to AI schedule generation.
 
 ---
 
@@ -11,13 +13,14 @@
 1. [Authentication](#authentication)
 2. [User Profile API](#user-profile-api)
 3. [Employees API](#employees-api)
-4. [Shifts API](#shifts-api)
-5. [Conflicts API](#conflicts-api)
-6. [Dashboard API](#dashboard-api)
-7. [AI Scheduling API](#ai-scheduling-api)
-8. [Error Handling](#error-handling)
-9. [Rate Limiting](#rate-limiting)
-10. [Versioning](#versioning)
+4. [Team Availability API](#team-availability-api) _(NEW)_
+5. [Shifts API](#shifts-api)
+6. [Conflicts API](#conflicts-api)
+7. [Dashboard API](#dashboard-api)
+8. [AI Scheduling API](#ai-scheduling-api)
+9. [Error Handling](#error-handling)
+10. [Rate Limiting](#rate-limiting)
+11. [Versioning](#versioning)
 
 ---
 
@@ -508,7 +511,7 @@ Authorization: Bearer YOUR_TOKEN
 
 ### PUT /api/employees/:id/preferences
 
-Update an employee's shift preferences.
+Update an employee's shift preferences. When staff edit their own preferences, confirmation status is reset. Team leaders can use `auto_confirm: true` to confirm immediately.
 
 **Request:**
 
@@ -521,7 +524,8 @@ Content-Type: application/json
   "preferred_days": ["Monday", "Tuesday", "Wednesday"],
   "preferred_shifts": ["Afternoon", "Evening"],
   "max_shifts_per_week": 4,
-  "notes": "Prefers afternoon shifts"
+  "notes": "Prefers afternoon shifts",
+  "auto_confirm": true  // Optional - team leaders only
 }
 ```
 
@@ -529,13 +533,204 @@ Content-Type: application/json
 
 ```json
 {
+  "employee_id": "uuid",
+  "employee_name": "Sofia Romano",
+  "preferred_days": ["Monday", "Tuesday", "Wednesday"],
+  "preferred_shifts": ["Afternoon", "Evening"],
+  "max_shifts_per_week": 4,
+  "notes": "Prefers afternoon shifts",
+  "confirmed": true,
+  "confirmed_by": "uuid",
+  "confirmed_by_name": "Sabina Suzzi",
+  "confirmed_at": "2025-12-08T10:30:00Z"
+}
+```
+
+---
+
+### POST /api/employees/:id/preferences/confirm
+
+Confirm an employee's shift preferences. Requires team leader or admin role.
+
+**Request:**
+
+```http
+POST /api/employees/uuid-here/preferences/confirm
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "message": "Preferences confirmed for Sofia Romano",
   "preferences": {
-    "id": "uuid",
+    "employee_id": "uuid",
+    "employee_name": "Sofia Romano",
     "preferred_days": ["Monday", "Tuesday", "Wednesday"],
-    "max_shifts_per_week": 4
+    "preferred_shifts": ["Afternoon", "Evening"],
+    "max_shifts_per_week": 4,
+    "notes": "Prefers afternoon shifts",
+    "confirmed": true,
+    "confirmed_by": "uuid",
+    "confirmed_by_name": "Sabina Suzzi",
+    "confirmed_at": "2025-12-08T10:30:00Z"
   }
 }
 ```
+
+**Errors:**
+
+- `403 Forbidden` - Only team leaders and administrators can confirm preferences
+
+---
+
+### GET /api/users/:id/team-leader
+
+Check if a user has team leader status.
+
+**Request:**
+
+```http
+GET /api/users/uuid-here/team-leader
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "id": "uuid",
+  "email": "sabina.suzzi@thomsonreuters.com",
+  "full_name": "Sabina Suzzi",
+  "is_team_leader": true
+}
+```
+
+---
+
+### PUT /api/users/:id/team-leader
+
+Toggle team leader status for a user. Requires admin role.
+
+**Request:**
+
+```http
+PUT /api/users/uuid-here/team-leader
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
+  "is_team_leader": true
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "message": "Sabina Suzzi is now a team leader",
+  "user": {
+    "id": "uuid",
+    "email": "sabina.suzzi@thomsonreuters.com",
+    "full_name": "Sabina Suzzi",
+    "is_team_leader": true
+  }
+}
+```
+
+**Errors:**
+
+- `403 Forbidden` - Only administrators can designate team leaders
+
+---
+
+## Team Availability API
+
+Manage team-wide availability and preference confirmation. Requires team leader or admin role.
+
+### GET /api/team/availability
+
+Get all employees with their preference status for team leader review.
+
+**Request:**
+
+```http
+GET /api/team/availability
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "employees": [
+    {
+      "id": "uuid",
+      "email": "sofia.romano@thomsonreuters.com",
+      "full_name": "Sofia Romano",
+      "title": "Breaking News Correspondent",
+      "shift_role": "correspondent",
+      "is_team_leader": false,
+      "bureau_id": "uuid",
+      "bureau_name": "Rome",
+      "preferences": {
+        "preferred_days": ["Monday", "Wednesday", "Friday"],
+        "preferred_shifts": ["Afternoon"],
+        "max_shifts_per_week": 4,
+        "notes": "Prefers not to work Tuesdays",
+        "confirmed": false,
+        "confirmed_by": null,
+        "confirmed_by_name": null,
+        "confirmed_at": null
+      },
+      "status": "pending"
+    }
+  ],
+  "stats": {
+    "total": 15,
+    "confirmed": 12,
+    "pending": 2,
+    "missing": 1
+  }
+}
+```
+
+**Status values:**
+
+- `confirmed` - Preferences have been reviewed and confirmed
+- `pending` - Preferences set but not yet confirmed
+- `missing` - No preferences have been set
+
+**Errors:**
+
+- `403 Forbidden` - Only team leaders and administrators can view team availability
+
+---
+
+### POST /api/team/availability
+
+Bulk confirm all pending preferences.
+
+**Request:**
+
+```http
+POST /api/team/availability
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "message": "Confirmed preferences for 3 employee(s)",
+  "confirmed_count": 3
+}
+```
+
+**Errors:**
+
+- `403 Forbidden` - Only team leaders and administrators can confirm preferences
 
 ---
 
@@ -1001,9 +1196,11 @@ Authorization: Bearer YOUR_TOKEN
 
 AI-powered scheduling and assistance using Claude Haiku 4.5.
 
+> **Access Control:** Schedule generation requires **team leader** or **admin** role. Regular staff cannot generate schedules.
+
 ### POST /api/ai/generate-schedule
 
-Generate an optimized schedule using AI.
+Generate an optimized schedule using AI. Only accessible to team leaders and admins.
 
 **Request:**
 
@@ -1043,6 +1240,7 @@ Content-Type: application/json
 
 ```json
 {
+  "success": true,
   "schedule": {
     "generated_shifts": [
       {
@@ -1064,14 +1262,20 @@ Content-Type: application/json
       "conflicts_detected": 0
     },
     "ai_notes": "Schedule optimized for role balance and preference compliance."
-  }
+  },
+  "saved": false,
+  "shift_ids": [],
+  "unconfirmed_preferences_count": 3
 }
 ```
+
+> **Note:** The `unconfirmed_preferences_count` field indicates how many employees have preferences that haven't been reviewed by a team leader. Consider reviewing team availability before generating schedules for best results.
 
 **Errors:**
 
 - `400` - Invalid date range or constraints
 - `402` - AI service unavailable (check ANTHROPIC_API_KEY)
+- `403` - Only team leaders and administrators can generate schedules
 - `500` - AI generation failed
 
 ---

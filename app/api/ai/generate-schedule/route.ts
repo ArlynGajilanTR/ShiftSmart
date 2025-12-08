@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth/verify';
+import { verifyAuth, canGenerateSchedule } from '@/lib/auth/verify';
 import { generateSchedule, saveSchedule } from '@/lib/ai/scheduler-agent';
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * POST /api/ai/generate-schedule
  * Generate AI-powered schedule using Claude Haiku 4.5
+ *
+ * Access: Only team leaders and admins can generate schedules
  */
 export async function POST(request: NextRequest) {
   try {
@@ -12,6 +15,14 @@ export async function POST(request: NextRequest) {
     const { user, error: authError } = await verifyAuth(request);
     if (authError || !user) {
       return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
+    }
+
+    // Only team leaders and admins can generate schedules
+    if (!canGenerateSchedule(user)) {
+      return NextResponse.json(
+        { error: 'Only team leaders and administrators can generate schedules' },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
@@ -80,6 +91,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Get unconfirmed preferences count for the response
+    const supabase = await createClient();
+    const { count: unconfirmedCount } = await supabase
+      .from('shift_preferences')
+      .select('*', { count: 'exact', head: true })
+      .eq('confirmed', false);
+
     // Return generated schedule
     return NextResponse.json(
       {
@@ -87,6 +105,7 @@ export async function POST(request: NextRequest) {
         schedule: result.data,
         saved: save_to_database,
         shift_ids: saveResult?.shift_ids || [],
+        unconfirmed_preferences_count: unconfirmedCount || 0,
       },
       { status: 200 }
     );

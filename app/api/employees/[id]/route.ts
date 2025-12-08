@@ -65,6 +65,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       bureau: employee.bureaus?.name || 'Unknown',
       status: employee.status,
       shiftsThisMonth: shifts?.length || 0,
+      is_team_leader: employee.is_team_leader || false,
       initials,
       preferences: preferences
         ? {

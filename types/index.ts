@@ -19,6 +19,7 @@ export interface User {
   role: UserRole;
   shift_role: ShiftRole;
   bureau_id: string;
+  is_team_leader: boolean;
   preferences?: UserPreferences;
   created_at: string;
   updated_at: string;
@@ -76,6 +77,20 @@ export interface UserPreferences {
   preferred_days: number[]; // 0-6 (Sunday-Saturday)
   max_shifts_per_week: number;
   preferred_shift_times: string[];
+}
+
+export interface ShiftPreferences {
+  id: string;
+  user_id: string;
+  preferred_days: string[]; // Day names: ['Monday', 'Tuesday']
+  preferred_shifts: string[]; // ['Morning', 'Afternoon', 'Evening', 'Night']
+  max_shifts_per_week: number;
+  notes?: string;
+  confirmed: boolean;
+  confirmed_by?: string;
+  confirmed_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface SchedulePeriod {

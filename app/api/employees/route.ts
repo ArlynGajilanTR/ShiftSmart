@@ -106,6 +106,7 @@ export async function GET(request: NextRequest) {
         bureau: emp.bureaus?.name || 'Unknown',
         status: emp.status,
         shiftsThisMonth: shiftsMap.get(emp.id) || 0,
+        is_team_leader: emp.is_team_leader || false,
         initials,
       };
     });

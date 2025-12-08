@@ -293,6 +293,10 @@ export default function SchedulePage() {
     preserve_existing: false,
   });
 
+  // User permission state for schedule generation
+  const [canGenerateSchedule, setCanGenerateSchedule] = useState(false);
+  const [unconfirmedPrefsCount, setUnconfirmedPrefsCount] = useState(0);
+
   // Edit/Delete state
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -408,6 +412,40 @@ export default function SchedulePage() {
       }
     }
     fetchEmployees();
+  }, []);
+
+  // Fetch user permissions and unconfirmed preferences count
+  useEffect(() => {
+    async function fetchUserAndPrefs() {
+      try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) return;
+
+        // Fetch current user permissions
+        const userResponse = await fetch('/api/users/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          // User can generate if admin or team_leader
+          setCanGenerateSchedule(userData.role === 'admin' || userData.is_team_leader === true);
+        }
+
+        // Fetch unconfirmed preferences count
+        const prefsResponse = await fetch('/api/team/availability', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (prefsResponse.ok) {
+          const prefsData = await prefsResponse.json();
+          setUnconfirmedPrefsCount(
+            (prefsData.stats?.pending || 0) + (prefsData.stats?.missing || 0)
+          );
+        }
+      } catch (error) {
+        console.error('Failed to fetch user permissions:', error);
+      }
+    }
+    fetchUserAndPrefs();
   }, []);
 
   // Filter field configurations
@@ -1038,10 +1076,12 @@ export default function SchedulePage() {
                 DEV: Reset
               </Button>
             )}
-            <Button variant="outline" onClick={() => setIsGenerateDialogOpen(true)}>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Generate Schedule
-            </Button>
+            {canGenerateSchedule && (
+              <Button variant="outline" onClick={() => setIsGenerateDialogOpen(true)}>
+                <Sparkles className="mr-2 h-4 w-4" />
+                Generate Schedule
+              </Button>
+            )}
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
@@ -1084,6 +1124,25 @@ export default function SchedulePage() {
                     <AlertDescription>
                       AI scheduling requires the ANTHROPIC_API_KEY environment variable to be set.
                       Please contact your system administrator to configure Claude AI integration.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Unconfirmed Preferences Warning */}
+                {unconfirmedPrefsCount > 0 && (
+                  <Alert className="border-yellow-200 bg-yellow-50">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    <AlertTitle className="text-yellow-800">Unconfirmed Preferences</AlertTitle>
+                    <AlertDescription className="text-yellow-700">
+                      {unconfirmedPrefsCount} employee(s) have preferences that haven't been
+                      reviewed.{' '}
+                      <a
+                        href="/dashboard/team"
+                        className="font-medium underline hover:text-yellow-900"
+                      >
+                        Review Team Availability
+                      </a>{' '}
+                      before generating to ensure accurate scheduling.
                     </AlertDescription>
                   </Alert>
                 )}

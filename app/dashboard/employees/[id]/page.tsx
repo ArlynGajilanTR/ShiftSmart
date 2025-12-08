@@ -16,11 +16,28 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, Mail, Phone, MapPin, Calendar, Clock, Loader2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Save,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Clock,
+  Loader2,
+  Shield,
+} from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+
+interface CurrentUser {
+  id: string;
+  role: string;
+  is_team_leader: boolean;
+}
 
 interface Employee {
   id: string;
@@ -32,6 +49,7 @@ interface Employee {
   status: string;
   shiftsThisMonth: number;
   initials: string;
+  is_team_leader: boolean;
   preferences: {
     preferredDays: string[];
     preferredShifts: string[];
@@ -61,6 +79,7 @@ const defaultEmployee: Employee = {
   status: 'active',
   shiftsThisMonth: 0,
   initials: '??',
+  is_team_leader: false,
   preferences: {
     preferredDays: [],
     preferredShifts: [],
@@ -81,6 +100,8 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [isTogglingTeamLeader, setIsTogglingTeamLeader] = useState(false);
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const shiftTypes = ['Morning', 'Afternoon', 'Evening', 'Night'];
@@ -96,6 +117,19 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
         if (!token) {
           router.push('/login');
           return;
+        }
+
+        // Fetch current user info first
+        const userResponse = await fetch('/api/users/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setCurrentUser({
+            id: userData.id,
+            role: userData.role,
+            is_team_leader: userData.is_team_leader || false,
+          });
         }
 
         // Fetch employee details
@@ -132,6 +166,7 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               .join('')
               .toUpperCase() ||
             '??',
+          is_team_leader: data.is_team_leader || false,
           preferences: data.preferences || {
             preferredDays: [],
             preferredShifts: [],
@@ -616,6 +651,82 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
               </div>
             </CardContent>
           </Card>
+
+          {/* Permissions Card - Admin Only */}
+          {currentUser?.role === 'admin' && (
+            <Card className="transition-all hover:shadow-md">
+              <CardHeader className="border-l-4 border-l-orange-500">
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Permissions
+                </CardTitle>
+                <CardDescription>Manage special permissions for this employee</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-lg border">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="team-leader" className="text-base font-medium">
+                      Team Leader
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      Team leaders can confirm employee preferences and generate AI schedules
+                    </p>
+                  </div>
+                  <Switch
+                    id="team-leader"
+                    checked={employee.is_team_leader}
+                    disabled={isTogglingTeamLeader}
+                    onCheckedChange={async (checked) => {
+                      setIsTogglingTeamLeader(true);
+                      try {
+                        const token = localStorage.getItem('auth_token');
+                        const response = await fetch(`/api/users/${employee.id}/team-leader`, {
+                          method: 'PUT',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                          },
+                          body: JSON.stringify({ is_team_leader: checked }),
+                        });
+
+                        if (!response.ok) {
+                          const errorData = await response.json();
+                          throw new Error(errorData.error || 'Failed to update team leader status');
+                        }
+
+                        const data = await response.json();
+                        setEmployee({ ...employee, is_team_leader: checked });
+                        setOriginalEmployee({ ...originalEmployee, is_team_leader: checked });
+                        toast({
+                          title: checked ? 'Team leader enabled' : 'Team leader disabled',
+                          description: data.message,
+                        });
+                      } catch (error: any) {
+                        console.error('Error updating team leader status:', error);
+                        toast({
+                          title: 'Failed to update',
+                          description: error.message || 'Please try again',
+                          variant: 'destructive',
+                        });
+                      } finally {
+                        setIsTogglingTeamLeader(false);
+                      }
+                    }}
+                  />
+                </div>
+                {employee.is_team_leader && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-sm text-orange-800">
+                    <p className="font-medium">This employee has team leader privileges:</p>
+                    <ul className="mt-1 list-disc list-inside text-orange-700">
+                      <li>Can confirm/override employee shift preferences</li>
+                      <li>Can generate AI-powered schedules</li>
+                      <li>Can view team availability dashboard</li>
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Shift Preferences Tab */}
