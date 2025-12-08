@@ -1,6 +1,6 @@
 # ShiftSmart Database Schema
 
-**Version:** 1.4.6  
+**Version:** 1.6.1  
 **Database:** PostgreSQL (Supabase)  
 **Last Updated:** December 8, 2025  
 **Purpose:** AI-friendly database reference for development and debugging
@@ -17,6 +17,7 @@
 | `shifts`            | Individual shift slots      | Belongs to bureau, has assignments |
 | `shift_assignments` | User-to-shift mappings      | Links users to shifts              |
 | `shift_preferences` | Employee availability       | One per user                       |
+| `time_off_requests` | Pre-approved time off       | Belongs to user (v1.6.1+)          |
 | `conflicts`         | Scheduling conflicts        | References shifts/users            |
 | `audit_logs`        | Change history              | References users                   |
 
@@ -321,7 +322,49 @@ CREATE TABLE shift_preferences (
 
 ---
 
-### 7. `conflicts` - Scheduling Conflicts
+### 7. `time_off_requests` - Pre-Approved Time Off _(NEW in v1.6.1)_
+
+**Purpose:** Stores employee pre-approved vacation and personal time off dates
+
+```sql
+CREATE TABLE time_off_requests (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    type VARCHAR(50) NOT NULL CHECK (type IN ('vacation', 'personal', 'sick', 'other')),
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    CONSTRAINT valid_date_range CHECK (end_date >= start_date)
+);
+```
+
+| Column       | Type        | Nullable | Description                          |
+| ------------ | ----------- | -------- | ------------------------------------ |
+| `id`         | UUID        | No       | Primary key                          |
+| `user_id`    | UUID        | No       | FK to users                          |
+| `start_date` | DATE        | No       | First day of time off                |
+| `end_date`   | DATE        | No       | Last day of time off (>= start_date) |
+| `type`       | VARCHAR(50) | No       | vacation, personal, sick, other      |
+| `notes`      | TEXT        | Yes      | Optional notes                       |
+| `created_at` | TIMESTAMPTZ | Yes      | Auto-set                             |
+| `updated_at` | TIMESTAMPTZ | Yes      | Auto-updated via trigger             |
+
+**Time Off Types:**
+
+| Type       | Description              |
+| ---------- | ------------------------ |
+| `vacation` | Scheduled vacation leave |
+| `personal` | Personal day             |
+| `sick`     | Sick leave               |
+| `other`    | Other approved time off  |
+
+> **AI Integration:** Time-off dates are automatically included in `unavailable_days` when generating schedules with the AI scheduler, ensuring employees are not scheduled during their approved time off.
+
+---
+
+### 8. `conflicts` - Scheduling Conflicts
 
 **Purpose:** Tracks detected scheduling conflicts
 
@@ -385,7 +428,7 @@ CREATE TABLE conflicts (
 
 ---
 
-### 8. `audit_logs` - Change History
+### 9. `audit_logs` - Change History
 
 **Purpose:** Tracks all changes for compliance and debugging
 

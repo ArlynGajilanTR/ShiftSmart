@@ -111,6 +111,12 @@ shiftsmart-v1/
 
 > **Note:** The Shifts API now includes pre-save conflict validation. Creating or updating a shift that would cause a conflict returns `409 Conflict` with details. Use `force: true` to override.
 
+### Time Off (3 endpoints)
+
+- `GET /api/time-off` - List current user's time-off entries
+- `POST /api/time-off` - Create time-off entry (vacation, personal, sick, other)
+- `DELETE /api/time-off/:id` - Delete time-off entry
+
 ### Dashboard (1 endpoint)
 
 - `GET /api/dashboard/stats` - Aggregated statistics

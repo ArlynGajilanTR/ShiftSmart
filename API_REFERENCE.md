@@ -1,10 +1,10 @@
 # ShiftSmart API Reference
 
-**Version:** 1.6.0  
+**Version:** 1.6.1  
 **Base URL:** `https://your-api-domain.vercel.app`  
 **Last Updated:** December 8, 2025
 
-> **v1.6.0 Changes:** Added Team Leader system with preference confirmation workflow. Team leaders and admins can now confirm employee shift preferences and control access to AI schedule generation.
+> **v1.6.1 Changes:** Added Time-Off Request System. Employees can enter pre-approved vacation and personal time off, which the AI scheduler respects as hard constraints.
 
 ---
 
@@ -13,14 +13,15 @@
 1. [Authentication](#authentication)
 2. [User Profile API](#user-profile-api)
 3. [Employees API](#employees-api)
-4. [Team Availability API](#team-availability-api) _(NEW)_
-5. [Shifts API](#shifts-api)
-6. [Conflicts API](#conflicts-api)
-7. [Dashboard API](#dashboard-api)
-8. [AI Scheduling API](#ai-scheduling-api)
-9. [Error Handling](#error-handling)
-10. [Rate Limiting](#rate-limiting)
-11. [Versioning](#versioning)
+4. [Team Availability API](#team-availability-api)
+5. [Time Off API](#time-off-api) _(NEW in v1.6.1)_
+6. [Shifts API](#shifts-api)
+7. [Conflicts API](#conflicts-api)
+8. [Dashboard API](#dashboard-api)
+9. [AI Scheduling API](#ai-scheduling-api)
+10. [Error Handling](#error-handling)
+11. [Rate Limiting](#rate-limiting)
+12. [Versioning](#versioning)
 
 ---
 
@@ -731,6 +732,129 @@ Authorization: Bearer YOUR_TOKEN
 **Errors:**
 
 - `403 Forbidden` - Only team leaders and administrators can confirm preferences
+
+---
+
+## Time Off API
+
+Manage employee time-off requests (vacation, personal, sick leave). Time-off entries are treated as hard constraints by the AI scheduler.
+
+> **Note:** Employees should only enter pre-approved time off that has been approved through their bureau's official leave system.
+
+### GET /api/time-off
+
+List time-off entries for the current user.
+
+**Request:**
+
+```http
+GET /api/time-off
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Query Parameters:**
+
+| Parameter    | Type   | Required | Description                                     |
+| ------------ | ------ | -------- | ----------------------------------------------- |
+| `start_date` | string | No       | Filter entries overlapping with this start date |
+| `end_date`   | string | No       | Filter entries overlapping with this end date   |
+
+**Response (200 OK):**
+
+```json
+{
+  "time_off_requests": [
+    {
+      "id": "uuid",
+      "user_id": "uuid",
+      "start_date": "2025-12-20",
+      "end_date": "2025-12-27",
+      "type": "vacation",
+      "notes": "Christmas holiday",
+      "created_at": "2025-12-08T10:00:00Z",
+      "updated_at": "2025-12-08T10:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### POST /api/time-off
+
+Create a new time-off entry.
+
+**Request:**
+
+```http
+POST /api/time-off
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
+  "start_date": "2025-12-20",
+  "end_date": "2025-12-27",
+  "type": "vacation",
+  "notes": "Christmas holiday"
+}
+```
+
+**Body Parameters:**
+
+| Parameter    | Type   | Required | Description                                     |
+| ------------ | ------ | -------- | ----------------------------------------------- |
+| `start_date` | string | Yes      | Start date (YYYY-MM-DD format)                  |
+| `end_date`   | string | Yes      | End date (YYYY-MM-DD format, must be >= start)  |
+| `type`       | string | Yes      | One of: `vacation`, `personal`, `sick`, `other` |
+| `notes`      | string | No       | Optional notes                                  |
+
+**Response (201 Created):**
+
+```json
+{
+  "time_off_request": {
+    "id": "uuid",
+    "user_id": "uuid",
+    "start_date": "2025-12-20",
+    "end_date": "2025-12-27",
+    "type": "vacation",
+    "notes": "Christmas holiday",
+    "created_at": "2025-12-08T10:00:00Z",
+    "updated_at": "2025-12-08T10:00:00Z"
+  }
+}
+```
+
+**Errors:**
+
+- `400 Bad Request` - Missing required fields or invalid date range
+- `503 Service Unavailable` - Database migration not run
+
+---
+
+### DELETE /api/time-off/:id
+
+Delete a time-off entry. Users can only delete their own entries.
+
+**Request:**
+
+```http
+DELETE /api/time-off/uuid-here
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "message": "Time-off entry deleted successfully"
+}
+```
+
+**Errors:**
+
+- `404 Not Found` - Time-off entry not found
+- `403 Forbidden` - Cannot delete another user's entry
 
 ---
 

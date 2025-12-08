@@ -1,6 +1,6 @@
 # ShiftSmart System Architecture
 
-**Version:** 1.4.6  
+**Version:** 1.6.1  
 **Last Updated:** December 8, 2025  
 **Purpose:** AI-friendly system reference for development, debugging, and feature enhancement
 
@@ -180,7 +180,7 @@ shiftsmart-v1/
 │
 ├── app/                              # Next.js App Router
 │   │
-│   ├── api/                          # ══════ API ROUTES (24 endpoints) ══════
+│   ├── api/                          # ══════ API ROUTES (27 endpoints) ══════
 │   │   │
 │   │   ├── auth/                     # Authentication (4 endpoints)
 │   │   │   ├── login/route.ts        # POST - Email/password login
@@ -224,6 +224,11 @@ shiftsmart-v1/
 │   │   │   ├── me/password/route.ts  # PUT - Change password
 │   │   │   └── [id]/team-leader/     # PUT - Toggle team leader status
 │   │   │
+│   │   ├── time-off/                 # Time Off Management (3 endpoints)
+│   │   │   ├── route.ts              # GET  - List user's time-off entries
+│   │   │   │                         # POST - Create time-off entry
+│   │   │   └── [id]/route.ts         # DELETE - Delete time-off entry
+│   │   │
 │   │   └── team/
 │   │       └── availability/route.ts # GET - Team availability overview
 │   │
@@ -237,6 +242,7 @@ shiftsmart-v1/
 │   │   ├── schedule/page.tsx         # Schedule calendar view
 │   │   ├── conflicts/page.tsx        # Conflict resolution UI
 │   │   ├── my-availability/page.tsx  # Personal availability settings
+│   │   ├── my-time-off/page.tsx      # Time-off entry management
 │   │   ├── team/page.tsx             # Team overview (leaders only)
 │   │   └── settings/page.tsx         # User settings
 │   │
@@ -336,6 +342,14 @@ shiftsmart-v1/
 | PATCH  | `/api/shifts/[id]`     | Move shift (date/time change)   | Yes           |
 | DELETE | `/api/shifts/[id]`     | Delete shift                    | Yes           |
 | GET    | `/api/shifts/upcoming` | Get upcoming shifts             | Yes           |
+
+### Time Off
+
+| Method | Endpoint             | Purpose                      | Auth Required |
+| ------ | -------------------- | ---------------------------- | ------------- |
+| GET    | `/api/time-off`      | List user's time-off entries | Yes           |
+| POST   | `/api/time-off`      | Create time-off entry        | Yes           |
+| DELETE | `/api/time-off/[id]` | Delete time-off entry        | Yes           |
 
 ### Conflicts
 

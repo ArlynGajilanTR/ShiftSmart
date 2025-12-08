@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2025-12-08
+
+### Added
+
+- **Time-Off Request System** - Employees can now enter pre-approved vacation and personal time off
+  - New `time_off_requests` database table with indexes, triggers, and RLS policies
+  - New API endpoints: `GET/POST /api/time-off`, `DELETE /api/time-off/:id`
+  - New "My Time Off" page in dashboard with date picker, type selector (Vacation, Personal, Sick, Other)
+  - AI scheduler integration: time-off dates are now treated as hard constraints (unavailable days)
+  - Sidebar navigation link for all authenticated users
+
+### Fixed
+
+- **AI Scheduler:** Fixed format mismatch in `unavailable_days` - day-of-week names from notes are now converted to specific dates in YYYY-MM-DD format for consistent AI input
+
+---
+
 ## [1.5.3] - 2025-12-08
 
 ### Fixed
