@@ -58,7 +58,7 @@ export default function SettingsPage() {
           email: user.email || '',
           phone: user.phone || '',
           title: user.title || '',
-          bureau: user.bureau_id || '',
+          bureau: user.bureau || '', // Use bureau name, not bureau_id
         };
         setFormData(userData);
         setOriginalData(userData);
@@ -71,7 +71,7 @@ export default function SettingsPage() {
             email: localUser.email || '',
             phone: localUser.phone || '',
             title: localUser.title || '',
-            bureau: localUser.bureau_id || '',
+            bureau: localUser.bureau || '', // Use bureau name, not bureau_id
           };
           setFormData(userData);
           setOriginalData(userData);
@@ -99,7 +99,7 @@ export default function SettingsPage() {
         email: user.email || '',
         phone: user.phone || '',
         title: user.title || '',
-        bureau: user.bureau_id || '',
+        bureau: user.bureau || '', // Use bureau name, not bureau_id
       };
       setOriginalData(updatedData);
       setFormData(updatedData);
@@ -260,15 +260,12 @@ export default function SettingsPage() {
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 Bureau Location
               </Label>
-              <Select value={formData.bureau} disabled>
-                <SelectTrigger className="transition-all bg-muted">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ITA-MILAN">Milan</SelectItem>
-                  <SelectItem value="ITA-ROME">Rome</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input
+                id="bureau"
+                value={formData.bureau}
+                disabled
+                className="transition-all bg-muted"
+              />
               <p className="text-xs text-muted-foreground">
                 Contact your administrator to change your bureau
               </p>
