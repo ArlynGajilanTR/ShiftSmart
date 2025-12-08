@@ -26,10 +26,8 @@ test.describe('ShiftSmart Authentication', () => {
     // Submit form
     await page.getByRole('button', { name: /log in/i }).click();
 
-    // Check for error toast (appears in toast notification)
-    await expect(
-      page.locator('[data-sonner-toast]').filter({ hasText: /login failed/i })
-    ).toBeVisible({ timeout: 10000 });
+    // Check for error toast (Radix Toast component)
+    await expect(page.getByText(/login failed/i)).toBeVisible({ timeout: 10000 });
   });
 
   test('should successfully login with valid credentials', async ({ page }) => {
