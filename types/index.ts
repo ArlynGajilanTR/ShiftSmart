@@ -205,3 +205,14 @@ export interface AuthSession {
   token: string;
   expiresAt: string;
 }
+
+export interface TimeOffRequest {
+  id: string;
+  user_id: string;
+  start_date: string; // ISO date format (YYYY-MM-DD)
+  end_date: string; // ISO date format (YYYY-MM-DD)
+  type: 'vacation' | 'personal' | 'sick' | 'other';
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}

@@ -11,6 +11,7 @@ import {
   endOfWeek,
   eachDayOfInterval,
   differenceInHours,
+  getDay,
 } from 'date-fns';
 
 // Debug storage for failed responses (in-memory for debugging)
@@ -305,17 +306,76 @@ async function generateScheduleSingle(request: ScheduleRequest): Promise<{
     const userIds = employees.map((emp: any) => emp.id);
     const historyMap = await calculateRecentHistoryBulk(userIds, supabase);
 
+    // OPTIMIZATION: Fetch time-off requests for all employees in bulk
+    const { data: timeOffEntries } = await supabase
+      .from('time_off_requests')
+      .select('user_id, start_date, end_date')
+      .in('user_id', userIds)
+      .gte('end_date', request.period.start_date) // Overlaps with schedule period
+      .lte('start_date', request.period.end_date); // Overlaps with schedule period
+
+    // Build map of user_id -> array of unavailable dates from time-off
+    const timeOffMap = new Map<string, string[]>();
+    if (timeOffEntries) {
+      timeOffEntries.forEach((entry: any) => {
+        const dates = eachDayOfInterval({
+          start: parseISO(entry.start_date),
+          end: parseISO(entry.end_date),
+        });
+        const dateStrings = dates.map((d) => format(d, 'yyyy-MM-dd'));
+        const existing = timeOffMap.get(entry.user_id) || [];
+        timeOffMap.set(entry.user_id, [...existing, ...dateStrings]);
+      });
+    }
+
+    // Convert day-of-week names to specific dates for the schedule period
+    const scheduleStart = parseISO(request.period.start_date);
+    const scheduleEnd = parseISO(request.period.end_date);
+    const allScheduleDates = eachDayOfInterval({ start: scheduleStart, end: scheduleEnd });
+
+    // Map day names to day-of-week numbers (0=Sunday, 1=Monday, ..., 6=Saturday)
+    const dayNameToNumber: Record<string, number> = {
+      Sunday: 0,
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
+    };
+
     const employeeData = employees.map((emp: any) => {
-      // Parse unavailable days from notes if present
+      // Parse unavailable days from notes if present (backward compatibility)
+      // Convert day-of-week names to specific dates for this schedule period
       const unavailableDays: string[] = [];
       if (emp.shift_preferences?.notes) {
         const notes = emp.shift_preferences.notes.toLowerCase();
-        if (notes.includes('monday')) unavailableDays.push('Monday');
-        if (notes.includes('tuesday')) unavailableDays.push('Tuesday');
-        if (notes.includes('wednesday')) unavailableDays.push('Wednesday');
-        if (notes.includes('thursday')) unavailableDays.push('Thursday');
-        if (notes.includes('friday')) unavailableDays.push('Friday');
+        const dayNames: string[] = [];
+        if (notes.includes('monday')) dayNames.push('Monday');
+        if (notes.includes('tuesday')) dayNames.push('Tuesday');
+        if (notes.includes('wednesday')) dayNames.push('Wednesday');
+        if (notes.includes('thursday')) dayNames.push('Thursday');
+        if (notes.includes('friday')) dayNames.push('Friday');
+        if (notes.includes('saturday')) dayNames.push('Saturday');
+        if (notes.includes('sunday')) dayNames.push('Sunday');
+
+        // Convert day names to specific dates in the schedule period
+        dayNames.forEach((dayName) => {
+          const dayNumber = dayNameToNumber[dayName];
+          allScheduleDates.forEach((date) => {
+            if (getDay(date) === dayNumber) {
+              unavailableDays.push(format(date, 'yyyy-MM-dd'));
+            }
+          });
+        });
       }
+
+      // Add time-off dates to unavailable_days (specific dates in YYYY-MM-DD format)
+      const timeOffDates = timeOffMap.get(emp.id) || [];
+      unavailableDays.push(...timeOffDates);
+
+      // Remove duplicates (in case a day name matches a time-off date)
+      const uniqueUnavailableDays = Array.from(new Set(unavailableDays));
 
       return {
         id: emp.id,
@@ -327,7 +387,7 @@ async function generateScheduleSingle(request: ScheduleRequest): Promise<{
         preferences: {
           preferred_days: emp.shift_preferences?.preferred_days || [],
           preferred_shifts: emp.shift_preferences?.preferred_shifts || [],
-          unavailable_days: unavailableDays,
+          unavailable_days: uniqueUnavailableDays,
           max_shifts_per_week: emp.shift_preferences?.max_shifts_per_week || 5,
           notes: emp.shift_preferences?.notes || '',
         },

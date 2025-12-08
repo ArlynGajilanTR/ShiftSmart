@@ -13,6 +13,7 @@ import {
   LogOut,
   ClipboardList,
   UsersRound,
+  CalendarX,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -141,6 +142,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       name: 'My Availability',
       href: '/dashboard/my-availability',
       icon: ClipboardList,
+    },
+    // My Time Off - visible to all authenticated users
+    {
+      name: 'My Time Off',
+      href: '/dashboard/my-time-off',
+      icon: CalendarX,
     },
     // Team Availability - only for team leaders and admins
     ...(canAccessTeamAvailability
