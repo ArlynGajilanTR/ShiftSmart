@@ -35,7 +35,7 @@ test.describe('ShiftSmart Authentication', () => {
   test('should successfully login with valid credentials', async ({ page }) => {
     // Fill in valid credentials
     await page.getByLabel(/email/i).fill('gianluca.semeraro@thomsonreuters.com');
-    await page.getByLabel(/password/i).fill('shiftsmart2024');
+    await page.getByLabel(/password/i).fill('changeme');
 
     // Submit form
     await page.getByRole('button', { name: /log in/i }).click();
@@ -51,7 +51,7 @@ test.describe('ShiftSmart Authentication', () => {
   test('should store auth token in localStorage', async ({ page }) => {
     // Login
     await page.getByLabel(/email/i).fill('gianluca.semeraro@thomsonreuters.com');
-    await page.getByLabel(/password/i).fill('shiftsmart2024');
+    await page.getByLabel(/password/i).fill('changeme');
     await page.getByRole('button', { name: /log in/i }).click();
 
     // Wait for dashboard
@@ -66,7 +66,7 @@ test.describe('ShiftSmart Authentication', () => {
   test('should logout successfully', async ({ page }) => {
     // Login first
     await page.getByLabel(/email/i).fill('gianluca.semeraro@thomsonreuters.com');
-    await page.getByLabel(/password/i).fill('shiftsmart2024');
+    await page.getByLabel(/password/i).fill('changeme');
     await page.getByRole('button', { name: /log in/i }).click();
     await page.waitForURL('**/dashboard');
 

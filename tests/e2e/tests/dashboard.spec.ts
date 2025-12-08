@@ -5,7 +5,7 @@ test.describe('ShiftSmart Dashboard', () => {
     // Login before each test
     await page.goto('/login');
     await page.getByLabel(/email/i).fill('gianluca.semeraro@thomsonreuters.com');
-    await page.getByLabel(/password/i).fill('shiftsmart2024');
+    await page.getByLabel(/password/i).fill('changeme');
     await page.getByRole('button', { name: /log in/i }).click();
     await page.waitForURL('**/dashboard');
   });
