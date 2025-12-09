@@ -35,6 +35,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import { ChatbotGuide } from '@/components/chatbot-guide';
+import { api } from '@/lib/api-client';
 
 // Navigation items - Schedule Health icon will be dynamic
 const baseNavigation = [
@@ -70,17 +71,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     const fetchCurrentUser = async () => {
       try {
-        const token = localStorage.getItem('auth_token');
-        const response = await fetch('/api/users/me', {
-          headers: { Authorization: `Bearer ${token}` },
+        const { user } = await api.users.getProfile();
+        setCurrentUser({
+          role: user.role,
+          is_team_leader: user.is_team_leader || false,
         });
-        if (response.ok) {
-          const userData = await response.json();
-          setCurrentUser({
-            role: userData.role,
-            is_team_leader: userData.is_team_leader || false,
-          });
-        }
       } catch (error) {
         console.error('Failed to fetch current user:', error);
       }

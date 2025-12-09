@@ -72,11 +72,11 @@ export default function MyAvailabilityPage() {
           throw new Error('Failed to fetch user');
         }
 
-        const userData = await userResponse.json();
-        setUserId(userData.id);
+        const { user } = await userResponse.json();
+        setUserId(user.id);
 
         // Get preferences
-        const prefsResponse = await fetch(`/api/employees/${userData.id}/preferences`, {
+        const prefsResponse = await fetch(`/api/employees/${user.id}/preferences`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -393,6 +393,7 @@ export const api = {
           team: string;
           status: string;
           role: string;
+          is_team_leader?: boolean;
         };
       }>('/api/users/me');
     },
@@ -412,6 +413,7 @@ export const api = {
           team: string;
           status: string;
           role: string;
+          is_team_leader?: boolean;
         };
       }>('/api/users/me', {
         method: 'PUT',

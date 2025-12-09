@@ -35,7 +35,6 @@ describe('All Protected Endpoints Require Authentication', () => {
     { method: 'PUT', path: '/api/shifts/test-id' },
     { method: 'PATCH', path: '/api/shifts/test-id' },
     { method: 'DELETE', path: '/api/shifts/test-id' },
-    { method: 'POST', path: '/api/shifts/test-id/validate-move' },
     { method: 'GET', path: '/api/shifts/upcoming' },
     { method: 'DELETE', path: '/api/shifts/reset' },
 

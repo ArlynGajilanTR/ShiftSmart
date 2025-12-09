@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { verifyAuth } from '@/lib/auth/verify';
 
 // ShiftSmart knowledge base - embedded in system prompt (v1.4.1)
 const SHIFTSMART_KNOWLEDGE = `
@@ -123,6 +124,12 @@ Conflicts are scheduling issues that need attention:
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify authentication
+    const { user, error: authError } = await verifyAuth(request);
+    if (authError || !user) {
+      return NextResponse.json({ error: authError || 'Unauthorized' }, { status: 401 });
+    }
+
     // Check for API key
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
@@ -135,31 +142,52 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { question, history = [] } = await request.json();
+    const body = await request.json();
+    const { question, history = [], messages: rawMessages } = body;
 
-    if (!question || typeof question !== 'string') {
-      return NextResponse.json({ error: 'Question is required' }, { status: 400 });
+    // Build messages array, supporting both legacy {question, history}
+    // and the newer {messages: [{ role, content }]} format used in tests.
+    const messages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+
+    if (Array.isArray(rawMessages) && rawMessages.length > 0) {
+      // New format: caller provides full message history
+      for (const msg of rawMessages) {
+        if (!msg || typeof msg.content !== 'string') continue;
+        messages.push({
+          role: msg.role === 'assistant' ? 'assistant' : 'user',
+          content: msg.content,
+        });
+      }
+
+      if (messages.length === 0) {
+        return NextResponse.json(
+          { error: 'At least one valid message is required' },
+          { status: 400 }
+        );
+      }
+    } else {
+      // Legacy format: separate question + history (used by ChatbotGuide)
+      if (!question || typeof question !== 'string') {
+        return NextResponse.json({ error: 'Question is required' }, { status: 400 });
+      }
+
+      const safeHistory = Array.isArray(history) ? history : [];
+      for (const msg of safeHistory) {
+        if (!msg || typeof msg.content !== 'string') continue;
+        messages.push({
+          role: msg.role === 'assistant' ? 'assistant' : 'user',
+          content: msg.content,
+        });
+      }
+
+      messages.push({
+        role: 'user',
+        content: question,
+      });
     }
 
     // Initialize Anthropic client
     const client = new Anthropic({ apiKey });
-
-    // Build messages array with history
-    const messages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
-
-    // Add conversation history
-    for (const msg of history) {
-      messages.push({
-        role: msg.role as 'user' | 'assistant',
-        content: msg.content,
-      });
-    }
-
-    // Add current question
-    messages.push({
-      role: 'user',
-      content: question,
-    });
 
     // Call Claude Haiku 4.5 (fast, cost-effective, near-frontier)
     const response = await client.messages.create({

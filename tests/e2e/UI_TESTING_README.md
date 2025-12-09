@@ -15,8 +15,12 @@ Comprehensive Playwright test suite that systematically tests all 88+ clickable 
 7. ✅ **Schedule Page** - Calendar views, drag-drop, AI generation
 8. ✅ **Conflicts Page** - Resolution workflow
 9. ✅ **Settings Page** - Profile and preferences
+10. ✅ **My Availability Page** - Personal shift preferences and save flow
+11. ✅ **Team Availability Page** - Manager/leader view of team preferences
+12. ✅ **My Time Off Page** - Time-off entry management and migration handling
+13. ✅ **ShiftSmart Chatbot** - In-app AI assistant trigger and basic Q&A
 
-### Total Tests: 50+ button interactions verified
+### Total Tests: 70+ button interactions verified
 
 ## 🚀 Quick Start
 
@@ -78,6 +82,10 @@ tests/e2e/
     ├── ui-04-schedule.spec.ts         # Schedule page
     ├── ui-05-conflicts.spec.ts        # Conflicts page
     ├── ui-06-settings.spec.ts         # Settings page
+    ├── ui-07-my-availability.spec.ts  # My Availability page
+    ├── ui-08-team-availability.spec.ts# Team Availability page
+    ├── ui-09-my-time-off.spec.ts      # My Time Off page
+    ├── ui-10-chatbot.spec.ts          # ShiftSmart chatbot assistant
     ├── drag-drop-conflict.spec.ts     # Drag-and-drop with conflict handling
     └── api-integration.spec.ts        # API integration tests
 ```

@@ -8,14 +8,14 @@
 
 ## Quick Reference
 
-| Component      | Technology             | Location              |
-| -------------- | ---------------------- | --------------------- |
-| Frontend       | Next.js 15 + React 19  | `app/dashboard/`      |
-| API Routes     | Next.js Route Handlers | `app/api/`            |
-| Database       | PostgreSQL (Supabase)  | `supabase/schema.sql` |
-| AI Integration | Claude API             | `lib/ai/`             |
-| Auth           | Custom session-based   | `lib/auth/`           |
-| Types          | TypeScript             | `types/index.ts`      |
+| Component      | Technology                    | Location              |
+| -------------- | ----------------------------- | --------------------- |
+| Frontend       | Next.js 15 + React 18.3.1     | `app/dashboard/`      |
+| API Routes     | Next.js Route Handlers        | `app/api/`            |
+| Database       | PostgreSQL (Supabase)         | `supabase/schema.sql` |
+| AI Integration | Claude API (Anthropic SDK)    | `lib/ai/`             |
+| Auth           | Custom session-based (bcrypt) | `lib/auth/`           |
+| Types          | TypeScript                    | `types/index.ts`      |
 
 ---
 

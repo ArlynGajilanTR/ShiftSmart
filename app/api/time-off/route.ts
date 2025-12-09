@@ -39,16 +39,26 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching time-off requests:', error);
-      // Check if table doesn't exist (common error code: 42P01)
-      if (error.code === '42P01' || error.message?.includes('does not exist')) {
+      // Handle "table does not exist" errors from Supabase/PostgREST
+      // - Postgres: 42P01
+      // - PostgREST: PGRST205 with message about missing table in schema cache
+      const isMissingTableError =
+        error.code === '42P01' ||
+        error.code === 'PGRST205' ||
+        error.message?.includes('does not exist') ||
+        error.message?.includes("Could not find the table 'public.time_off_requests'");
+
+      if (isMissingTableError) {
         return NextResponse.json(
           {
-            error: 'Time-off feature not initialized. Please run database migration.',
+            error:
+              'Time-off feature not initialized. Please run database migration: supabase/migrations/002_time_off_requests.sql',
             details: error.message,
           },
           { status: 503 }
         );
       }
+
       return NextResponse.json(
         { error: 'Failed to fetch time-off requests', details: error.message },
         { status: 500 }
@@ -118,16 +128,24 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error creating time-off request:', error);
-      // Check if table doesn't exist
-      if (error.code === '42P01' || error.message?.includes('does not exist')) {
+      // Handle "table does not exist" errors from Supabase/PostgREST
+      const isMissingTableError =
+        error.code === '42P01' ||
+        error.code === 'PGRST205' ||
+        error.message?.includes('does not exist') ||
+        error.message?.includes("Could not find the table 'public.time_off_requests'");
+
+      if (isMissingTableError) {
         return NextResponse.json(
           {
-            error: 'Time-off feature not initialized. Please run database migration.',
+            error:
+              'Time-off feature not initialized. Please run database migration: supabase/migrations/002_time_off_requests.sql',
             details: error.message,
           },
           { status: 503 }
         );
       }
+
       return NextResponse.json(
         { error: 'Failed to create time-off request', details: error.message },
         { status: 500 }

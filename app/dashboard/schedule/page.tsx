@@ -422,14 +422,9 @@ export default function SchedulePage() {
         if (!token) return;
 
         // Fetch current user permissions
-        const userResponse = await fetch('/api/users/me', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          // User can generate if admin or team_leader
-          setCanGenerateSchedule(userData.role === 'admin' || userData.is_team_leader === true);
-        }
+        const { user } = await api.users.getProfile();
+        // User can generate if admin or team_leader
+        setCanGenerateSchedule(user.role === 'admin' || user.is_team_leader === true);
 
         // Fetch unconfirmed preferences count
         const prefsResponse = await fetch('/api/team/availability', {

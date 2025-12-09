@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
         team: user.team,
         status: user.status,
         role: user.role,
+        is_team_leader: user.is_team_leader,
       },
     });
   } catch (error) {

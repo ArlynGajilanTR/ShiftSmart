@@ -49,22 +49,30 @@ Content-Type: application/json
 
 ```json
 {
-  "token": "abc123...",
   "user": {
     "id": "uuid",
     "email": "gianluca.semeraro@thomsonreuters.com",
     "full_name": "Gianluca Semeraro",
-    "role": "staff",
+    "phone": "+39 02 1234 5678",
+    "title": "Breaking News Correspondent, Italy",
+    "shift_role": "correspondent",
+    "bureau": "Milan",
     "bureau_id": "uuid",
-    "team": "Breaking News"
+    "team": "Breaking News",
+    "status": "active",
+    "role": "staff"
+  },
+  "session": {
+    "access_token": "session-token-uuid",
+    "expires_at": "2025-12-09T10:15:30.000Z"
   }
 }
 ```
 
 **Errors:**
 
-- `400` - Missing email or password
-- `401` - Invalid credentials
+- `400` - Email and password are required
+- `401` - Invalid email or password
 
 ---
 

@@ -283,6 +283,7 @@ export function ChatbotGuide() {
                 size="icon"
                 className="h-8 w-8 shrink-0"
                 disabled={isLoading || !input.trim()}
+                aria-label="Send"
               >
                 <Send className="h-3 w-3" />
               </Button>

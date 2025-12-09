@@ -51,12 +51,15 @@ This document captures field naming and data structure decisions that may appear
 
 ### Conflicts Table
 
-| Field Name           | ✅ Use This      | ❌ Not This           | Reason                                                   |
-| -------------------- | ---------------- | --------------------- | -------------------------------------------------------- |
-| scheduling_conflicts | `conflict_type`  | `type`                | Fully qualified to avoid reserved word issues            |
-| scheduling_conflicts | `severity`       | `priority` or `level` | Enum: low/medium/high/critical                           |
-| scheduling_conflicts | `related_shifts` | `shift_ids`           | JSONB array of shift IDs involved in conflict            |
-| scheduling_conflicts | `detected_at`    | `created_at`          | Semantic clarity - when conflict was detected vs created |
+The `conflicts` table is intentionally modeled to match the domain language used in the UI and AI prompts.
+
+| Field Name | ✅ Use This | ❌ Not This           | Reason                                                        |
+| ---------- | ----------- | --------------------- | ------------------------------------------------------------- |
+| conflicts  | `type`      | `conflict_type`       | Short, human-readable label that matches UI/AI terminology    |
+| conflicts  | `severity`  | `priority` or `level` | Enum: `high` / `medium` / `low` for straightforward triage    |
+| conflicts  | `status`    | `resolution_status`   | Enum: `unresolved` / `acknowledged` / `resolved`              |
+| conflicts  | `date`      | `conflict_date`       | Calendar date of the conflict used for filtering and trends   |
+| conflicts  | `details`   | `metadata` or `extra` | JSONB for flexible, structured context (affected shifts, etc) |
 
 ### Bureaus Table
 

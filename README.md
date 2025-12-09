@@ -1,20 +1,20 @@
-# ShiftSmart v1.4.2
+# ShiftSmart v1.6.1
 
 Unified fullstack application for Reuters Breaking News shift scheduling system.
 
-**Version:** 1.4.2 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 332+
+**Version:** 1.6.1 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 350+
 
 ## Overview
 
-ShiftSmart is an internal scheduling application for Reuters Breaking News editorial teams in Milan and Rome. It features AI-powered schedule generation, intelligent conflict detection, and comprehensive employee management—all tested with automated end-to-end verification.
+ShiftSmart is an internal scheduling application for Reuters Breaking News editorial teams in Milan and Rome. It features AI-powered schedule generation, intelligent conflict detection, availability and time-off management, and comprehensive employee management—all tested with automated end-to-end verification.
 
 ## Tech Stack
 
-- **Next.js 15** - Fullstack framework (frontend + API routes)
-- **React 18** - UI components
+- **Next.js 15.0.2** - Fullstack framework (App Router: frontend + API routes)
+- **React 18.3.1** - UI components
 - **Supabase** - PostgreSQL database
 - **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
+- **Tailwind CSS + shadcn/ui** - Styling and component library
 - **@dnd-kit** - Drag-and-drop scheduling
 - **Claude Haiku 4.5** - AI-powered scheduling (near-frontier performance, 2x+ faster, 67% cheaper)
 - **bcryptjs** - Password hashing
@@ -22,10 +22,12 @@ ShiftSmart is an internal scheduling application for Reuters Breaking News edito
 
 ## Key Features
 
-✅ **100% Tested** - All 20 API endpoints passing automated tests  
+✅ **100% Tested** - All core API endpoints and critical flows covered by automated tests  
 🤖 **AI Scheduling** - Claude Haiku 4.5 generates optimized schedules (near-frontier performance, 2x+ faster)  
-💬 **AI Chatbot Guide** - In-app assistant helps users navigate features (NEW in v1.4.2)  
+💬 **AI Chatbot Guide** - In-app assistant helps users navigate features  
 👥 **Employee Management** - CRUD operations with preferences  
+🗓️ **My Availability & Team Availability** - Staff and leaders manage shift preferences  
+🏖️ **My Time Off** - Pre-approved time-off captured as hard constraints for AI scheduling  
 📅 **Smart Scheduling** - Drag-and-drop with conflict detection  
 🛡️ **Schedule Health** - AI-powered conflict prevention and resolution  
 📊 **Real-time Dashboard** - Statistics and upcoming shifts  
@@ -44,17 +46,16 @@ ShiftSmart is an internal scheduling application for Reuters Breaking News edito
 ```
 shiftsmart-v1/
 ├── app/
-│   ├── api/                    # API routes (24 endpoints)
+│   ├── api/                    # API routes (27 endpoints)
 │   │   ├── auth/              # Authentication (login, signup, session)
 │   │   ├── employees/         # Employee management (CRUD + preferences)
 │   │   ├── shifts/            # Shift scheduling (list, create, move, delete)
 │   │   ├── conflicts/         # Conflict detection and resolution
 │   │   ├── dashboard/         # Statistics and aggregations
 │   │   └── ai/                # AI-powered scheduling (Claude Haiku 4.5)
-│   ├── dashboard/             # Frontend pages (employees, schedule, conflicts)
+│   ├── dashboard/             # Frontend pages (employees, schedule, conflicts, availability)
 │   ├── login/                 # Authentication UI
 │   ├── signup/                # User registration
-│   ├── welcome/               # Landing page
 │   ├── layout.tsx
 │   └── page.tsx               # Main welcome screen
 ├── components/                # React components (calendar, forms, UI)
@@ -67,10 +68,10 @@ shiftsmart-v1/
 ├── supabase/
 │   ├── schema.sql             # Complete database schema
 │   └── seed-breaking-news-team.sql  # 15 real Breaking News employees
-├── tests/                     # Automated test suite (100% coverage)
-│   ├── test-api-endpoints.sh  # API endpoint tests (20/20 passing)
+├── tests/                     # Automated test suite (API, integration, Playwright E2E)
+│   ├── test-api-endpoints.sh  # API endpoint tests
 │   ├── test-integration.sh    # Integration tests
-│   ├── e2e/                   # Playwright E2E tests
+│   ├── e2e/                   # Playwright E2E tests (UI + API integration)
 │   └── run-all-tests.sh       # Master test runner
 └── types/                     # TypeScript type definitions
 ```

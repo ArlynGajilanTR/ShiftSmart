@@ -296,6 +296,7 @@ export default function MyTimeOffPage() {
                   <Label htmlFor="start_date">Start Date *</Label>
                   <Input
                     id="start_date"
+                    name="start_date"
                     type="date"
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
@@ -306,6 +307,7 @@ export default function MyTimeOffPage() {
                   <Label htmlFor="end_date">End Date *</Label>
                   <Input
                     id="end_date"
+                    name="end_date"
                     type="date"
                     value={formData.end_date}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
@@ -408,6 +410,7 @@ export default function MyTimeOffPage() {
                 return (
                   <div
                     key={entry.id}
+                    data-testid="time-off-entry"
                     className={`flex items-center justify-between p-4 rounded-lg border ${
                       isPast ? 'bg-muted/50' : 'bg-background'
                     }`}

@@ -10,7 +10,9 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 5
+    },
     "preserveOutput": "always",
     "reporter": [
       ["html", null],
@@ -32,7 +34,9 @@
         "outputDir": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 5
+        },
         "id": "chromium",
         "name": "chromium",
         "testDir": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests",
@@ -44,7 +48,9 @@
         "outputDir": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 5
+        },
         "id": "firefox",
         "name": "firefox",
         "testDir": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests",
@@ -56,7 +62,9 @@
         "outputDir": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 5
+        },
         "id": "webkit",
         "name": "webkit",
         "testDir": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests",
@@ -71,25 +79,443 @@
     "version": "1.56.1",
     "workers": 5,
     "webServer": {
-      "command": "npm run dev",
+      "command": "cd ../.. && npm run dev",
       "url": "http://localhost:3000",
       "reuseExistingServer": true,
       "timeout": 120000
     }
   },
-  "suites": [],
-  "errors": [
+  "suites": [
     {
-      "message": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments.",
-      "stack": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments."
+      "title": "ui-07-my-availability.spec.ts",
+      "file": "ui-07-my-availability.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "My Availability Page",
+          "file": "ui-07-my-availability.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "loads current preferences and status banner",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8774,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-09T06:34:39.696Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5547c69226029fdfe740-000d41c8168cfc1fbf21",
+              "file": "ui-07-my-availability.spec.ts",
+              "line": 10,
+              "column": 7
+            },
+            {
+              "title": "allows updating and saving preferences",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 8771,
+                      "error": {
+                        "message": "Error: locator.click: Error: strict mode violation: getByText('Morning') resolved to 2 elements:\n    1) <label for=\"Morning\" class=\"text-sm font-medium cursor-pointer\">Morning</label> aka getByText('Morning', { exact: true })\n    2) <p>Morning: 08:00 - 16:00 | Afternoon: 16:00 - 00:00…</p> aka getByText('Morning: 08:00 - 16:00 |')\n\nCall log:\n\u001b[2m  - waiting for getByText('Morning')\u001b[22m\n",
+                        "stack": "Error: locator.click: Error: strict mode violation: getByText('Morning') resolved to 2 elements:\n    1) <label for=\"Morning\" class=\"text-sm font-medium cursor-pointer\">Morning</label> aka getByText('Morning', { exact: true })\n    2) <p>Morning: 08:00 - 16:00 | Afternoon: 16:00 - 00:00…</p> aka getByText('Morning: 08:00 - 16:00 |')\n\nCall log:\n\u001b[2m  - waiting for getByText('Morning')\u001b[22m\n\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-07-my-availability.spec.ts:24:27",
+                        "location": {
+                          "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-07-my-availability.spec.ts",
+                          "column": 27,
+                          "line": 24
+                        },
+                        "snippet": "  22 |     // Toggle at least one shift type\n  23 |     const morningCheckbox = page.getByText('Morning');\n> 24 |     await morningCheckbox.click();\n     |                           ^\n  25 |\n  26 |     // Click save\n  27 |     const saveButton = page.getByRole('button', { name: 'Save Preferences' });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-07-my-availability.spec.ts",
+                            "column": 27,
+                            "line": 24
+                          },
+                          "message": "Error: locator.click: Error: strict mode violation: getByText('Morning') resolved to 2 elements:\n    1) <label for=\"Morning\" class=\"text-sm font-medium cursor-pointer\">Morning</label> aka getByText('Morning', { exact: true })\n    2) <p>Morning: 08:00 - 16:00 | Afternoon: 16:00 - 00:00…</p> aka getByText('Morning: 08:00 - 16:00 |')\n\nCall log:\n\u001b[2m  - waiting for getByText('Morning')\u001b[22m\n\n\n  22 |     // Toggle at least one shift type\n  23 |     const morningCheckbox = page.getByText('Morning');\n> 24 |     await morningCheckbox.click();\n     |                           ^\n  25 |\n  26 |     // Click save\n  27 |     const saveButton = page.getByRole('button', { name: 'Save Preferences' });\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-07-my-availability.spec.ts:24:27"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-09T06:34:39.693Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-07-my-availability-My-A-77ed7-ting-and-saving-preferences-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-07-my-availability-My-A-77ed7-ting-and-saving-preferences-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-07-my-availability-My-A-77ed7-ting-and-saving-preferences-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-07-my-availability.spec.ts",
+                        "column": 27,
+                        "line": 24
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "5547c69226029fdfe740-52577071d6e1807c8b76",
+              "file": "ui-07-my-availability.spec.ts",
+              "line": 17,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "ui-08-team-availability.spec.ts",
+      "file": "ui-08-team-availability.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Team Availability Page",
+          "file": "ui-08-team-availability.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "loads team availability table and stats",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-08-team-availability.spec.ts",
+                        "line": 13,
+                        "column": 12
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "skipped",
+                      "duration": 6883,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-09T06:34:39.692Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "location": {
+                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-08-team-availability.spec.ts",
+                            "line": 13,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "9fff3bd384c0e5fef923-ff040d0cc5b9e9eecb79",
+              "file": "ui-08-team-availability.spec.ts",
+              "line": 10,
+              "column": 7
+            },
+            {
+              "title": "allows confirming all pending preferences",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-08-team-availability.spec.ts",
+                        "line": 24,
+                        "column": 12
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "skipped",
+                      "duration": 6883,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-09T06:34:39.692Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "location": {
+                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-08-team-availability.spec.ts",
+                            "line": 24,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "9fff3bd384c0e5fef923-1a137050cbcdd8fa059c",
+              "file": "ui-08-team-availability.spec.ts",
+              "line": 21,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "ui-09-my-time-off.spec.ts",
+      "file": "ui-09-my-time-off.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "My Time Off Page",
+          "file": "ui-09-my-time-off.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "loads time-off list and create button",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 8803,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-09T06:34:39.695Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1497f59f20c5d01fa7f8-dcc3df845e4b5524d864",
+              "file": "ui-09-my-time-off.spec.ts",
+              "line": 10,
+              "column": 7
+            },
+            {
+              "title": "allows creating and deleting a time-off entry (when migration is applied)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 14119,
+                      "error": {
+                        "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Save|Create/i }).first()\u001b[22m\n",
+                        "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Save|Create/i }).first()\u001b[22m\n\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-09-my-time-off.spec.ts:42:24",
+                        "location": {
+                          "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-09-my-time-off.spec.ts",
+                          "column": 24,
+                          "line": 42
+                        },
+                        "snippet": "  40 |     // Submit\n  41 |     const submitButton = page.getByRole('button', { name: /Save|Create/i }).first();\n> 42 |     await submitButton.click();\n     |                        ^\n  43 |\n  44 |     // Expect at least one row in the list\n  45 |     const rows = page.locator('tbody tr');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-09-my-time-off.spec.ts",
+                            "column": 24,
+                            "line": 42
+                          },
+                          "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Save|Create/i }).first()\u001b[22m\n\n\n  40 |     // Submit\n  41 |     const submitButton = page.getByRole('button', { name: /Save|Create/i }).first();\n> 42 |     await submitButton.click();\n     |                        ^\n  43 |\n  44 |     // Expect at least one row in the list\n  45 |     const rows = page.locator('tbody tr');\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-09-my-time-off.spec.ts:42:24"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-09T06:34:46.881Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-09-my-time-off-My-Time--aea1e--when-migration-is-applied--chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-09-my-time-off-My-Time--aea1e--when-migration-is-applied--chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-09-my-time-off-My-Time--aea1e--when-migration-is-applied--chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-09-my-time-off.spec.ts",
+                        "column": 24,
+                        "line": 42
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1497f59f20c5d01fa7f8-eecc4be2423a11e549b7",
+              "file": "ui-09-my-time-off.spec.ts",
+              "line": 15,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "ui-10-chatbot.spec.ts",
+      "file": "ui-10-chatbot.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "ShiftSmart Chatbot",
+          "file": "ui-10-chatbot.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "opens chatbot and sends a basic question",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3933,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-09T06:34:46.884Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a6c3400cce9b07b5e12b-ffc6efc02d1beb346975",
+              "file": "ui-10-chatbot.spec.ts",
+              "line": 10,
+              "column": 7
+            }
+          ]
+        }
+      ]
     }
   ],
+  "errors": [],
   "stats": {
-    "startTime": "2025-12-08T16:48:56.132Z",
-    "duration": 555.265,
-    "expected": 0,
-    "skipped": 0,
-    "unexpected": 0,
+    "startTime": "2025-12-09T06:34:37.888Z",
+    "duration": 23180.908000000003,
+    "expected": 3,
+    "skipped": 2,
+    "unexpected": 2,
     "flaky": 0
   }
 }

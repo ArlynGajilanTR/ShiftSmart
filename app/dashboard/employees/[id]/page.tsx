@@ -124,11 +124,11 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
           headers: { Authorization: `Bearer ${token}` },
         });
         if (userResponse.ok) {
-          const userData = await userResponse.json();
+          const { user } = await userResponse.json();
           setCurrentUser({
-            id: userData.id,
-            role: userData.role,
-            is_team_leader: userData.is_team_leader || false,
+            id: user.id,
+            role: user.role,
+            is_team_leader: user.is_team_leader || false,
           });
         }
 
