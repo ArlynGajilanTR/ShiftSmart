@@ -566,7 +566,7 @@ mkdir -p app/api/{auth,employees,shifts,conflicts,dashboard,users}
 ### Backend API
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://kkqiknndofddjugbdefa.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://wmozxwlmdyxdnzcxetgl.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
 ANTHROPIC_API_KEY=...                    # For AI scheduling (Phase 3)
