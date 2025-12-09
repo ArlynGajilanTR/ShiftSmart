@@ -1,10 +1,10 @@
 # ShiftSmart API Reference
 
-**Version:** 1.6.1  
+**Version:** 1.7.0  
 **Base URL:** `https://your-api-domain.vercel.app`  
-**Last Updated:** December 8, 2025
+**Last Updated:** December 9, 2025
 
-> **v1.6.1 Changes:** Added Time-Off Request System. Employees can enter pre-approved vacation and personal time off, which the AI scheduler respects as hard constraints.
+> **v1.7.0 Changes:** Enhanced Time-Off features with edit functionality (PUT endpoint), overlap validation, and team time-off visibility for team leaders/admins.
 
 ---
 
@@ -743,6 +743,66 @@ Authorization: Bearer YOUR_TOKEN
 
 ---
 
+### GET /api/team/time-off
+
+Get all time-off requests for team members. Only accessible to team leaders and administrators.
+
+**Request:**
+
+```http
+GET /api/team/time-off?start_date=2025-12-01&end_date=2025-12-31
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Query Parameters:**
+
+| Parameter    | Type   | Required | Description                                     |
+| ------------ | ------ | -------- | ----------------------------------------------- |
+| `start_date` | string | No       | Filter entries overlapping with this start date |
+| `end_date`   | string | No       | Filter entries overlapping with this end date   |
+
+**Response (200 OK):**
+
+```json
+{
+  "time_off_requests": [
+    {
+      "id": "uuid",
+      "user_id": "uuid",
+      "employee_name": "Gianluca Semeraro",
+      "employee_email": "gianluca.semeraro@thomsonreuters.com",
+      "employee_title": "Breaking News Correspondent, Italy",
+      "employee_role": "correspondent",
+      "bureau_id": "uuid",
+      "bureau_name": "Milan",
+      "start_date": "2025-12-20",
+      "end_date": "2025-12-27",
+      "type": "vacation",
+      "notes": "Christmas holiday",
+      "created_at": "2025-12-08T10:00:00Z",
+      "updated_at": "2025-12-08T10:00:00Z"
+    }
+  ],
+  "stats": {
+    "total_requests": 5,
+    "employees_with_time_off": 3,
+    "by_type": {
+      "vacation": 3,
+      "personal": 1,
+      "sick": 1,
+      "other": 0
+    }
+  }
+}
+```
+
+**Errors:**
+
+- `403 Forbidden` - Only team leaders and administrators can view team time-off
+- `503 Service Unavailable` - Database migration not run
+
+---
+
 ## Time Off API
 
 Manage employee time-off requests (vacation, personal, sick leave). Time-off entries are treated as hard constraints by the AI scheduler.
@@ -835,7 +895,71 @@ Content-Type: application/json
 
 **Errors:**
 
-- `400 Bad Request` - Missing required fields or invalid date range
+- `400 Bad Request` - Missing required fields, invalid date range, or overlapping entry
+- `503 Service Unavailable` - Database migration not run
+
+**Overlap Validation:**
+
+The API will reject entries that overlap with existing time-off entries for the same user. For example, if the user already has time-off from Dec 10-15, trying to create an entry for Dec 12-20 will return a 400 error:
+
+```json
+{
+  "error": "This time-off overlaps with an existing entry (2025-12-10 to 2025-12-15)"
+}
+```
+
+---
+
+### PUT /api/time-off/:id
+
+Update an existing time-off entry. Users can only update their own entries.
+
+**Request:**
+
+```http
+PUT /api/time-off/uuid-here
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
+  "start_date": "2025-12-21",
+  "end_date": "2025-12-28",
+  "type": "personal",
+  "notes": "Updated notes"
+}
+```
+
+**Body Parameters:**
+
+| Parameter    | Type   | Required | Description                                     |
+| ------------ | ------ | -------- | ----------------------------------------------- |
+| `start_date` | string | No       | Start date (YYYY-MM-DD format)                  |
+| `end_date`   | string | No       | End date (YYYY-MM-DD format, must be >= start)  |
+| `type`       | string | No       | One of: `vacation`, `personal`, `sick`, `other` |
+| `notes`      | string | No       | Optional notes                                  |
+
+**Response (200 OK):**
+
+```json
+{
+  "time_off_request": {
+    "id": "uuid",
+    "user_id": "uuid",
+    "start_date": "2025-12-21",
+    "end_date": "2025-12-28",
+    "type": "personal",
+    "notes": "Updated notes",
+    "created_at": "2025-12-08T10:00:00Z",
+    "updated_at": "2025-12-09T14:30:00Z"
+  }
+}
+```
+
+**Errors:**
+
+- `400 Bad Request` - Invalid date range, invalid type, or overlapping entry
+- `403 Forbidden` - Cannot update another user's entry
+- `404 Not Found` - Time-off entry not found
 - `503 Service Unavailable` - Database migration not run
 
 ---
@@ -1402,6 +1526,15 @@ Content-Type: application/json
 ```
 
 > **Note:** The `unconfirmed_preferences_count` field indicates how many employees have preferences that haven't been reviewed by a team leader. Consider reviewing team availability before generating schedules for best results.
+
+**Preference Confirmation Handling:**
+
+The AI scheduler considers **both** confirmed and pending preferences, but treats them differently:
+
+- **CONFIRMED preferences** (approved by team leader): Treated as high-priority soft constraints. Claude will prioritize respecting these.
+- **PENDING preferences** (not yet approved): Still used by the AI, but treated as lower-priority hints that may be overridden if they conflict with confirmed preferences or hard constraints.
+
+This information is surfaced to Claude in the prompt via a `Preference Status` indicator for each employee, allowing the AI to make informed scheduling decisions.
 
 **Errors:**
 

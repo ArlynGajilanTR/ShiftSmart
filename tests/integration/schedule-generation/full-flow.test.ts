@@ -336,6 +336,140 @@ describe('Schedule Generation - Full Flow Integration', () => {
     });
   });
 
+  describe('Preference Confirmation Status', () => {
+    it('should include confirmed field in employee preferences mapping', async () => {
+      mockServer.addResponse(/.*/, createValidSchedule({ shifts: 5 }));
+
+      // Mock employees with mixed confirmation status
+      mockSupabase.then.mockResolvedValueOnce({
+        data: [
+          {
+            id: '1',
+            full_name: 'Confirmed Employee',
+            email: 'confirmed@reuters.com',
+            title: 'Senior Editor',
+            shift_role: 'senior',
+            bureaus: { name: 'Milan' },
+            shift_preferences: {
+              preferred_days: ['Monday', 'Wednesday'],
+              preferred_shifts: ['Morning'],
+              max_shifts_per_week: 5,
+              notes: '',
+              confirmed: true,
+              confirmed_at: '2025-12-01T10:00:00Z',
+            },
+          },
+          {
+            id: '2',
+            full_name: 'Pending Employee',
+            email: 'pending@reuters.com',
+            title: 'Correspondent',
+            shift_role: 'correspondent',
+            bureaus: { name: 'Rome' },
+            shift_preferences: {
+              preferred_days: ['Friday'],
+              preferred_shifts: ['Afternoon'],
+              max_shifts_per_week: 4,
+              notes: 'Childcare Mon-Thu',
+              confirmed: false,
+              confirmed_at: null,
+            },
+          },
+        ],
+        error: null,
+      });
+
+      const result = await generateSchedule({
+        period: { start_date: '2025-11-01', end_date: '2025-11-07', type: 'week' },
+        bureau: 'both',
+      });
+
+      expect(result.success).toBe(true);
+
+      // Verify AI was called - the prompt should contain confirmation status
+      const history = mockServer.getRequestHistory();
+      expect(history.length).toBeGreaterThan(0);
+
+      const promptContent = history[0].body.messages[0].content;
+      expect(promptContent).toContain('CONFIRMED');
+      expect(promptContent).toContain('PENDING');
+    });
+
+    it('should default to pending when shift_preferences is null', async () => {
+      mockServer.addResponse(/.*/, createValidSchedule({ shifts: 3 }));
+
+      // Mock employee with no preferences (null)
+      mockSupabase.then.mockResolvedValueOnce({
+        data: [
+          {
+            id: '1',
+            full_name: 'No Prefs Employee',
+            email: 'noprefs@reuters.com',
+            title: 'Junior Correspondent',
+            shift_role: 'correspondent',
+            bureaus: { name: 'Milan' },
+            shift_preferences: null, // No preferences set
+          },
+        ],
+        error: null,
+      });
+
+      const result = await generateSchedule({
+        period: { start_date: '2025-11-01', end_date: '2025-11-07', type: 'week' },
+      });
+
+      expect(result.success).toBe(true);
+
+      // Verify the prompt shows PENDING for employee without preferences
+      const history = mockServer.getRequestHistory();
+      const promptContent = history[0].body.messages[0].content;
+      expect(promptContent).toContain('No Prefs Employee');
+      expect(promptContent).toContain('PENDING (not yet approved)');
+    });
+
+    it('should include all preferences even when status is pending', async () => {
+      mockServer.addResponse(/.*/, createValidSchedule({ shifts: 3 }));
+
+      // Mock employee with pending preferences
+      mockSupabase.then.mockResolvedValueOnce({
+        data: [
+          {
+            id: '1',
+            full_name: 'Pending With Details',
+            email: 'pending@reuters.com',
+            title: 'Correspondent',
+            shift_role: 'correspondent',
+            bureaus: { name: 'Rome' },
+            shift_preferences: {
+              preferred_days: ['Monday', 'Tuesday', 'Wednesday'],
+              preferred_shifts: ['Morning', 'Afternoon'],
+              max_shifts_per_week: 3,
+              notes: 'Part-time contract',
+              confirmed: false,
+              confirmed_at: null,
+            },
+          },
+        ],
+        error: null,
+      });
+
+      const result = await generateSchedule({
+        period: { start_date: '2025-11-01', end_date: '2025-11-07', type: 'week' },
+      });
+
+      expect(result.success).toBe(true);
+
+      // Verify all preferences are in the prompt even when pending
+      const history = mockServer.getRequestHistory();
+      const promptContent = history[0].body.messages[0].content;
+      expect(promptContent).toContain('Pending With Details');
+      expect(promptContent).toContain('Monday, Tuesday, Wednesday');
+      expect(promptContent).toContain('Morning, Afternoon');
+      expect(promptContent).toContain('Part-time contract');
+      expect(promptContent).toContain('PENDING (not yet approved)');
+    });
+  });
+
   describe('Save to Database', () => {
     it('should save generated schedule to database', async () => {
       const schedule = createValidSchedule({ shifts: 5 });

@@ -450,6 +450,209 @@ describe('AI Prompt Generation', () => {
       expect(SYSTEM_PROMPT).toContain('Breaking News');
       expect(SYSTEM_PROMPT).toContain('Reuters');
     });
+
+    it('should include preference confirmation status instructions', () => {
+      expect(SYSTEM_PROMPT).toContain('PREFERENCE CONFIRMATION STATUS');
+      expect(SYSTEM_PROMPT).toContain('CONFIRMED');
+      expect(SYSTEM_PROMPT).toContain('PENDING');
+      expect(SYSTEM_PROMPT).toContain('prioritize CONFIRMED preferences over PENDING');
+    });
+  });
+
+  describe('Preference Confirmation Status in Prompts', () => {
+    it('should show CONFIRMED status when preferences are confirmed', () => {
+      const prompt = buildUserPrompt({
+        period: {
+          start_date: '2025-11-01',
+          end_date: '2025-11-07',
+          type: 'week',
+        },
+        employees: [
+          {
+            id: '123',
+            full_name: 'Sofia Romano',
+            email: 'sofia@reuters.com',
+            title: 'Breaking News Correspondent',
+            shift_role: 'correspondent',
+            bureau: 'Rome',
+            preferences: {
+              preferred_days: ['Monday', 'Wednesday', 'Friday'],
+              preferred_shifts: ['Morning', 'Afternoon'],
+              unavailable_days: [],
+              max_shifts_per_week: 5,
+              notes: '',
+              confirmed: true,
+              confirmed_at: '2025-12-01T10:00:00Z',
+            },
+          },
+        ],
+        existing_shifts: [],
+        italian_holidays: [],
+      });
+
+      expect(prompt).toContain('Sofia Romano');
+      expect(prompt).toContain('Preference Status: CONFIRMED');
+      expect(prompt).not.toContain('PENDING (not yet approved)');
+    });
+
+    it('should show PENDING status when preferences are not confirmed', () => {
+      const prompt = buildUserPrompt({
+        period: {
+          start_date: '2025-11-01',
+          end_date: '2025-11-07',
+          type: 'week',
+        },
+        employees: [
+          {
+            id: '456',
+            full_name: 'Marco Bianchi',
+            email: 'marco.b@reuters.com',
+            title: 'Correspondent',
+            shift_role: 'correspondent',
+            bureau: 'Milan',
+            preferences: {
+              preferred_days: ['Tuesday', 'Thursday'],
+              preferred_shifts: ['Afternoon'],
+              unavailable_days: [],
+              max_shifts_per_week: 4,
+              notes: 'Childcare on Mondays',
+              confirmed: false,
+              confirmed_at: null,
+            },
+          },
+        ],
+        existing_shifts: [],
+        italian_holidays: [],
+      });
+
+      expect(prompt).toContain('Marco Bianchi');
+      expect(prompt).toContain('Preference Status: PENDING (not yet approved)');
+      expect(prompt).not.toMatch(/Preference Status: CONFIRMED[^)]|Preference Status: CONFIRMED$/m);
+    });
+
+    it('should show PENDING status when confirmed field is undefined', () => {
+      const prompt = buildUserPrompt({
+        period: {
+          start_date: '2025-11-01',
+          end_date: '2025-11-07',
+          type: 'week',
+        },
+        employees: [
+          {
+            id: '789',
+            full_name: 'Lucia Verde',
+            email: 'lucia@reuters.com',
+            title: 'Senior Correspondent',
+            shift_role: 'senior',
+            bureau: 'Rome',
+            preferences: {
+              preferred_days: [],
+              preferred_shifts: [],
+              unavailable_days: [],
+              max_shifts_per_week: 5,
+              // confirmed field omitted (undefined)
+            },
+          },
+        ],
+        existing_shifts: [],
+        italian_holidays: [],
+      });
+
+      expect(prompt).toContain('Lucia Verde');
+      expect(prompt).toContain('Preference Status: PENDING (not yet approved)');
+    });
+
+    it('should include both CONFIRMED and PENDING employees in same prompt', () => {
+      const prompt = buildUserPrompt({
+        period: {
+          start_date: '2025-11-01',
+          end_date: '2025-11-07',
+          type: 'week',
+        },
+        employees: [
+          {
+            id: '1',
+            full_name: 'Confirmed Employee',
+            email: 'confirmed@reuters.com',
+            title: 'Senior Editor',
+            shift_role: 'senior',
+            bureau: 'Milan',
+            preferences: {
+              preferred_days: ['Monday'],
+              preferred_shifts: ['Morning'],
+              unavailable_days: [],
+              max_shifts_per_week: 5,
+              confirmed: true,
+              confirmed_at: '2025-12-01T10:00:00Z',
+            },
+          },
+          {
+            id: '2',
+            full_name: 'Pending Employee',
+            email: 'pending@reuters.com',
+            title: 'Correspondent',
+            shift_role: 'correspondent',
+            bureau: 'Milan',
+            preferences: {
+              preferred_days: ['Friday'],
+              preferred_shifts: ['Afternoon'],
+              unavailable_days: [],
+              max_shifts_per_week: 4,
+              confirmed: false,
+            },
+          },
+        ],
+        existing_shifts: [],
+        italian_holidays: [],
+      });
+
+      expect(prompt).toContain('Confirmed Employee');
+      expect(prompt).toContain('Pending Employee');
+      // Should contain exactly one CONFIRMED and one PENDING status
+      expect((prompt.match(/Preference Status: CONFIRMED/g) || []).length).toBe(1);
+      expect((prompt.match(/Preference Status: PENDING \(not yet approved\)/g) || []).length).toBe(
+        1
+      );
+    });
+
+    it('should still include preferences even when status is PENDING', () => {
+      const prompt = buildUserPrompt({
+        period: {
+          start_date: '2025-11-01',
+          end_date: '2025-11-07',
+          type: 'week',
+        },
+        employees: [
+          {
+            id: '999',
+            full_name: 'Pending With Prefs',
+            email: 'pending@reuters.com',
+            title: 'Correspondent',
+            shift_role: 'correspondent',
+            bureau: 'Rome',
+            preferences: {
+              preferred_days: ['Monday', 'Tuesday', 'Wednesday'],
+              preferred_shifts: ['Morning', 'Afternoon'],
+              unavailable_days: ['2025-11-05'],
+              max_shifts_per_week: 3,
+              notes: 'Part-time schedule',
+              confirmed: false,
+            },
+          },
+        ],
+        existing_shifts: [],
+        italian_holidays: [],
+      });
+
+      // Preference status should be pending
+      expect(prompt).toContain('Preference Status: PENDING (not yet approved)');
+      // But all preferences should still be included
+      expect(prompt).toContain('Monday, Tuesday, Wednesday');
+      expect(prompt).toContain('Morning, Afternoon');
+      expect(prompt).toContain('2025-11-05');
+      expect(prompt).toContain('Max Shifts/Week: 3');
+      expect(prompt).toContain('Part-time schedule');
+    });
   });
 });
 

@@ -320,6 +320,17 @@ CREATE TABLE shift_preferences (
 - `preferred_days`: `['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']`
 - `preferred_shifts`: `['Morning', 'Afternoon', 'Evening', 'Night']`
 
+**Confirmation Workflow:**
+
+The `confirmed`, `confirmed_by`, and `confirmed_at` fields implement a team leader approval workflow:
+
+- When an employee sets or updates their preferences, `confirmed` is set to `false`
+- A team leader can review and confirm preferences via `/api/employees/:id/preferences/confirm`
+- Once confirmed, the AI scheduler treats these preferences as high-priority soft constraints
+- Unconfirmed preferences are still used by the scheduler, but treated as lower-priority hints
+
+> **AI Scheduling Integration:** The scheduler includes a `Preference Status` indicator (CONFIRMED or PENDING) for each employee in the prompt sent to Claude. This allows the AI to prioritize confirmed preferences when making scheduling decisions.
+
 ---
 
 ### 7. `time_off_requests` - Pre-Approved Time Off _(NEW in v1.6.1)_

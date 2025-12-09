@@ -390,6 +390,9 @@ async function generateScheduleSingle(request: ScheduleRequest): Promise<{
           unavailable_days: uniqueUnavailableDays,
           max_shifts_per_week: emp.shift_preferences?.max_shifts_per_week || 5,
           notes: emp.shift_preferences?.notes || '',
+          // Include confirmation status so AI can prioritize confirmed preferences
+          confirmed: emp.shift_preferences?.confirmed || false,
+          confirmed_at: emp.shift_preferences?.confirmed_at || null,
         },
         recent_history: historyMap.get(emp.id) || {
           weekend_shifts_last_month: 0,

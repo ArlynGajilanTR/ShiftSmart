@@ -5,6 +5,118 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.2] - 2025-12-09
+
+### Fixed
+
+- **My Time Off Page** - Fixed UI bug where create form and edit dialog could be open simultaneously
+  - Clicking "Edit" on an entry now closes the create form first
+  - Prevents confusing shared state between both forms
+
+---
+
+## [1.7.1] - 2025-12-09
+
+### Added
+
+- **Team Availability API Client Methods** - Centralized API access for team availability
+  - `api.team.getAvailability()` - Fetch all employees with preference status
+  - `api.team.confirmAll()` - Bulk confirm all pending preferences
+  - `api.employees.confirmPreferences(id)` - Confirm individual employee preferences
+
+- **Individual Confirm Loading States** - UX improvement for preference confirmation
+  - Per-employee loading indicator when confirming preferences
+  - Button shows spinner and becomes disabled during API call
+  - Returns to enabled state on error with existing toast notification
+
+- **Client-Side Pagination** - Scalability improvement for large teams
+  - Employee table now paginated (25 employees per page)
+  - Previous/Next navigation controls
+  - Page indicator showing current position
+  - Auto-resets to page 1 when filters change
+
+- **Enhanced E2E Test Coverage** - Comprehensive Team Availability tests
+  - Stats cards visibility tests
+  - Filter functionality tests
+  - Individual confirm button with loading state tests
+  - Bulk confirm dialog tests
+  - Tab navigation tests
+  - Edit dialog tests
+
+### Changed
+
+- **Team Availability Page** - Refactored to use centralized API client
+  - Replaced raw `fetch()` calls with `api.team.*` and `api.employees.*` methods
+  - Consistent error handling with other dashboard pages
+  - Better code maintainability
+
+### Documentation
+
+- Updated `UI_TESTING_README.md` with Team Availability test details
+- Added Team Availability API endpoints to verified endpoints list
+- Version bumped to 1.7.1
+
+---
+
+## [1.7.0] - 2025-12-09
+
+### Added
+
+- **Time-Off Edit Functionality** - Users can now edit their existing time-off entries
+  - New `PUT /api/time-off/:id` endpoint for updating entries
+  - Edit modal dialog in the My Time Off page
+  - Edit button (pencil icon) next to delete for future entries
+
+- **Overlap Validation** - Prevent duplicate time-off entries
+  - Both POST and PUT endpoints now validate against overlapping date ranges
+  - Clear error messages when overlap is detected
+
+- **Team Time-Off View** - Team leaders and admins can view team's time-off
+  - New `GET /api/team/time-off` endpoint with optional date filtering
+  - New "Time Off" tab on the Team Management page
+  - Shows upcoming 30-day time-off for all team members
+  - Summary statistics by type (vacation, sick, personal, other)
+
+- **API Client Methods** - Added `api.timeOff` methods for consistency
+  - `api.timeOff.list()`, `api.timeOff.create()`, `api.timeOff.update()`, `api.timeOff.delete()`
+  - `api.team.getTimeOff()` for team view
+
+### Changed
+
+- **My Time Off Page** - Refactored to use API client methods instead of raw fetch
+- **Team Page** - Renamed to "Team Management" with tabbed interface (Availability / Time Off)
+
+### Documentation
+
+- Updated `API_REFERENCE.md` with new PUT endpoint and team time-off endpoint
+- Added overlap validation documentation
+- Version bumped to 1.7.0
+
+---
+
+## [1.6.3] - 2025-12-09
+
+### Added
+
+- **Preference Confirmation Awareness in AI Scheduler** - The AI scheduler now distinguishes between confirmed and pending employee preferences:
+  - Employee preferences include a `Preference Status` indicator (CONFIRMED or PENDING) in the prompt sent to Claude
+  - SYSTEM_PROMPT updated with instructions to prioritize confirmed preferences over pending ones
+  - Both confirmed and pending preferences are still used, but Claude treats confirmed preferences as higher-priority soft constraints
+  - Enables more informed scheduling decisions when some employees have unreviewed preferences
+
+### Changed
+
+- **AI Prompt Generation:** `buildUserPrompt` in `lib/ai/prompts/schedule-generation.ts` now includes preference confirmation status for each employee
+- **Scheduler Agent:** `lib/ai/scheduler-agent.ts` now maps `confirmed` and `confirmed_at` fields from `shift_preferences` table
+
+### Documentation
+
+- Updated `ARCHITECTURE.md` with preference confirmation awareness details
+- Updated `DATABASE_SCHEMA.md` with confirmation workflow documentation
+- Updated `API_REFERENCE.md` with preference handling explanation
+
+---
+
 ## [1.6.2] - 2025-12-08
 
 ### Added

@@ -3,6 +3,31 @@ import { createClient } from '@/lib/supabase/server';
 import { verifyAuth } from '@/lib/auth/verify';
 
 /**
+ * Helper function to check for overlapping time-off entries
+ */
+async function checkOverlap(
+  supabase: any,
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<{ hasOverlap: boolean; overlappingEntry?: any }> {
+  // Find entries that overlap with the given date range
+  // Overlap occurs when: existing.start <= new.end AND existing.end >= new.start
+  const { data, error } = await supabase
+    .from('time_off_requests')
+    .select('id, start_date, end_date, type')
+    .eq('user_id', userId)
+    .lte('start_date', endDate)
+    .gte('end_date', startDate);
+
+  if (error || !data || data.length === 0) {
+    return { hasOverlap: false };
+  }
+
+  return { hasOverlap: true, overlappingEntry: data[0] };
+}
+
+/**
  * GET /api/time-off
  * List current user's time-off entries
  * Optional query params: start_date, end_date (ISO date format)
@@ -112,6 +137,23 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createClient();
+
+    // Check for overlapping entries
+    const { hasOverlap, overlappingEntry } = await checkOverlap(
+      supabase,
+      user.id,
+      start_date,
+      end_date
+    );
+
+    if (hasOverlap) {
+      return NextResponse.json(
+        {
+          error: `This time-off overlaps with an existing entry (${overlappingEntry.start_date} to ${overlappingEntry.end_date})`,
+        },
+        { status: 400 }
+      );
+    }
 
     // Create time-off entry
     const { data, error } = await supabase

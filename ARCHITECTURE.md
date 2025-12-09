@@ -393,10 +393,24 @@ Detects 7 types of conflicts:
 Orchestrates AI-powered schedule creation:
 
 1. Fetches all active employees
-2. Gets shift preferences for each
-3. Builds context for Claude
+2. Gets shift preferences for each (including confirmation status)
+3. Builds context for Claude with preference confirmation indicators
 4. Generates assignments with role balancing
 5. Validates for conflicts before returning
+
+**Preference Confirmation Awareness:**
+
+The AI scheduler distinguishes between confirmed and pending preferences:
+
+- **CONFIRMED preferences**: Reviewed and approved by a team leader. Treated as high-priority soft constraints by Claude.
+- **PENDING preferences**: Submitted by staff but not yet approved. Still used by Claude, but treated as lower-priority hints.
+
+This is surfaced to Claude in two ways:
+
+1. `SYSTEM_PROMPT` includes instructions to prioritize confirmed over pending preferences
+2. Each employee's data in `buildUserPrompt` includes a `Preference Status: CONFIRMED` or `PENDING` indicator
+
+The API returns `unconfirmed_preferences_count` so the UI can warn schedulers when many preferences haven't been reviewed.
 
 ### Authentication
 

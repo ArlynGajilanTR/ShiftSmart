@@ -18,9 +18,18 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Plus, Trash2, Loader2, AlertCircle, Info, CalendarX } from 'lucide-react';
+import { Plus, Trash2, Loader2, AlertCircle, Info, CalendarX, Pencil } from 'lucide-react';
 import { TimeOffRequest } from '@/types';
-import { format, parseISO, isAfter, isBefore, startOfToday } from 'date-fns';
+import { format, parseISO, isBefore, startOfToday } from 'date-fns';
+import { api, isAuthenticated } from '@/lib/api-client';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const timeOffTypes = [
   { value: 'vacation', label: 'Vacation' },
@@ -37,6 +46,7 @@ export default function MyTimeOffPage() {
   const [timeOffEntries, setTimeOffEntries] = useState<TimeOffRequest[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [migrationError, setMigrationError] = useState<string | null>(null);
+  const [editingEntry, setEditingEntry] = useState<TimeOffRequest | null>(null);
   const [formData, setFormData] = useState({
     start_date: '',
     end_date: '',
@@ -49,36 +59,20 @@ export default function MyTimeOffPage() {
     const fetchTimeOff = async () => {
       setIsLoading(true);
       try {
-        const token = localStorage.getItem('auth_token');
-        if (!token) {
+        if (!isAuthenticated()) {
           router.push('/login');
           return;
         }
 
-        const response = await fetch('/api/time-off', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          const errorMessage =
-            errorData.error || `Failed to fetch time-off entries (${response.status})`;
-
-          // Check if it's a migration error
-          if (response.status === 503 && errorMessage.includes('migration')) {
-            setMigrationError(errorMessage);
-          }
-
-          throw new Error(errorMessage);
-        }
-
-        // Clear migration error on success
+        const data = await api.timeOff.list();
         setMigrationError(null);
-
-        const data = await response.json();
         setTimeOffEntries(data.time_off_requests || []);
       } catch (error: any) {
         console.error('Error fetching time-off entries:', error);
+        // Check if it's a migration error
+        if (error.message?.includes('migration')) {
+          setMigrationError(error.message);
+        }
         toast({
           title: 'Error loading time-off entries',
           description: error.message || 'Please try again',
@@ -91,6 +85,15 @@ export default function MyTimeOffPage() {
 
     fetchTimeOff();
   }, [router, toast]);
+
+  const resetForm = () => {
+    setFormData({
+      start_date: '',
+      end_date: '',
+      type: 'vacation',
+      notes: '',
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,22 +121,13 @@ export default function MyTimeOffPage() {
 
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch('/api/time-off', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
+      const data = await api.timeOff.create({
+        start_date: formData.start_date,
+        end_date: formData.end_date,
+        type: formData.type,
+        notes: formData.notes || undefined,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create time-off entry');
-      }
-
-      const data = await response.json();
       setTimeOffEntries(
         [...timeOffEntries, data.time_off_request].sort((a, b) =>
           a.start_date.localeCompare(b.start_date)
@@ -145,18 +139,83 @@ export default function MyTimeOffPage() {
         description: 'Your time-off entry has been added successfully',
       });
 
-      // Reset form
-      setFormData({
-        start_date: '',
-        end_date: '',
-        type: 'vacation',
-        notes: '',
-      });
+      resetForm();
       setShowForm(false);
     } catch (error: any) {
       console.error('Error creating time-off entry:', error);
       toast({
         title: 'Failed to create time-off entry',
+        description: error.message || 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEdit = (entry: TimeOffRequest) => {
+    // Close the create form if it's open to avoid having both forms visible
+    setShowForm(false);
+    setEditingEntry(entry);
+    setFormData({
+      start_date: entry.start_date,
+      end_date: entry.end_date,
+      type: entry.type,
+      notes: entry.notes || '',
+    });
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingEntry) return;
+
+    if (!formData.start_date || !formData.end_date || !formData.type) {
+      toast({
+        title: 'Missing required fields',
+        description: 'Please fill in start date, end date, and type',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate date range
+    const start = parseISO(formData.start_date);
+    const end = parseISO(formData.end_date);
+    if (end < start) {
+      toast({
+        title: 'Invalid date range',
+        description: 'End date must be on or after start date',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const data = await api.timeOff.update(editingEntry.id, {
+        start_date: formData.start_date,
+        end_date: formData.end_date,
+        type: formData.type,
+        notes: formData.notes || undefined,
+      });
+
+      setTimeOffEntries(
+        timeOffEntries
+          .map((entry) => (entry.id === editingEntry.id ? data.time_off_request : entry))
+          .sort((a, b) => a.start_date.localeCompare(b.start_date))
+      );
+
+      toast({
+        title: 'Time-off entry updated',
+        description: 'Your time-off entry has been updated successfully',
+      });
+
+      setEditingEntry(null);
+      resetForm();
+    } catch (error: any) {
+      console.error('Error updating time-off entry:', error);
+      toast({
+        title: 'Failed to update time-off entry',
         description: error.message || 'Please try again',
         variant: 'destructive',
       });
@@ -171,16 +230,7 @@ export default function MyTimeOffPage() {
     }
 
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`/api/time-off/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete time-off entry');
-      }
+      await api.timeOff.delete(id);
 
       setTimeOffEntries(timeOffEntries.filter((entry) => entry.id !== id));
       toast({
@@ -368,12 +418,7 @@ export default function MyTimeOffPage() {
                   variant="outline"
                   onClick={() => {
                     setShowForm(false);
-                    setFormData({
-                      start_date: '',
-                      end_date: '',
-                      type: 'vacation',
-                      notes: '',
-                    });
+                    resetForm();
                   }}
                 >
                   Cancel
@@ -434,14 +479,25 @@ export default function MyTimeOffPage() {
                       )}
                     </div>
                     {!isPast && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(entry.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(entry)}
+                          title="Edit entry"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(entry.id)}
+                          className="text-destructive hover:text-destructive"
+                          title="Delete entry"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     )}
                   </div>
                 );
@@ -450,6 +506,104 @@ export default function MyTimeOffPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Dialog */}
+      <Dialog
+        open={!!editingEntry}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingEntry(null);
+            resetForm();
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Time Off Entry</DialogTitle>
+            <DialogDescription>Update your pre-approved time off dates</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="edit_start_date">Start Date *</Label>
+                <Input
+                  id="edit_start_date"
+                  type="date"
+                  value={formData.start_date}
+                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_end_date">End Date *</Label>
+                <Input
+                  id="edit_end_date"
+                  type="date"
+                  value={formData.end_date}
+                  onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                  required
+                  min={formData.start_date}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit_type">Type *</Label>
+              <Select
+                value={formData.type}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, type: value as TimeOffRequest['type'] })
+                }
+              >
+                <SelectTrigger id="edit_type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {timeOffTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit_notes">Notes (Optional)</Label>
+              <Textarea
+                id="edit_notes"
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Any additional details about your time off"
+                className="min-h-[80px]"
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setEditingEntry(null);
+                  resetForm();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

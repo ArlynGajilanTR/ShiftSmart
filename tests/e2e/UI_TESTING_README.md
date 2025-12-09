@@ -17,6 +17,12 @@ Comprehensive Playwright test suite that systematically tests all 88+ clickable 
 9. ✅ **Settings Page** - Profile and preferences
 10. ✅ **My Availability Page** - Personal shift preferences and save flow
 11. ✅ **Team Availability Page** - Manager/leader view of team preferences
+    - Stats cards (Total Employees, Confirmed, Pending, Missing)
+    - Search and filter controls (by name, bureau, status)
+    - Individual confirm button with loading state
+    - Bulk confirm all preferences
+    - Edit employee preferences dialog
+    - Client-side pagination (25 employees per page)
 12. ✅ **My Time Off Page** - Time-off entry management and migration handling
 13. ✅ **ShiftSmart Chatbot** - In-app AI assistant trigger and basic Q&A
 
@@ -116,6 +122,13 @@ For each button/test, we verify:
 - `GET /api/employees`
 - `GET /api/employees/{id}`
 - `PUT /api/employees/{id}`
+- `PUT /api/employees/{id}/preferences`
+- `POST /api/employees/{id}/preferences/confirm`
+
+### Team Availability
+
+- `GET /api/team/availability` - List all employees with preference status
+- `POST /api/team/availability` - Bulk confirm all pending preferences
 
 ### Shifts
 

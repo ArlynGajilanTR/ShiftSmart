@@ -52,6 +52,17 @@ Create optimal shift schedules for a team of 15 Breaking News correspondents and
 4. **Preference Satisfaction**: Maximize assignments matching employee preferences
 5. **Minimize Violations**: Track and minimize any soft preference violations
 
+## PREFERENCE CONFIRMATION STATUS
+
+Employee preferences have a **Preference Status** indicator:
+- **CONFIRMED**: Preferences reviewed and approved by a team leader. Treat as high-priority soft constraints.
+- **PENDING**: Preferences submitted but not yet approved. Treat as lower-priority hints that may change.
+
+**Priority Rules:**
+- When conflicts arise, prioritize CONFIRMED preferences over PENDING ones
+- PENDING preferences should still be considered when they don't conflict with CONFIRMED preferences or hard constraints
+- If an employee has no preferences set, schedule them flexibly based on fairness and coverage needs
+
 ## ROLE DEFINITIONS
 
 - **Editor**: Most senior, can supervise, limited to 1 per bureau (Gavin Jones in Rome)
@@ -179,6 +190,8 @@ export function buildUserPrompt(scheduleRequest: {
       unavailable_days?: string[]; // Blocked dates
       max_shifts_per_week: number;
       notes?: string;
+      confirmed?: boolean; // Team leader has reviewed and approved
+      confirmed_at?: string | null; // ISO timestamp of confirmation
     };
     recent_history?: {
       weekend_shifts_last_month: number;
@@ -213,6 +226,7 @@ ${scheduleRequest.employees
 - Email: ${emp.email}
 
 **Preferences:**
+- Preference Status: ${emp.preferences.confirmed ? 'CONFIRMED' : 'PENDING (not yet approved)'}
 - Preferred Days: ${emp.preferences.preferred_days.length > 0 ? emp.preferences.preferred_days.join(', ') : 'No preference'}
 - Preferred Shifts: ${emp.preferences.preferred_shifts.length > 0 ? emp.preferences.preferred_shifts.join(', ') : 'No preference'}
 - Unavailable: ${emp.preferences.unavailable_days && emp.preferences.unavailable_days.length > 0 ? emp.preferences.unavailable_days.join(', ') : 'None'}

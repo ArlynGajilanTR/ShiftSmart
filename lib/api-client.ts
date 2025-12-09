@@ -157,6 +157,26 @@ export const api = {
         body: JSON.stringify(preferences),
       });
     },
+
+    confirmPreferences: async (id: string) => {
+      return apiCall<{
+        message: string;
+        preferences: {
+          employee_id: string;
+          employee_name: string;
+          preferred_days: string[];
+          preferred_shifts: string[];
+          max_shifts_per_week: number;
+          notes: string;
+          confirmed: boolean;
+          confirmed_by: string;
+          confirmed_by_name: string;
+          confirmed_at: string;
+        };
+      }>(`/api/employees/${id}/preferences/confirm`, {
+        method: 'POST',
+      });
+    },
   },
 
   // ============================================================================
@@ -430,6 +450,170 @@ export const api = {
         method: 'PUT',
         body: JSON.stringify(data),
       });
+    },
+  },
+
+  // ============================================================================
+  // TIME OFF
+  // ============================================================================
+
+  timeOff: {
+    list: async (filters?: { start_date?: string; end_date?: string }) => {
+      const params = new URLSearchParams(
+        Object.entries(filters || {}).filter(([_, v]) => v != null) as [string, string][]
+      );
+      const query = params.toString();
+
+      return apiCall<{
+        time_off_requests: Array<{
+          id: string;
+          user_id: string;
+          start_date: string;
+          end_date: string;
+          type: 'vacation' | 'personal' | 'sick' | 'other';
+          notes?: string;
+          created_at: string;
+          updated_at: string;
+        }>;
+      }>(`/api/time-off${query ? `?${query}` : ''}`);
+    },
+
+    create: async (data: {
+      start_date: string;
+      end_date: string;
+      type: 'vacation' | 'personal' | 'sick' | 'other';
+      notes?: string;
+    }) => {
+      return apiCall<{
+        time_off_request: {
+          id: string;
+          user_id: string;
+          start_date: string;
+          end_date: string;
+          type: 'vacation' | 'personal' | 'sick' | 'other';
+          notes?: string;
+          created_at: string;
+          updated_at: string;
+        };
+      }>('/api/time-off', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    update: async (
+      id: string,
+      data: {
+        start_date?: string;
+        end_date?: string;
+        type?: 'vacation' | 'personal' | 'sick' | 'other';
+        notes?: string;
+      }
+    ) => {
+      return apiCall<{
+        time_off_request: {
+          id: string;
+          user_id: string;
+          start_date: string;
+          end_date: string;
+          type: 'vacation' | 'personal' | 'sick' | 'other';
+          notes?: string;
+          created_at: string;
+          updated_at: string;
+        };
+      }>(`/api/time-off/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    delete: async (id: string) => {
+      return apiCall<{ message: string }>(`/api/time-off/${id}`, {
+        method: 'DELETE',
+      });
+    },
+  },
+
+  // ============================================================================
+  // TEAM
+  // ============================================================================
+
+  team: {
+    getAvailability: async () => {
+      return apiCall<{
+        employees: Array<{
+          id: string;
+          email: string;
+          full_name: string;
+          title: string;
+          shift_role: string;
+          is_team_leader: boolean;
+          bureau_id: string;
+          bureau_name: string;
+          preferences: {
+            preferred_days: string[];
+            preferred_shifts: string[];
+            max_shifts_per_week: number;
+            notes: string;
+            confirmed: boolean;
+            confirmed_by: string | null;
+            confirmed_by_name: string | null;
+            confirmed_at: string | null;
+          };
+          status: 'confirmed' | 'pending' | 'missing';
+        }>;
+        stats: {
+          total: number;
+          confirmed: number;
+          pending: number;
+          missing: number;
+        };
+      }>('/api/team/availability');
+    },
+
+    confirmAll: async () => {
+      return apiCall<{
+        message: string;
+        confirmed_count: number;
+      }>('/api/team/availability', {
+        method: 'POST',
+      });
+    },
+
+    getTimeOff: async (filters?: { start_date?: string; end_date?: string }) => {
+      const params = new URLSearchParams(
+        Object.entries(filters || {}).filter(([_, v]) => v != null) as [string, string][]
+      );
+      const query = params.toString();
+
+      return apiCall<{
+        time_off_requests: Array<{
+          id: string;
+          user_id: string;
+          employee_name: string;
+          employee_email: string;
+          employee_title: string;
+          employee_role: string;
+          bureau_id: string | null;
+          bureau_name: string;
+          start_date: string;
+          end_date: string;
+          type: 'vacation' | 'personal' | 'sick' | 'other';
+          notes?: string;
+          created_at: string;
+          updated_at: string;
+        }>;
+        stats: {
+          total_requests: number;
+          employees_with_time_off: number;
+          by_type: {
+            vacation: number;
+            personal: number;
+            sick: number;
+            other: number;
+          };
+        };
+      }>(`/api/team/time-off${query ? `?${query}` : ''}`);
     },
   },
 
