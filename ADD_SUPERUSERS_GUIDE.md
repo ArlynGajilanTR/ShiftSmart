@@ -21,6 +21,14 @@
 - **Role:** admin (full access)
 - **Shift Role:** editor (highest scheduling level)
 
+### 3. Guest Admin (Test Account)
+
+- **Email:** `test.test@thomsonreuters.com`
+- **Password:** `testtest`
+- **Role:** admin (full access)
+- **Shift Role:** editor (highest scheduling level)
+- **Script:** `supabase/add-guest-admin.sql`
+
 ---
 
 ## How to Add These Users
@@ -84,7 +92,8 @@ supabase db execute --file supabase/add-superusers.sql
 2. Filter by email:
    - `rob.lang@thomsonreuters.com`
    - `RafalWojciech.Nowak@thomsonreuters.com`
-3. Verify both have:
+   - `test.test@thomsonreuters.com`
+3. Verify all have:
    - ✅ `role` = `admin`
    - ✅ `shift_role` = `editor`
    - ✅ `status` = `active`
@@ -102,7 +111,8 @@ SELECT
 FROM users
 WHERE email IN (
     'rob.lang@thomsonreuters.com',
-    'RafalWojciech.Nowak@thomsonreuters.com'
+    'RafalWojciech.Nowak@thomsonreuters.com',
+    'test.test@thomsonreuters.com'
 )
 ORDER BY email;
 ```
@@ -116,7 +126,10 @@ ORDER BY email;
 3. Try logging in as Rafal:
    - Email: `RafalWojciech.Nowak@thomsonreuters.com`
    - Password: `testtest`
-4. Both should have full access to:
+4. Try logging in as Guest Admin:
+   - Email: `test.test@thomsonreuters.com`
+   - Password: `testtest`
+5. All should have full access to:
    - Dashboard
    - Employee Management
    - Schedule Management
@@ -214,7 +227,8 @@ Make sure:
 
 ## Files Included
 
-- `supabase/add-superusers.sql` - SQL script to add both users
+- `supabase/add-superusers.sql` - SQL script to add Rob Lang and Rafal Nowak
+- `supabase/add-guest-admin.sql` - SQL script to add Guest Admin (test.test@thomsonreuters.com)
 - `ADD_SUPERUSERS_GUIDE.md` - This guide
 
 ---
