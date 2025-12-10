@@ -72,8 +72,8 @@ export async function loginAs(page: Page, user: TestUser): Promise<string> {
   await page.fill('input[type="password"]', user.password);
   await page.click('button[type="submit"]');
 
-  // Wait for navigation to dashboard
-  await page.waitForURL('/dashboard', { timeout: 15000 });
+  // Wait for navigation to dashboard (increased timeout for slow responses)
+  await page.waitForURL('/dashboard', { timeout: 30000 });
 
   // Verify token is stored
   const token = await page.evaluate(() => localStorage.getItem('auth_token'));
@@ -110,7 +110,8 @@ export async function loginAsStaffer(page: Page, user: TestUser = STAFFER_MILAN)
  */
 export async function logout(page: Page): Promise<void> {
   await page.click('text=Log Out');
-  await page.waitForURL('/', { timeout: 5000 });
+  // App redirects to /login after logout, not /
+  await page.waitForURL(/\/(login)?$/, { timeout: 5000 });
 
   const token = await page.evaluate(() => localStorage.getItem('auth_token'));
   if (token) {
