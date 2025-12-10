@@ -1,0 +1,30 @@
+# ShiftSmart Project Rules
+
+## Critical: role vs shift_role
+- `role` = System permissions (admin/manager/scheduler/staff)
+- `shift_role` = Editorial role for scheduling (editor/senior/correspondent)
+- These are BOTH required and serve different purposes. Never consolidate them.
+
+## Auth: Custom implementation
+- This project uses custom session-based auth, NOT Supabase Auth
+- Tokens use `Authorization: Bearer <token>` header
+- Password field is `password_hash` (bcrypt via bcryptjs)
+- Session tokens stored in `sessions` table
+
+## API Response Mapping
+- API returns `name` (from DB `full_name`)
+- API returns `role` (from DB `title` - editorial position)
+- Don't confuse API `role` with DB `role` (system permissions)
+
+## Libraries & Conventions
+- Dates: use `date-fns`, not moment.js or native Date
+- All timestamps use `TIMESTAMP WITH TIME ZONE`
+- Default timezone: `America/New_York`
+
+## AI Integration
+- Uses Anthropic Claude (ANTHROPIC_API_KEY), not OpenAI
+- Prompts centralized in `/lib/ai/prompts/`
+
+## Reference
+- Full gotchas: `docs/PROJECT_FIELD_GOTCHAS.md`
+- Schema: `supabase/schema.sql`
