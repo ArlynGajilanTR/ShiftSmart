@@ -3,6 +3,7 @@ import {
   loginAsStaffer,
   loginAsManager,
   loginAsAdmin,
+  logout,
   STAFFER_MILAN,
   MANAGER_USER,
   ADMIN_USER,
@@ -413,8 +414,7 @@ test.describe('Cross-Role Feature Matrix', () => {
     };
 
     // Logout and login as Admin (team leader) to test elevated access
-    await page.evaluate(() => localStorage.removeItem('auth_token'));
-    await page.goto('/login');
+    await logout(page);
     await loginAsAdmin(page);
 
     featureMatrix['admin'] = {
