@@ -259,13 +259,10 @@ test.describe('Data Consistency Across Sessions', () => {
     await page.goto('/dashboard/conflicts');
     await page.waitForTimeout(2000);
 
-    const totalConflicts = page
-      .locator('text=Total Conflicts')
-      .locator('..')
-      .locator('.font-bold, .text-2xl')
-      .first();
-    const conflictPageCount = await totalConflicts.textContent();
-    console.log(`Conflict count on conflicts page: ${conflictPageCount}`);
+    // Find the Active Issues stat card and get the count
+    const activeIssuesTab = page.getByRole('tab', { name: /Active Issues/ });
+    const conflictTabText = await activeIssuesTab.textContent();
+    console.log(`Conflict tab text: ${conflictTabText}`);
 
     console.log('✓ Conflict data is accessible and consistent');
   });

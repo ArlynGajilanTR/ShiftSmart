@@ -227,7 +227,7 @@ test.describe('Manager Access Control', () => {
     test('manager can access Conflicts page', async ({ page }) => {
       await page.goto('/dashboard/conflicts');
       await expect(page).toHaveURL('/dashboard/conflicts');
-      await expect(page.locator('text=Total Conflicts')).toBeVisible();
+      await expect(page.getByRole('tab', { name: /Active Issues/ })).toBeVisible();
     });
 
     test('manager can access Schedule with full controls', async ({ page }) => {
@@ -406,7 +406,7 @@ test.describe('Cross-Role Feature Matrix', () => {
 
     // Logout and login as Manager
     await page.click('text=Log Out');
-    await page.waitForURL('/');
+    await page.waitForURL(/\/(login)?$/, { timeout: 5000 });
     await loginAsManager(page);
 
     featureMatrix['manager'] = {

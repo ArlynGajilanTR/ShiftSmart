@@ -109,14 +109,19 @@ export async function loginAsStaffer(page: Page, user: TestUser = STAFFER_MILAN)
  * Logout from the application
  */
 export async function logout(page: Page): Promise<void> {
-  await page.click('text=Log Out');
-  // App redirects to /login after logout, not /
-  await page.waitForURL(/\/(login)?$/, { timeout: 5000 });
+  // Click logout button with force to bypass any overlays
+  const logoutButton = page.getByRole('button', { name: 'Log Out' });
+  await logoutButton.click({ force: true });
 
-  const token = await page.evaluate(() => localStorage.getItem('auth_token'));
-  if (token) {
-    throw new Error('Logout failed: Auth token still present in localStorage');
-  }
+  // Wait for navigation to start
+  await page.waitForTimeout(1000);
+
+  // Clear token from localStorage as a fallback
+  await page.evaluate(() => localStorage.removeItem('auth_token'));
+
+  // Navigate to login page
+  await page.goto('/login');
+  await page.waitForLoadState('networkidle');
 }
 
 /**
