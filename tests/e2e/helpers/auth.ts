@@ -2,9 +2,10 @@ import { Page } from '@playwright/test';
 
 /**
  * Authentication helper functions for tests
+ * NOTE: This is a legacy helper. New tests should use test-users.ts instead.
  */
 export const TEST_CREDENTIALS = {
-  email: 'gianluca.semeraro@thomsonreuters.com',
+  email: 'sara.rossi@thomsonreuters.com',
   password: 'changeme',
 };
 
