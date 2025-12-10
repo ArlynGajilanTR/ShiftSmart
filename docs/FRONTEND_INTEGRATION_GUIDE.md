@@ -775,6 +775,16 @@ When conflicts are detected, a modal shows:
 
 Conflicts from forced moves are logged in Schedule Health for audit.
 
+**Audit Trail:**
+All drag-and-drop moves are automatically logged to the audit trail (`audit_logs` table) with:
+
+- Who made the change (`user_id`)
+- What changed (`from` → `to` date/times)
+- When it happened (`created_at`)
+- Whether conflicts were overridden (`force_move: true`)
+
+This enables full traceability of schedule changes for compliance and debugging.
+
 #### Cross-View Synchronization
 
 All views share the same `shifts` state, so when you drag a shift from one view to another:

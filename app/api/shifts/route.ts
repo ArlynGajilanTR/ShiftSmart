@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { format, parseISO, differenceInHours } from 'date-fns';
+import { logAudit, getClientIP } from '@/lib/audit/logger';
 
 /**
  * Detect conflicts for a shift assignment
@@ -504,6 +505,29 @@ export async function POST(request: NextRequest) {
 
       await supabase.from('conflicts').insert(conflictsToInsert);
     }
+
+    // Log shift creation to audit trail
+    logAudit({
+      user_id: user.id,
+      action: 'shift_created',
+      entity_type: 'shift',
+      entity_id: newShift.id,
+      changes: {
+        created_shift: {
+          date,
+          start_time,
+          end_time,
+          bureau,
+          employee: assignmentData?.user?.full_name || null,
+        },
+        ...(force &&
+          potentialConflicts.length > 0 && {
+            forced: true,
+            conflicts_overridden: potentialConflicts.length,
+          }),
+      },
+      ip_address: getClientIP(request) || undefined,
+    }).catch((err) => console.error('Audit log failed:', err));
 
     // Format response
     const response = {

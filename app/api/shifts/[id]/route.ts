@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { verifyAuth } from '@/lib/auth/verify';
 import { format, parseISO, differenceInHours } from 'date-fns';
+import { logAudit, createShiftMoveAudit, getClientIP } from '@/lib/audit/logger';
 
 /**
  * Detect conflicts for a shift assignment
@@ -240,6 +241,19 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       .eq('shift_id', id)
       .maybeSingle();
 
+    // Log update to audit trail
+    logAudit({
+      user_id: user.id,
+      action: 'shift_updated',
+      entity_type: 'shift',
+      entity_id: id,
+      changes: {
+        updates,
+        employee_changed: employee_id !== undefined,
+      },
+      ip_address: getClientIP(request) || undefined,
+    }).catch((err) => console.error('Audit log failed:', err));
+
     // Format response
     const response = {
       id: updatedShift.id,
@@ -291,12 +305,39 @@ export async function DELETE(
       return NextResponse.json({ error: 'Shift not found' }, { status: 404 });
     }
 
+    // Get shift details before deletion for audit log
+    const { data: shiftDetails } = await supabase
+      .from('shifts')
+      .select('*, bureaus(name), shift_assignments(user_id, users(full_name))')
+      .eq('id', id)
+      .single();
+
     // Delete shift (cascade will handle assignments)
     const { error: deleteError } = await supabase.from('shifts').delete().eq('id', id);
 
     if (deleteError) {
       console.error('Error deleting shift:', deleteError);
       return NextResponse.json({ error: 'Failed to delete shift' }, { status: 500 });
+    }
+
+    // Log deletion to audit trail
+    if (shiftDetails) {
+      logAudit({
+        user_id: user.id,
+        action: 'shift_deleted',
+        entity_type: 'shift',
+        entity_id: id,
+        changes: {
+          deleted_shift: {
+            date: format(new Date(shiftDetails.start_time), 'yyyy-MM-dd'),
+            start_time: format(new Date(shiftDetails.start_time), 'HH:mm'),
+            end_time: format(new Date(shiftDetails.end_time), 'HH:mm'),
+            bureau: shiftDetails.bureaus?.name,
+            employee: shiftDetails.shift_assignments?.[0]?.users?.full_name || null,
+          },
+        },
+        ip_address: getClientIP(request) || undefined,
+      }).catch((err) => console.error('Audit log failed:', err));
     }
 
     return NextResponse.json({ message: 'Shift deleted successfully' }, { status: 200 });
@@ -535,6 +576,32 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       console.error('Error moving shift:', updateError);
       return NextResponse.json({ error: 'Failed to move shift' }, { status: 500 });
     }
+
+    // Log the shift move to audit trail
+    const previousDate = format(new Date(existingShift.start_time), 'yyyy-MM-dd');
+    const auditEntry = createShiftMoveAudit(
+      user.id,
+      id,
+      {
+        date: previousDate,
+        start_time: existingStartTime,
+        end_time: existingEndTime,
+        employee_id: assignment?.user_id,
+        employee_name: assignment?.user?.full_name,
+      },
+      {
+        date,
+        start_time: newStartTime,
+        end_time: newEndTime,
+      },
+      {
+        forced: force && potentialConflicts.length > 0,
+        ip_address: getClientIP(request),
+      }
+    );
+
+    // Fire-and-forget audit logging (don't block the response)
+    logAudit(auditEntry).catch((err) => console.error('Audit log failed:', err));
 
     // If conflicts exist but were forced, log them as user-confirmed overrides
     if (potentialConflicts.length > 0 && force) {

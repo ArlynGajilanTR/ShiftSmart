@@ -1,9 +1,15 @@
 # ShiftSmart API Reference
 
-**Version:** 1.7.0  
+**Version:** 1.8.0  
 **Base URL:** `https://your-api-domain.vercel.app`  
-**Last Updated:** December 9, 2025
+**Last Updated:** December 10, 2025
 
+> **v1.8.0 Changes:**
+>
+> - Added comprehensive audit trail logging for all shift operations (create, move, update, delete)
+> - Enhanced drag-and-drop with time slot precision, keyboard accessibility, and undo functionality
+> - Improved E2E test stability with robust wait helpers
+>
 > **v1.7.0 Changes:** Enhanced Time-Off features with edit functionality (PUT endpoint), overlap validation, and team time-off visibility for team leaders/admins.
 
 ---
@@ -1185,7 +1191,18 @@ Content-Type: application/json
 - `start_time` (string, optional) - New start time (HH:mm), defaults to existing
 - `end_time` (string, optional) - New end time (HH:mm), defaults to existing
 - `validate_only` (boolean, optional) - If `true`, only check for conflicts without moving
-- `force` (boolean, optional) - If `true`, move even if conflicts exist (logged for audit)
+- `force` (boolean, optional) - If `true`, move even if conflicts exist (logged as `conflict_force_moved` in audit trail)
+
+**Audit Trail:**
+All shift moves are automatically logged to the `audit_logs` table with:
+
+- `action`: `shift_moved` (or `conflict_force_moved` if forced)
+- `entity_type`: `shift`
+- `entity_id`: The shift ID
+- `changes`: JSONB containing `from` and `to` states with date, times, and employee info
+- `user_id`: The user who performed the move
+- `ip_address`: Client IP address
+- `created_at`: Timestamp of the change
 
 **Response (200 OK):**
 

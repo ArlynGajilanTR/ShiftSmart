@@ -177,6 +177,11 @@ CREATE INDEX idx_conflicts_user ON conflicts (user_id);
 CREATE INDEX idx_conflicts_status ON conflicts (status);
 CREATE INDEX idx_conflicts_severity ON conflicts (severity);
 CREATE INDEX idx_conflicts_date ON conflicts (date);
+CREATE INDEX idx_audit_logs_user ON audit_logs (user_id);
+CREATE INDEX idx_audit_logs_entity ON audit_logs (entity_type, entity_id);
+CREATE INDEX idx_audit_logs_action ON audit_logs (action);
+CREATE INDEX idx_audit_logs_created ON audit_logs (created_at DESC);
+CREATE INDEX idx_audit_logs_entity_time ON audit_logs (entity_type, created_at DESC);
 CREATE INDEX idx_schedule_periods_bureau ON schedule_periods (bureau_id);
 CREATE INDEX idx_schedule_periods_dates ON schedule_periods (
     start_date, end_date

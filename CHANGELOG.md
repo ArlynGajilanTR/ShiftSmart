@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2025-12-10
+
+### Added
+
+- **Comprehensive Audit Trail Logging** - Full traceability for all shift operations
+  - All shift moves via drag-and-drop are logged to `audit_logs` table
+  - Records who made the change, what changed (from/to), when, and IP address
+  - Actions logged: `shift_created`, `shift_moved`, `shift_updated`, `shift_deleted`, `conflict_force_moved`
+  - Audit utility library (`lib/audit/logger.ts`) with helper functions
+  - Database indexes added for efficient audit log queries
+
+- **Enhanced Drag-and-Drop Features**
+  - **Time Slot Precision**: Drop shifts into Morning/Afternoon/Evening slots in Today view to auto-set times
+  - **Keyboard Accessibility**: Full keyboard navigation (Tab, Space, Arrow keys) with ARIA support
+  - **Undo Functionality**: Undo button and Ctrl+Z keyboard shortcut to reverse moves
+  - **Screen Reader Support**: ARIA live regions announce drag/drop actions
+
+- **E2E Test Stability Improvements**
+  - Robust wait helpers with exponential backoff (`tests/e2e/helpers/wait-helpers.ts`)
+  - Retry logic for drag operations
+  - Replaced hardcoded timeouts with intelligent waiting
+  - Added `data-testid` attributes for reliable element selection
+
+### Changed
+
+- **Shift API Endpoints** - Now automatically log all operations to audit trail
+  - `PATCH /api/shifts/:id` - Logs `shift_moved` or `conflict_force_moved`
+  - `PUT /api/shifts/:id` - Logs `shift_updated`
+  - `DELETE /api/shifts/:id` - Logs `shift_deleted`
+  - `POST /api/shifts` - Logs `shift_created`
+
+- **Database Schema** - Added indexes on `audit_logs` table for performance
+  - `idx_audit_logs_user` - Fast lookups by user
+  - `idx_audit_logs_entity` - Fast lookups by entity type/id
+  - `idx_audit_logs_action` - Fast filtering by action type
+  - `idx_audit_logs_created` - Fast time-based queries
+  - `idx_audit_logs_entity_time` - Composite index for entity + time queries
+
+### Documentation
+
+- Updated `API_REFERENCE.md` with audit trail information
+- Updated `FRONTEND_INTEGRATION_GUIDE.md` with audit trail details
+- Created `DRAG_DROP_ENHANCEMENTS_SUMMARY.md` with comprehensive implementation details
+
+---
+
 ## [1.7.2] - 2025-12-09
 
 ### Fixed

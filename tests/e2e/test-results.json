@@ -87,20 +87,883 @@
   },
   "suites": [
     {
-      "title": "ui-07-my-availability.spec.ts",
-      "file": "ui-07-my-availability.spec.ts",
+      "title": "workflows/access-control.spec.ts",
+      "file": "workflows/access-control.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "My Availability Page",
-          "file": "ui-07-my-availability.spec.ts",
-          "line": 4,
+          "title": "Staffer Access Control",
+          "file": "workflows/access-control.spec.ts",
+          "line": 33,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Pages Staffers SHOULD Access",
+              "file": "workflows/access-control.spec.ts",
+              "line": 34,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "staffer can access Dashboard",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 14968,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:02.049Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-c15d826e7ef6fbfe0746",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 39,
+                  "column": 9
+                },
+                {
+                  "title": "staffer can access Schedule page",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 8932,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:17.377Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-de35ee03edc3c9c6aac7",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 46,
+                  "column": 9
+                },
+                {
+                  "title": "staffer can access My Availability",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 9994,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:26.322Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-59263185e9d9d20d5aca",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 51,
+                  "column": 9
+                },
+                {
+                  "title": "staffer can access My Time Off",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 9863,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:36.327Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-be79c63f9676506190f7",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 60,
+                  "column": 9
+                },
+                {
+                  "title": "staffer can access Settings",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 13375,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:46.202Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-52884f3af9dc47d56acd",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 66,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Manager-Only Features Visibility Check",
+              "file": "workflows/access-control.spec.ts",
+              "line": 72,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "staffer should not see \"Generate Schedule\" button",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 5681,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Generate Schedule button visible for staffer: true\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:59.589Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-d1e0c240506e1fcc84e0",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 77,
+                  "column": 9
+                },
+                {
+                  "title": "staffer should not see \"Add Shift\" button",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 4396,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Add Shift button visible for staffer: true\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:05.282Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-51fe28ea21e62318d515",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 95,
+                  "column": 9
+                },
+                {
+                  "title": "staffer should not have drag-and-drop capability on shifts",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 17342,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Draggable shifts visible for staffer: 0\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:09.687Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-aeae1e83111bc62eb987",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 107,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Page Access Restrictions",
+              "file": "workflows/access-control.spec.ts",
+              "line": 122,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "staffer accessing Employees page - document behavior",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 8291,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Staffer can access Employees page: true\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:27.042Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-95773067c65ca076a4fe",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 127,
+                  "column": 9
+                },
+                {
+                  "title": "staffer accessing Team Management page - document behavior",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 13575,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Staffer can access Team Management page: true\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:35.349Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-93f2341b7587f89b5a00",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 142,
+                  "column": 9
+                },
+                {
+                  "title": "staffer accessing Conflicts page - document behavior",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 4052,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Staffer can access Conflicts page: true\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:48.935Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-6595016c5a2fc0106a49",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 155,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "API Access Control",
+              "file": "workflows/access-control.spec.ts",
+              "line": 169,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "staffer API call to team availability - document behavior",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1738,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Team API response status for staffer: 500\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:52.995Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-6d51cbbbaed7aae15616",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 170,
+                  "column": 9
+                },
+                {
+                  "title": "staffer API call to generate schedule - document behavior",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 6444,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Generate schedule API timed out (likely processing) - access not blocked\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:54.738Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-5b4e684cc4ded5387869",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 186,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Manager/Team Leader Access Control",
+          "file": "workflows/access-control.spec.ts",
+          "line": 213,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Pages Team Leaders SHOULD Access",
+              "file": "workflows/access-control.spec.ts",
+              "line": 220,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "team leader can access Dashboard",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 14821,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:48:01.189Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-b3bff15c1585c34b829d",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 226,
+                  "column": 9
+                },
+                {
+                  "title": "team leader can access Employees page",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 6396,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:48:16.018Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-41fb0986a5a8d2c518a9",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 231,
+                  "column": 9
+                },
+                {
+                  "title": "team leader can access Team Management",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 5678,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:48:22.420Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-5796f6067febf27e1df1",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 237,
+                  "column": 9
+                },
+                {
+                  "title": "team leader can access Schedule Health (Conflicts)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 8145,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:48:28.104Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-f8acd8925e2ec7faf282",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 245,
+                  "column": 9
+                },
+                {
+                  "title": "team leader can access Schedule with full controls",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 7020,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:48:36.259Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-5814bd5f56a7fc05631d",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 251,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Team Leader API Access",
+              "file": "workflows/access-control.spec.ts",
+              "line": 266,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "team leader can access team availability API",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 5812,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:48:43.284Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-53213a322b72dd14fa36",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 267,
+                  "column": 9
+                },
+                {
+                  "title": "team leader can access generate schedule dialog",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 6638,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:48:49.101Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-e05b9a823f17936e3509",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 279,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Admin Access Control",
+          "file": "workflows/access-control.spec.ts",
+          "line": 297,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Admin Has Full Access",
+              "file": "workflows/access-control.spec.ts",
+              "line": 298,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "admin can access all pages",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 14913,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:48:55.744Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-defab7ca54ca8028e0a0",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 304,
+                  "column": 9
+                },
+                {
+                  "title": "admin sees all management controls",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 6545,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:49:10.664Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4fa001a844af5db4e632-b5ce0b0c755f1e1fd101",
+                  "file": "workflows/access-control.spec.ts",
+                  "line": 330,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Unauthenticated Access Control",
+          "file": "workflows/access-control.spec.ts",
+          "line": 342,
           "column": 6,
           "specs": [
             {
-              "title": "loads current preferences and status banner",
+              "title": "unauthenticated user redirected from dashboard",
               "ok": true,
               "tags": [],
               "tests": [
@@ -115,12 +978,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8774,
+                      "duration": 4832,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-09T06:34:39.696Z",
+                      "startTime": "2025-12-10T21:49:17.215Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -128,13 +991,89 @@
                   "status": "expected"
                 }
               ],
-              "id": "5547c69226029fdfe740-000d41c8168cfc1fbf21",
-              "file": "ui-07-my-availability.spec.ts",
-              "line": 10,
+              "id": "4fa001a844af5db4e632-c02a5e2f51d6c386886e",
+              "file": "workflows/access-control.spec.ts",
+              "line": 343,
               "column": 7
             },
             {
-              "title": "allows updating and saving preferences",
+              "title": "unauthenticated user redirected from schedule",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3314,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:49:22.053Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4fa001a844af5db4e632-2c2a98981dd79c0f39eb",
+              "file": "workflows/access-control.spec.ts",
+              "line": 359,
+              "column": 7
+            },
+            {
+              "title": "unauthenticated API calls return 401",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2079,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:49:25.373Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4fa001a844af5db4e632-50e7464f64577aec46a3",
+              "file": "workflows/access-control.spec.ts",
+              "line": 372,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Cross-Role Feature Matrix",
+          "file": "workflows/access-control.spec.ts",
+          "line": 380,
+          "column": 6,
+          "specs": [
+            {
+              "title": "document feature access matrix",
               "ok": false,
               "tags": [],
               "tests": [
@@ -146,65 +1085,57 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 8771,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30888,
                       "error": {
-                        "message": "Error: locator.click: Error: strict mode violation: getByText('Morning') resolved to 2 elements:\n    1) <label for=\"Morning\" class=\"text-sm font-medium cursor-pointer\">Morning</label> aka getByText('Morning', { exact: true })\n    2) <p>Morning: 08:00 - 16:00 | Afternoon: 16:00 - 00:00…</p> aka getByText('Morning: 08:00 - 16:00 |')\n\nCall log:\n\u001b[2m  - waiting for getByText('Morning')\u001b[22m\n",
-                        "stack": "Error: locator.click: Error: strict mode violation: getByText('Morning') resolved to 2 elements:\n    1) <label for=\"Morning\" class=\"text-sm font-medium cursor-pointer\">Morning</label> aka getByText('Morning', { exact: true })\n    2) <p>Morning: 08:00 - 16:00 | Afternoon: 16:00 - 00:00…</p> aka getByText('Morning: 08:00 - 16:00 |')\n\nCall log:\n\u001b[2m  - waiting for getByText('Morning')\u001b[22m\n\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-07-my-availability.spec.ts:24:27",
-                        "location": {
-                          "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-07-my-availability.spec.ts",
-                          "column": 27,
-                          "line": 24
-                        },
-                        "snippet": "  22 |     // Toggle at least one shift type\n  23 |     const morningCheckbox = page.getByText('Morning');\n> 24 |     await morningCheckbox.click();\n     |                           ^\n  25 |\n  26 |     // Click save\n  27 |     const saveButton = page.getByRole('button', { name: 'Save Preferences' });"
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
                       },
                       "errors": [
                         {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
                           "location": {
-                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-07-my-availability.spec.ts",
-                            "column": 27,
-                            "line": 24
+                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/helpers/test-users.ts",
+                            "column": 14,
+                            "line": 70
                           },
-                          "message": "Error: locator.click: Error: strict mode violation: getByText('Morning') resolved to 2 elements:\n    1) <label for=\"Morning\" class=\"text-sm font-medium cursor-pointer\">Morning</label> aka getByText('Morning', { exact: true })\n    2) <p>Morning: 08:00 - 16:00 | Afternoon: 16:00 - 00:00…</p> aka getByText('Morning: 08:00 - 16:00 |')\n\nCall log:\n\u001b[2m  - waiting for getByText('Morning')\u001b[22m\n\n\n  22 |     // Toggle at least one shift type\n  23 |     const morningCheckbox = page.getByText('Morning');\n> 24 |     await morningCheckbox.click();\n     |                           ^\n  25 |\n  26 |     // Click save\n  27 |     const saveButton = page.getByRole('button', { name: 'Save Preferences' });\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-07-my-availability.spec.ts:24:27"
+                          "message": "Error: page.goto: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/login\", waiting until \"load\"\u001b[22m\n\n\n   at ../helpers/test-users.ts:70\n\n  68 |  */\n  69 | export async function loginAs(page: Page, user: TestUser): Promise<string> {\n> 70 |   await page.goto('/login');\n     |              ^\n  71 |   await page.fill('input[type=\"email\"]', user.email);\n  72 |   await page.fill('input[type=\"password\"]', user.password);\n  73 |   await page.click('button[type=\"submit\"]');\n    at loginAs (/Users/lng1512/shiftsmart-v1/tests/e2e/helpers/test-users.ts:70:14)\n    at loginAsAdmin (/Users/lng1512/shiftsmart-v1/tests/e2e/helpers/test-users.ts:91:10)\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/access-control.spec.ts:418:23"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-09T06:34:39.693Z",
+                      "startTime": "2025-12-10T21:49:27.461Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-07-my-availability-My-A-77ed7-ting-and-saving-preferences-chromium/test-failed-1.png"
+                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-access-control-C-13249-ument-feature-access-matrix-chromium/test-failed-1.png"
                         },
                         {
                           "name": "video",
                           "contentType": "video/webm",
-                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-07-my-availability-My-A-77ed7-ting-and-saving-preferences-chromium/video.webm"
+                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-access-control-C-13249-ument-feature-access-matrix-chromium/video.webm"
                         },
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-07-my-availability-My-A-77ed7-ting-and-saving-preferences-chromium/error-context.md"
+                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-access-control-C-13249-ument-feature-access-matrix-chromium/error-context.md"
                         }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-07-my-availability.spec.ts",
-                        "column": 27,
-                        "line": 24
-                      }
+                      ]
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "5547c69226029fdfe740-52577071d6e1807c8b76",
-              "file": "ui-07-my-availability.spec.ts",
-              "line": 17,
+              "id": "4fa001a844af5db4e632-912ee6363077a019d62f",
+              "file": "workflows/access-control.spec.ts",
+              "line": 386,
               "column": 7
             }
           ]
@@ -212,141 +1143,272 @@
       ]
     },
     {
-      "title": "ui-08-team-availability.spec.ts",
-      "file": "ui-08-team-availability.spec.ts",
+      "title": "workflows/cross-role-integration.spec.ts",
+      "file": "workflows/cross-role-integration.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Team Availability Page",
-          "file": "ui-08-team-availability.spec.ts",
-          "line": 4,
+          "title": "Staffer Actions → Manager Views",
+          "file": "workflows/cross-role-integration.spec.ts",
+          "line": 35,
           "column": 6,
-          "specs": [
+          "specs": [],
+          "suites": [
             {
-              "title": "loads team availability table and stats",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "Preference Updates Flow",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 36,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 30000,
-                  "annotations": [
+                  "title": "staffer preference update is visible to manager",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
                     {
-                      "type": "skip",
-                      "location": {
-                        "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-08-team-availability.spec.ts",
-                        "line": 13,
-                        "column": 12
-                      }
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "skipped",
-                      "duration": 6883,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-09T06:34:39.692Z",
-                      "annotations": [
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
                         {
-                          "type": "skip",
-                          "location": {
-                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-08-team-availability.spec.ts",
-                            "line": 13,
-                            "column": 12
-                          }
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "timedOut",
+                          "duration": 30190,
+                          "error": {
+                            "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                            "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                          },
+                          "errors": [
+                            {
+                              "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                            },
+                            {
+                              "location": {
+                                "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/cross-role-integration.spec.ts",
+                                "column": 76,
+                                "line": 58
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: 'Team Management' })\nExpected: visible\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: 'Team Management' })\u001b[22m\n\n\n  56 |       await waitForDynamicNav(page);\n  57 |       await page.goto('/dashboard/team');\n> 58 |       await expect(page.getByRole('heading', { name: 'Team Management' })).toBeVisible({\n     |                                                                            ^\n  59 |         timeout: 10000,\n  60 |       });\n  61 |\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/cross-role-integration.spec.ts:58:76"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:02.048Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-cross-role-integ-8afc9-pdate-is-visible-to-manager-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-cross-role-integ-8afc9-pdate-is-visible-to-manager-chromium/video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-cross-role-integ-8afc9-pdate-is-visible-to-manager-chromium/error-context.md"
+                            }
+                          ]
                         }
                       ],
-                      "attachments": []
+                      "status": "unexpected"
                     }
                   ],
-                  "status": "skipped"
+                  "id": "f62cbf45c12f2c1c4097-6bc8dc6b88451931cf9e",
+                  "file": "workflows/cross-role-integration.spec.ts",
+                  "line": 37,
+                  "column": 9
                 }
-              ],
-              "id": "9fff3bd384c0e5fef923-ff040d0cc5b9e9eecb79",
-              "file": "ui-08-team-availability.spec.ts",
-              "line": 10,
-              "column": 7
+              ]
             },
             {
-              "title": "allows confirming all pending preferences",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "Time-Off Entry Flow",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 73,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 30000,
-                  "annotations": [
+                  "title": "staffer time-off entry appears in manager team view",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "type": "skip",
-                      "location": {
-                        "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-08-team-availability.spec.ts",
-                        "line": 24,
-                        "column": 12
-                      }
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "skipped",
-                      "duration": 6883,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-09T06:34:39.692Z",
-                      "annotations": [
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
                         {
-                          "type": "skip",
-                          "location": {
-                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-08-team-availability.spec.ts",
-                            "line": 24,
-                            "column": 12
-                          }
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:32.636Z",
+                          "annotations": [],
+                          "attachments": []
                         }
                       ],
-                      "attachments": []
+                      "status": "skipped"
                     }
                   ],
-                  "status": "skipped"
+                  "id": "f62cbf45c12f2c1c4097-4df580a7c7f24fb678da",
+                  "file": "workflows/cross-role-integration.spec.ts",
+                  "line": 74,
+                  "column": 9
                 }
-              ],
-              "id": "9fff3bd384c0e5fef923-1a137050cbcdd8fa059c",
-              "file": "ui-08-team-availability.spec.ts",
-              "line": 21,
-              "column": 7
+              ]
             }
           ]
-        }
-      ]
-    },
-    {
-      "title": "ui-09-my-time-off.spec.ts",
-      "file": "ui-09-my-time-off.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
+        },
         {
-          "title": "My Time Off Page",
-          "file": "ui-09-my-time-off.spec.ts",
-          "line": 4,
+          "title": "Manager Actions → Staffer Views",
+          "file": "workflows/cross-role-integration.spec.ts",
+          "line": 103,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Preference Confirmation Flow",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 104,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "manager confirming preferences updates staffer status",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:32.636Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "f62cbf45c12f2c1c4097-805bffec74a4575867e1",
+                  "file": "workflows/cross-role-integration.spec.ts",
+                  "line": 105,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Schedule Assignment Flow",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 136,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "shifts assigned by manager are visible to staffer",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:32.636Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "f62cbf45c12f2c1c4097-3d7213ed286fa6a67e03",
+                  "file": "workflows/cross-role-integration.spec.ts",
+                  "line": 137,
+                  "column": 9
+                },
+                {
+                  "title": "manager schedule changes reflect in staffer view",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:32.636Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "f62cbf45c12f2c1c4097-09b4ef286ac4174a50f5",
+                  "file": "workflows/cross-role-integration.spec.ts",
+                  "line": 170,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Data Consistency Across Sessions",
+          "file": "workflows/cross-role-integration.spec.ts",
+          "line": 208,
           "column": 6,
           "specs": [
             {
-              "title": "loads time-off list and create button",
+              "title": "employee data is consistent between manager and staffer views",
               "ok": true,
               "tags": [],
               "tests": [
@@ -358,15 +1420,2603 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 4,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 8803,
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-09T06:34:39.695Z",
+                      "startTime": "2025-12-10T21:46:32.636Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f62cbf45c12f2c1c4097-2497675da5c1af9e2393",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 209,
+              "column": 7
+            },
+            {
+              "title": "conflict data is consistent in system",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:46:32.636Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f62cbf45c12f2c1c4097-30421c0963dfe9edc3de",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 234,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Workflow Handoff Points",
+          "file": "workflows/cross-role-integration.spec.ts",
+          "line": 250,
+          "column": 6,
+          "specs": [
+            {
+              "title": "complete preference → schedule workflow",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:46:32.636Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f62cbf45c12f2c1c4097-071bd737e9ab14ed6f3d",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 251,
+              "column": 7
+            },
+            {
+              "title": "complete time-off → schedule exclusion workflow",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:46:32.636Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f62cbf45c12f2c1c4097-679d70d802bd84ddf639",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 306,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Real-Time Data Sync",
+          "file": "workflows/cross-role-integration.spec.ts",
+          "line": 350,
+          "column": 6,
+          "specs": [
+            {
+              "title": "dashboard stats are current after actions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:46:32.636Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f62cbf45c12f2c1c4097-032f98a7e9584fad1572",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 351,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Multi-Bureau Data Visibility",
+          "file": "workflows/cross-role-integration.spec.ts",
+          "line": 380,
+          "column": 6,
+          "specs": [
+            {
+              "title": "manager sees both Milan and Rome data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:46:32.636Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f62cbf45c12f2c1c4097-2b35eedfec0f94558571",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 381,
+              "column": 7
+            },
+            {
+              "title": "staffer data is bureau-scoped",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:46:32.636Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f62cbf45c12f2c1c4097-19f5f3ab37e7da56b7e4",
+              "file": "workflows/cross-role-integration.spec.ts",
+              "line": 402,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "workflows/manager-workflow.spec.ts",
+      "file": "workflows/manager-workflow.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Manager Complete Workflow",
+          "file": "workflows/manager-workflow.spec.ts",
+          "line": 44,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Phase 1: Authentication & Dashboard Access",
+              "file": "workflows/manager-workflow.spec.ts",
+              "line": 45,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "admin/team-leader can login successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 11439,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:02.053Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-337ca2c298139f25205f",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 46,
+                  "column": 9
+                },
+                {
+                  "title": "admin sees full dashboard stats",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 5816,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:13.825Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-8f4192ac4d8330d2b7d2",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 53,
+                  "column": 9
+                },
+                {
+                  "title": "manager sees all navigation options",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "failed",
+                          "duration": 28304,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('link', { name: 'Team Availability' })\nExpected: visible\nTimeout: 20000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 20000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('link', { name: 'Team Availability' })\u001b[22m\n",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('link', { name: 'Team Availability' })\nExpected: visible\nTimeout: 20000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 20000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('link', { name: 'Team Availability' })\u001b[22m\n\n    at waitForDynamicNav (/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/manager-workflow.spec.ts:39:71)\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/manager-workflow.spec.ts:67:7",
+                            "location": {
+                              "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/manager-workflow.spec.ts",
+                              "column": 71,
+                              "line": 39
+                            },
+                            "snippet": "  37 |   // Wait for Team Availability link which only appears after role fetch\n  38 |   // This confirms the user profile API has returned and nav is rendered\n> 39 |   await expect(page.getByRole('link', { name: 'Team Availability' })).toBeVisible({\n     |                                                                       ^\n  40 |     timeout: 20000,\n  41 |   });\n  42 | }"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/manager-workflow.spec.ts",
+                                "column": 71,
+                                "line": 39
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('link', { name: 'Team Availability' })\nExpected: visible\nTimeout: 20000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 20000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('link', { name: 'Team Availability' })\u001b[22m\n\n\n  37 |   // Wait for Team Availability link which only appears after role fetch\n  38 |   // This confirms the user profile API has returned and nav is rendered\n> 39 |   await expect(page.getByRole('link', { name: 'Team Availability' })).toBeVisible({\n     |                                                                       ^\n  40 |     timeout: 20000,\n  41 |   });\n  42 | }\n    at waitForDynamicNav (/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/manager-workflow.spec.ts:39:71)\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/manager-workflow.spec.ts:67:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:19.648Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-manager-workflow-d4a71-sees-all-navigation-options-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-manager-workflow-d4a71-sees-all-navigation-options-chromium/video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-manager-workflow-d4a71-sees-all-navigation-options-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/manager-workflow.spec.ts",
+                            "column": 71,
+                            "line": 39
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-12f264f382c7d547cba2",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 63,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 2: Review Team Availability",
+              "file": "workflows/manager-workflow.spec.ts",
+              "line": 78,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Team Management page loads correctly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-723c9f2095ec02e02cc1",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 85,
+                  "column": 9
+                },
+                {
+                  "title": "displays stats cards for team preferences",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-f844ae85a2dc5715c3e9",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 94,
+                  "column": 9
+                },
+                {
+                  "title": "displays employee preferences table",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-0be7d4c0bfe88bcaef6c",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 106,
+                  "column": 9
+                },
+                {
+                  "title": "can filter employees by bureau",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-445017ebc1d2fd7fbd34",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 122,
+                  "column": 9
+                },
+                {
+                  "title": "can filter employees by status",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-7e0de45d28756101e2e5",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 144,
+                  "column": 9
+                },
+                {
+                  "title": "can search employees by name",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-84fdab5602a4a126509c",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 162,
+                  "column": 9
+                },
+                {
+                  "title": "can open edit preferences dialog",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-740dd1454cb070c2cadf",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 179,
+                  "column": 9
+                },
+                {
+                  "title": "can confirm individual preferences",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-516f8859250ad379f362",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 205,
+                  "column": 9
+                },
+                {
+                  "title": "can batch confirm all pending preferences",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-e98a8ebe6c2d9dc532dd",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 226,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 3: Review Team Time-Off",
+              "file": "workflows/manager-workflow.spec.ts",
+              "line": 247,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "can switch to Time Off tab",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-e15a359d204153932650",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 255,
+                  "column": 9
+                },
+                {
+                  "title": "displays team time-off entries",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-1d41b2e08c397d5f2db4",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 268,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 4: AI Schedule Generation",
+              "file": "workflows/manager-workflow.spec.ts",
+              "line": 286,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Generate Schedule button is visible",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-28fcb8faf08bcd075fc1",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 295,
+                  "column": 9
+                },
+                {
+                  "title": "can open Generate Schedule dialog",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-3c73100f3a22e4f642ed",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 301,
+                  "column": 9
+                },
+                {
+                  "title": "Generate Schedule dialog has configuration options",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-6593dde73fb8c5cd4efa",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 310,
+                  "column": 9
+                },
+                {
+                  "title": "can configure and start AI generation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-064a721d883f60cc14bb",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 329,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 5: Schedule Fine-Tuning",
+              "file": "workflows/manager-workflow.spec.ts",
+              "line": 359,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "can switch between schedule views",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-62a7107da69f1a2a82be",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 367,
+                  "column": 9
+                },
+                {
+                  "title": "can open Add Shift dialog",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-79d80f705f8960c01932",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 386,
+                  "column": 9
+                },
+                {
+                  "title": "drag and drop is available for shifts",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-3d1555c270981feaa40d",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 401,
+                  "column": 9
+                },
+                {
+                  "title": "can perform drag and drop shift move",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.014Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-5dbe7c3b6438e9e53746",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 413,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 6: Conflict Resolution",
+              "file": "workflows/manager-workflow.spec.ts",
+              "line": 433,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Conflicts page loads correctly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-f41250b6f2d030cbdf6a",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 441,
+                  "column": 9
+                },
+                {
+                  "title": "can filter conflicts by severity",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-a758987f09b822936d98",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 450,
+                  "column": 9
+                },
+                {
+                  "title": "can switch conflict tabs",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-baf6862d0e3f9bd753d7",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 465,
+                  "column": 9
+                },
+                {
+                  "title": "can resolve a conflict",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-8044998856193090ed64",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 477,
+                  "column": 9
+                },
+                {
+                  "title": "can acknowledge a conflict",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-9c4d1b6a9d3229446cb3",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 490,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 7: Employee Management",
+              "file": "workflows/manager-workflow.spec.ts",
+              "line": 504,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Employees page loads correctly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-87c1a49b00d892de1dde",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 512,
+                  "column": 9
+                },
+                {
+                  "title": "can search employees",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-96fd8e9122943706dd7b",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 517,
+                  "column": 9
+                },
+                {
+                  "title": "can filter by bureau",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-421c8b3d69e20ce02ced",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 525,
+                  "column": 9
+                },
+                {
+                  "title": "can navigate to employee detail",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-97bf53abeea741d5d60b",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 548,
+                  "column": 9
+                },
+                {
+                  "title": "Add Employee button is visible",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-6d5e39a84565542a435b",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 564,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 8: Complete Manager Workflow Journey",
+              "file": "workflows/manager-workflow.spec.ts",
+              "line": 570,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "complete manager journey: team review → schedule generation → conflicts → employees",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": -1,
+                          "parallelIndex": -1,
+                          "status": "skipped",
+                          "duration": 0,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.017Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "cc22fa4aac456f8e3873-1e560811de63871d2bf1",
+                  "file": "workflows/manager-workflow.spec.ts",
+                  "line": 571,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Manager API Integration",
+          "file": "workflows/manager-workflow.spec.ts",
+          "line": 621,
+          "column": 6,
+          "specs": [
+            {
+              "title": "manager has access to all management APIs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:46:48.017Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "cc22fa4aac456f8e3873-6631d15cd8117085a12e",
+              "file": "workflows/manager-workflow.spec.ts",
+              "line": 622,
+              "column": 7
+            },
+            {
+              "title": "manager can access conflict management APIs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:46:48.017Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "cc22fa4aac456f8e3873-2d47c7067d62d4ba3360",
+              "file": "workflows/manager-workflow.spec.ts",
+              "line": 636,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "workflows/staffer-workflow.spec.ts",
+      "file": "workflows/staffer-workflow.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Staffer Complete Workflow",
+          "file": "workflows/staffer-workflow.spec.ts",
+          "line": 18,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Phase 1: Authentication & Initial Access",
+              "file": "workflows/staffer-workflow.spec.ts",
+              "line": 19,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "staffer can login successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 10750,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:02.049Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-f89cdd7d129c152a5189",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 20,
+                  "column": 9
+                },
+                {
+                  "title": "staffer sees correct navigation options",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 8746,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:02.045Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-3179a5850c1caa5a08ea",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 28,
+                  "column": 9
+                },
+                {
+                  "title": "staffer can logout successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 8195,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:11.205Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-a31fd624047b6af6a2d7",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 39,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 2: Set Shift Preferences (My Availability)",
+              "file": "workflows/staffer-workflow.spec.ts",
+              "line": 48,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "My Availability page loads correctly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 6676,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:13.135Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-2ff546390486ad2314da",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 54,
+                  "column": 9
+                },
+                {
+                  "title": "can view preferred days options",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 11092,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:19.415Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-bb0c20018c95e42860da",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 72,
+                  "column": 9
+                },
+                {
+                  "title": "can view preferred shifts options",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 10709,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:19.827Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-7d8dd012ed59094b09b3",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 84,
+                  "column": 9
+                },
+                {
+                  "title": "can update and save preferences",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 10305,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:30.525Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-917c1dd70f6305f26fd5",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 123,
+                  "column": 9
+                },
+                {
+                  "title": "can set max shifts per week",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 8211,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:30.551Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-4982b068cfb47e157d72",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 149,
+                  "column": 9
+                },
+                {
+                  "title": "can add notes for special constraints",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 7073,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:33.447Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-69c742212d312ddfacdd",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 179,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 3: Time-Off Management (My Time Off)",
+              "file": "workflows/staffer-workflow.spec.ts",
+              "line": 195,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "My Time Off page loads correctly",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "timedOut",
+                          "duration": 30060,
+                          "error": {
+                            "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                            "stack": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:196:10",
+                            "location": {
+                              "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                              "column": 10,
+                              "line": 196
+                            },
+                            "snippet": "  194 |\n  195 |   test.describe('Phase 3: Time-Off Management (My Time Off)', () => {\n> 196 |     test.beforeEach(async ({ page }) => {\n      |          ^\n  197 |       await loginAsStaffer(page);\n  198 |       await page.goto('/dashboard/my-time-off');\n  199 |     });"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                                "column": 10,
+                                "line": 196
+                              },
+                              "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  194 |\n  195 |   test.describe('Phase 3: Time-Off Management (My Time Off)', () => {\n> 196 |     test.beforeEach(async ({ page }) => {\n      |          ^\n  197 |       await loginAsStaffer(page);\n  198 |       await page.goto('/dashboard/my-time-off');\n  199 |     });\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:196:10"
+                            },
+                            {
+                              "location": {
+                                "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/helpers/test-users.ts",
+                                "column": 14,
+                                "line": 76
+                              },
+                              "message": "Error: page.waitForURL: Test timeout of 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"/dashboard\" until \"load\"\n============================================================\n\n   at ../helpers/test-users.ts:76\n\n  74 |\n  75 |   // Wait for navigation to dashboard (increased timeout for slow responses)\n> 76 |   await page.waitForURL('/dashboard', { timeout: 30000 });\n     |              ^\n  77 |\n  78 |   // Verify token is stored\n  79 |   const token = await page.evaluate(() => localStorage.getItem('auth_token'));\n    at loginAs (/Users/lng1512/shiftsmart-v1/tests/e2e/helpers/test-users.ts:76:14)\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:197:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:38.786Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-787d9-me-Off-page-loads-correctly-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-787d9-me-Off-page-loads-correctly-chromium/video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-787d9-me-Off-page-loads-correctly-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                            "column": 10,
+                            "line": 196
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-266c0cabfc069b3f3477",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 201,
+                  "column": 9
+                },
+                {
+                  "title": "can open add time-off form",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 1,
+                          "status": "timedOut",
+                          "duration": 30094,
+                          "error": {
+                            "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                            "stack": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:196:10",
+                            "location": {
+                              "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                              "column": 10,
+                              "line": 196
+                            },
+                            "snippet": "  194 |\n  195 |   test.describe('Phase 3: Time-Off Management (My Time Off)', () => {\n> 196 |     test.beforeEach(async ({ page }) => {\n      |          ^\n  197 |       await loginAsStaffer(page);\n  198 |       await page.goto('/dashboard/my-time-off');\n  199 |     });"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                                "column": 10,
+                                "line": 196
+                              },
+                              "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  194 |\n  195 |   test.describe('Phase 3: Time-Off Management (My Time Off)', () => {\n> 196 |     test.beforeEach(async ({ page }) => {\n      |          ^\n  197 |       await loginAsStaffer(page);\n  198 |       await page.goto('/dashboard/my-time-off');\n  199 |     });\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:196:10"
+                            },
+                            {
+                              "location": {
+                                "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/helpers/test-users.ts",
+                                "column": 14,
+                                "line": 76
+                              },
+                              "message": "Error: page.waitForURL: Test timeout of 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"/dashboard\" until \"load\"\n============================================================\n\n   at ../helpers/test-users.ts:76\n\n  74 |\n  75 |   // Wait for navigation to dashboard (increased timeout for slow responses)\n> 76 |   await page.waitForURL('/dashboard', { timeout: 30000 });\n     |              ^\n  77 |\n  78 |   // Verify token is stored\n  79 |   const token = await page.evaluate(() => localStorage.getItem('auth_token'));\n    at loginAs (/Users/lng1512/shiftsmart-v1/tests/e2e/helpers/test-users.ts:76:14)\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:197:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:40.845Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-e9f04--can-open-add-time-off-form-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-e9f04--can-open-add-time-off-form-chromium/video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-e9f04--can-open-add-time-off-form-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                            "column": 10,
+                            "line": 196
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-1a9353f80c6321b3d279",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 210,
+                  "column": 9
+                },
+                {
+                  "title": "can create a time-off entry",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "timedOut",
+                          "duration": 30090,
+                          "error": {
+                            "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                            "stack": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:196:10",
+                            "location": {
+                              "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                              "column": 10,
+                              "line": 196
+                            },
+                            "snippet": "  194 |\n  195 |   test.describe('Phase 3: Time-Off Management (My Time Off)', () => {\n> 196 |     test.beforeEach(async ({ page }) => {\n      |          ^\n  197 |       await loginAsStaffer(page);\n  198 |       await page.goto('/dashboard/my-time-off');\n  199 |     });"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                                "column": 10,
+                                "line": 196
+                              },
+                              "message": "\u001b[31mTest timeout of 30000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n  194 |\n  195 |   test.describe('Phase 3: Time-Off Management (My Time Off)', () => {\n> 196 |     test.beforeEach(async ({ page }) => {\n      |          ^\n  197 |       await loginAsStaffer(page);\n  198 |       await page.goto('/dashboard/my-time-off');\n  199 |     });\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:196:10"
+                            },
+                            {
+                              "location": {
+                                "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/helpers/test-users.ts",
+                                "column": 14,
+                                "line": 76
+                              },
+                              "message": "Error: page.waitForURL: Test timeout of 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"/dashboard\" until \"load\"\n============================================================\n\n   at ../helpers/test-users.ts:76\n\n  74 |\n  75 |   // Wait for navigation to dashboard (increased timeout for slow responses)\n> 76 |   await page.waitForURL('/dashboard', { timeout: 30000 });\n     |              ^\n  77 |\n  78 |   // Verify token is stored\n  79 |   const token = await page.evaluate(() => localStorage.getItem('auth_token'));\n    at loginAs (/Users/lng1512/shiftsmart-v1/tests/e2e/helpers/test-users.ts:76:14)\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:197:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:40.847Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-086b4-can-create-a-time-off-entry-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-086b4-can-create-a-time-off-entry-chromium/video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-086b4-can-create-a-time-off-entry-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                            "column": 10,
+                            "line": 196
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-95de7b56d476a58a6ca5",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 222,
+                  "column": 9
+                },
+                {
+                  "title": "displays time-off entries in list",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 13904,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:46:48.764Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-35ec96a880efaed3a8f2",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 262,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 4: Schedule Viewing",
+              "file": "workflows/staffer-workflow.spec.ts",
+              "line": 290,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Schedule page loads correctly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 5783,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:02.874Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-c38d8c6958fd70900ae8",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 297,
+                  "column": 9
+                },
+                {
+                  "title": "can view different calendar views",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 17055,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:08.670Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-f85bf54973242168730b",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 304,
+                  "column": 9
+                },
+                {
+                  "title": "can navigate calendar dates",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 16950,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:09.886Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-12a2994d201054a1b478",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 322,
+                  "column": 9
+                },
+                {
+                  "title": "can filter to \"My Shifts\" toggle if available",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 21343,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:11.754Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-eb2daeba1a645e0f3380",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 334,
+                  "column": 9
+                },
+                {
+                  "title": "shift cards display correctly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 22285,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:11.753Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-8ec602fb5112347e76a7",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 349,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 5: Settings Access",
+              "file": "workflows/staffer-workflow.spec.ts",
+              "line": 366,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Settings page loads correctly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 9596,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:25.739Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-ae7c43375ad3e67a83ab",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 372,
+                  "column": 9
+                },
+                {
+                  "title": "can view profile information",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 9224,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:27.005Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-5aa60e93beaf930e38e0",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 376,
+                  "column": 9
+                },
+                {
+                  "title": "can edit profile information",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 4889,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:33.339Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-dc5232752fc43f32755b",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 403,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Phase 6: Complete Workflow Journey",
+              "file": "workflows/staffer-workflow.spec.ts",
+              "line": 414,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "complete staffer journey: login → preferences → time-off → schedule → logout",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 4,
+                          "status": "failed",
+                          "duration": 9849,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected: \u001b[32m\"http://localhost:3000/dashboard/my-\u001b[7mtime-off\u001b[27m\"\u001b[39m\nReceived: \u001b[31m\"http://localhost:3000/dashboard/my-\u001b[7mavailability\u001b[27m\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"http://localhost:3000/dashboard/my-availability\"\u001b[22m\n",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected: \u001b[32m\"http://localhost:3000/dashboard/my-\u001b[7mtime-off\u001b[27m\"\u001b[39m\nReceived: \u001b[31m\"http://localhost:3000/dashboard/my-\u001b[7mavailability\u001b[27m\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"http://localhost:3000/dashboard/my-availability\"\u001b[22m\n\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:429:26",
+                            "location": {
+                              "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                              "column": 26,
+                              "line": 429
+                            },
+                            "snippet": "  427 |       // Step 3: Navigate to My Time Off (use role selector for precision)\n  428 |       await page.getByRole('link', { name: 'My Time Off' }).click();\n> 429 |       await expect(page).toHaveURL('/dashboard/my-time-off');\n      |                          ^\n  430 |       await page.waitForTimeout(500);\n  431 |\n  432 |       // Step 4: Navigate to Schedule"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                                "column": 26,
+                                "line": 429
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected: \u001b[32m\"http://localhost:3000/dashboard/my-\u001b[7mtime-off\u001b[27m\"\u001b[39m\nReceived: \u001b[31m\"http://localhost:3000/dashboard/my-\u001b[7mavailability\u001b[27m\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"http://localhost:3000/dashboard/my-availability\"\u001b[22m\n\n\n  427 |       // Step 3: Navigate to My Time Off (use role selector for precision)\n  428 |       await page.getByRole('link', { name: 'My Time Off' }).click();\n> 429 |       await expect(page).toHaveURL('/dashboard/my-time-off');\n      |                          ^\n  430 |       await page.waitForTimeout(500);\n  431 |\n  432 |       // Step 4: Navigate to Schedule\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts:429:26"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-10T21:47:34.285Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-c98e0-ime-off-→-schedule-→-logout-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-c98e0-ime-off-→-schedule-→-logout-chromium/video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/workflows-staffer-workflow-c98e0-ime-off-→-schedule-→-logout-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/workflows/staffer-workflow.spec.ts",
+                            "column": 26,
+                            "line": 429
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "b93ec8c7f302e64b3661-8c0828916161f7f9c4c5",
+                  "file": "workflows/staffer-workflow.spec.ts",
+                  "line": 415,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Staffer API Integration",
+          "file": "workflows/staffer-workflow.spec.ts",
+          "line": 453,
+          "column": 6,
+          "specs": [
+            {
+              "title": "staffer API calls include auth token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 13080,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-10T21:47:35.354Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -374,104 +4024,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "1497f59f20c5d01fa7f8-dcc3df845e4b5524d864",
-              "file": "ui-09-my-time-off.spec.ts",
-              "line": 10,
+              "id": "b93ec8c7f302e64b3661-9ce62d42e048177fef73",
+              "file": "workflows/staffer-workflow.spec.ts",
+              "line": 454,
               "column": 7
             },
             {
-              "title": "allows creating and deleting a time-off entry (when migration is applied)",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "failed",
-                      "duration": 14119,
-                      "error": {
-                        "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Save|Create/i }).first()\u001b[22m\n",
-                        "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Save|Create/i }).first()\u001b[22m\n\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-09-my-time-off.spec.ts:42:24",
-                        "location": {
-                          "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-09-my-time-off.spec.ts",
-                          "column": 24,
-                          "line": 42
-                        },
-                        "snippet": "  40 |     // Submit\n  41 |     const submitButton = page.getByRole('button', { name: /Save|Create/i }).first();\n> 42 |     await submitButton.click();\n     |                        ^\n  43 |\n  44 |     // Expect at least one row in the list\n  45 |     const rows = page.locator('tbody tr');"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-09-my-time-off.spec.ts",
-                            "column": 24,
-                            "line": 42
-                          },
-                          "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Save|Create/i }).first()\u001b[22m\n\n\n  40 |     // Submit\n  41 |     const submitButton = page.getByRole('button', { name: /Save|Create/i }).first();\n> 42 |     await submitButton.click();\n     |                        ^\n  43 |\n  44 |     // Expect at least one row in the list\n  45 |     const rows = page.locator('tbody tr');\n    at /Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-09-my-time-off.spec.ts:42:24"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-09T06:34:46.881Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-09-my-time-off-My-Time--aea1e--when-migration-is-applied--chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-09-my-time-off-My-Time--aea1e--when-migration-is-applied--chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/lng1512/shiftsmart-v1/tests/e2e/test-results/ui-09-my-time-off-My-Time--aea1e--when-migration-is-applied--chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/lng1512/shiftsmart-v1/tests/e2e/tests/ui-09-my-time-off.spec.ts",
-                        "column": 24,
-                        "line": 42
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "1497f59f20c5d01fa7f8-eecc4be2423a11e549b7",
-              "file": "ui-09-my-time-off.spec.ts",
-              "line": 15,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "ui-10-chatbot.spec.ts",
-      "file": "ui-10-chatbot.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "ShiftSmart Chatbot",
-          "file": "ui-10-chatbot.spec.ts",
-          "line": 4,
-          "column": 6,
-          "specs": [
-            {
-              "title": "opens chatbot and sends a basic question",
+              "title": "staffer can fetch their own employee data",
               "ok": true,
               "tags": [],
               "tests": [
@@ -483,15 +4042,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
+                      "workerIndex": 7,
+                      "parallelIndex": 3,
                       "status": "passed",
-                      "duration": 3933,
+                      "duration": 13341,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-12-09T06:34:46.884Z",
+                      "startTime": "2025-12-10T21:47:36.247Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -499,9 +4058,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "a6c3400cce9b07b5e12b-ffc6efc02d1beb346975",
-              "file": "ui-10-chatbot.spec.ts",
-              "line": 10,
+              "id": "b93ec8c7f302e64b3661-857c6b8065943306db99",
+              "file": "workflows/staffer-workflow.spec.ts",
+              "line": 467,
               "column": 7
             }
           ]
@@ -511,11 +4070,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-12-09T06:34:37.888Z",
-    "duration": 23180.908000000003,
-    "expected": 3,
-    "skipped": 2,
-    "unexpected": 2,
+    "startTime": "2025-12-10T21:46:00.446Z",
+    "duration": 237992.999,
+    "expected": 47,
+    "skipped": 43,
+    "unexpected": 7,
     "flaky": 0
   }
 }

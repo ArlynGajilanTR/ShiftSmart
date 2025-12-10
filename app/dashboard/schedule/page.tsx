@@ -7,9 +7,11 @@ import {
   DragOverlay,
   type DragStartEvent,
   PointerSensor,
+  KeyboardSensor,
   useSensor,
   useSensors,
   closestCenter,
+  type KeyboardCoordinateGetter,
 } from '@dnd-kit/core';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 
@@ -133,8 +135,17 @@ function DraggableShift({
         style={style}
         {...listeners}
         {...attributes}
-        className={`bg-primary/10 border border-primary/20 rounded px-1.5 py-1 text-[10px] cursor-grab active:cursor-grabbing hover:bg-primary/20 hover:shadow-sm ${settleClass}`}
+        data-testid="draggable-shift"
+        data-shift-id={shift.id}
+        tabIndex={0}
+        role="button"
+        aria-roledescription="draggable shift"
+        aria-describedby={`shift-${shift.id}-instructions`}
+        className={`bg-primary/10 border border-primary/20 rounded px-1.5 py-1 text-[10px] cursor-grab active:cursor-grabbing hover:bg-primary/20 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${settleClass}`}
       >
+        <span id={`shift-${shift.id}-instructions`} className="sr-only">
+          Press Space or Enter to pick up. Use arrow keys to move. Press Space or Enter to drop.
+        </span>
         <div className="flex items-center gap-1">
           <GripVertical className="h-2 w-2 text-muted-foreground flex-shrink-0" />
           <div className="flex-1 min-w-0">
@@ -154,8 +165,17 @@ function DraggableShift({
         style={style}
         {...listeners}
         {...attributes}
-        className={`bg-white border-l-4 border-l-[#FF6600] rounded-lg p-4 shadow-sm hover:shadow-md hover:scale-[1.01] cursor-grab active:cursor-grabbing ${settleClass}`}
+        data-testid="draggable-shift"
+        data-shift-id={shift.id}
+        tabIndex={0}
+        role="button"
+        aria-roledescription="draggable shift"
+        aria-describedby={`shift-${shift.id}-instructions`}
+        className={`bg-white border-l-4 border-l-[#FF6600] rounded-lg p-4 shadow-sm hover:shadow-md hover:scale-[1.01] cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${settleClass}`}
       >
+        <span id={`shift-${shift.id}-instructions`} className="sr-only">
+          Press Space or Enter to pick up. Use arrow keys to move. Press Space or Enter to drop.
+        </span>
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-2">
             <GripVertical className="h-5 w-5 text-muted-foreground mt-0.5 opacity-50 hover:opacity-100 transition-opacity" />
@@ -192,8 +212,17 @@ function DraggableShift({
       style={style}
       {...listeners}
       {...attributes}
-      className={`bg-primary/10 border border-primary/20 rounded p-2 text-xs cursor-grab active:cursor-grabbing hover:bg-primary/20 hover:shadow-md group ${settleClass}`}
+      data-testid="draggable-shift"
+      data-shift-id={shift.id}
+      tabIndex={0}
+      role="button"
+      aria-roledescription="draggable shift"
+      aria-describedby={`shift-${shift.id}-instructions`}
+      className={`bg-primary/10 border border-primary/20 rounded p-2 text-xs cursor-grab active:cursor-grabbing hover:bg-primary/20 hover:shadow-md group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${settleClass}`}
     >
+      <span id={`shift-${shift.id}-instructions`} className="sr-only">
+        Press Space or Enter to pick up. Use arrow keys to move. Press Space or Enter to drop.
+      </span>
       <div className="flex items-start gap-1">
         <GripVertical className="h-3 w-3 text-muted-foreground mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="flex-1 min-w-0">
@@ -227,6 +256,8 @@ function DroppableDay({
   return (
     <div
       ref={setNodeRef}
+      data-testid="droppable-day"
+      data-date={format(date, 'yyyy-MM-dd')}
       className={`border rounded-lg p-3 min-h-[200px] transition-all ${
         isOver ? 'bg-primary/5 border-primary ring-2 ring-primary/20' : ''
       } ${isActive ? 'ring-1 ring-primary/30' : ''}`}
@@ -259,9 +290,52 @@ function DroppableMonthDay({
   return (
     <div
       ref={setNodeRef}
+      data-testid="droppable-day"
+      data-date={format(day, 'yyyy-MM-dd')}
       className={`border rounded-lg p-2 min-h-[120px] transition-all ${
         !isCurrentMonth ? 'bg-muted/20 text-muted-foreground' : ''
       } ${isOver ? 'bg-primary/5 border-primary ring-2 ring-primary/20' : ''}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+// Time slot definitions for Today view
+const TIME_SLOTS = {
+  morning: { label: 'Morning', start: '06:00', end: '12:00', icon: Sunrise },
+  afternoon: { label: 'Afternoon', start: '12:00', end: '18:00', icon: Sun },
+  evening: { label: 'Evening/Night', start: '18:00', end: '06:00', icon: Moon },
+} as const;
+
+type TimeSlotKey = keyof typeof TIME_SLOTS;
+
+function DroppableTimeSlot({
+  date,
+  slot,
+  children,
+}: {
+  date: Date;
+  slot: TimeSlotKey;
+  children: React.ReactNode;
+}) {
+  const slotConfig = TIME_SLOTS[slot];
+  const { setNodeRef, isOver } = useDroppable({
+    id: `timeslot-${format(date, 'yyyy-MM-dd')}-${slot}`,
+    data: {
+      date,
+      slot,
+      startTime: slotConfig.start,
+      endTime: slotConfig.end,
+    },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`rounded-lg p-4 transition-all ${
+        isOver ? 'bg-primary/10 ring-2 ring-primary/30 scale-[1.02]' : 'bg-gray-50'
+      }`}
     >
       {children}
     </div>
@@ -277,6 +351,25 @@ export default function SchedulePage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [currentQuarter, setCurrentQuarter] = useState(new Date());
   const [activeShift, setActiveShift] = useState<any>(null);
+
+  // State for announcements (accessibility)
+  const [announcement, setAnnouncement] = useState('');
+
+  // Move history for undo functionality
+  interface MoveHistoryEntry {
+    shiftId: string;
+    previousDate: string;
+    previousStartTime: string;
+    previousEndTime: string;
+    newDate: string;
+    newStartTime: string;
+    newEndTime: string;
+    timestamp: number;
+  }
+
+  const [moveHistory, setMoveHistory] = useState<MoveHistoryEntry[]>([]);
+  const MAX_HISTORY = 10; // Keep last 10 moves
+  const [isUndoing, setIsUndoing] = useState(false);
 
   // AI Schedule Generation state
   const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
@@ -312,6 +405,16 @@ export default function SchedulePage() {
     conflicts: any[];
   } | null>(null);
   const [isForceMoving, setIsForceMoving] = useState(false);
+
+  // State for time change confirmation
+  const [isTimeChangeDialogOpen, setIsTimeChangeDialogOpen] = useState(false);
+  const [pendingTimeChange, setPendingTimeChange] = useState<{
+    shiftId: string;
+    shift: any;
+    newDate: string;
+    suggestedStartTime: string;
+    suggestedEndTime: string;
+  } | null>(null);
 
   // Track recently moved shifts for settle animation
   const [recentlyMovedShiftId, setRecentlyMovedShiftId] = useState<string | null>(null);
@@ -856,11 +959,33 @@ export default function SchedulePage() {
     setAiConfigured(null); // Reset AI check for next time
   };
 
+  // Custom keyboard coordinate getter for grid navigation
+  const customKeyboardCoordinates: KeyboardCoordinateGetter = (event, { currentCoordinates }) => {
+    const GRID_CELL_WIDTH = 150; // Approximate day column width
+    const GRID_CELL_HEIGHT = 50; // Approximate shift height
+
+    switch (event.code) {
+      case 'ArrowRight':
+        return { ...currentCoordinates, x: currentCoordinates.x + GRID_CELL_WIDTH };
+      case 'ArrowLeft':
+        return { ...currentCoordinates, x: currentCoordinates.x - GRID_CELL_WIDTH };
+      case 'ArrowDown':
+        return { ...currentCoordinates, y: currentCoordinates.y + GRID_CELL_HEIGHT };
+      case 'ArrowUp':
+        return { ...currentCoordinates, y: currentCoordinates.y - GRID_CELL_HEIGHT };
+      default:
+        return undefined;
+    }
+  };
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
       },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: customKeyboardCoordinates,
     })
   );
 
@@ -892,6 +1017,7 @@ export default function SchedulePage() {
   const handleDragStart = (event: DragStartEvent) => {
     const shift = event.active.data.current?.shift;
     setActiveShift(shift);
+    setAnnouncement(`Picked up shift for ${shift?.employee}. Use arrow keys to move.`);
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -902,6 +1028,93 @@ export default function SchedulePage() {
 
     const shiftId = active.data.current?.shift?.id;
     const shift = active.data.current?.shift;
+
+    // Check if dropped on a time slot
+    const isTimeSlotDrop = over.id.toString().startsWith('timeslot-');
+
+    if (isTimeSlotDrop) {
+      const newDate = over.data.current?.date;
+      const newStartTime = over.data.current?.startTime;
+      const newEndTime = over.data.current?.endTime;
+
+      if (shiftId && newDate) {
+        const formattedDate = format(newDate, 'yyyy-MM-dd');
+
+        try {
+          await api.shifts.move(shiftId, formattedDate, newStartTime, newEndTime);
+
+          // Record move for undo
+          setMoveHistory((prev) => {
+            const entry: MoveHistoryEntry = {
+              shiftId: String(shiftId),
+              previousDate: format(shift.date, 'yyyy-MM-dd'),
+              previousStartTime: shift.startTime,
+              previousEndTime: shift.endTime,
+              newDate: formattedDate,
+              newStartTime: newStartTime,
+              newEndTime: newEndTime,
+              timestamp: Date.now(),
+            };
+            return [entry, ...prev].slice(0, MAX_HISTORY);
+          });
+
+          setShifts((prevShifts) =>
+            prevShifts.map((s) =>
+              String(s.id) === String(shiftId)
+                ? { ...s, date: new Date(newDate), startTime: newStartTime, endTime: newEndTime }
+                : s
+            )
+          );
+
+          setRecentlyMovedShiftId(String(shiftId));
+          setTimeout(() => setRecentlyMovedShiftId(null), 2500);
+
+          setAnnouncement(`Shift dropped on ${formattedDate}`);
+
+          toast({
+            title: 'Shift moved',
+            description: `Shift moved to ${formattedDate} (${newStartTime} - ${newEndTime})`,
+          });
+        } catch (error: any) {
+          // Handle conflicts same as regular drops
+          if (
+            error.message?.includes('conflicts') ||
+            error.message?.includes('Move would create')
+          ) {
+            try {
+              const validationResult = await api.shifts.validateMove(
+                shiftId,
+                formattedDate,
+                newStartTime,
+                newEndTime
+              );
+
+              if (!validationResult.valid && validationResult.conflicts?.length > 0) {
+                setPendingMove({
+                  shiftId,
+                  newDate: formattedDate,
+                  shift,
+                  conflicts: validationResult.conflicts,
+                });
+                setIsConflictDialogOpen(true);
+                return;
+              }
+            } catch (validationError) {
+              console.error('Validation error:', validationError);
+            }
+          }
+
+          toast({
+            title: 'Failed to move shift',
+            description: error.message || 'An error occurred while moving the shift',
+            variant: 'destructive',
+          });
+        }
+      }
+      return;
+    }
+
+    // Existing day drop logic continues...
     const newDate = over.data.current?.date;
 
     if (shiftId && newDate) {
@@ -910,6 +1123,21 @@ export default function SchedulePage() {
       try {
         // Attempt to move via API (will return 409 if conflicts exist)
         await api.shifts.move(shiftId, formattedDate);
+
+        // Record move for undo
+        setMoveHistory((prev) => {
+          const entry: MoveHistoryEntry = {
+            shiftId: String(shiftId),
+            previousDate: format(shift.date, 'yyyy-MM-dd'),
+            previousStartTime: shift.startTime,
+            previousEndTime: shift.endTime,
+            newDate: formattedDate,
+            newStartTime: shift.startTime,
+            newEndTime: shift.endTime,
+            timestamp: Date.now(),
+          };
+          return [entry, ...prev].slice(0, MAX_HISTORY);
+        });
 
         // Success - update local state
         setShifts((prevShifts) =>
@@ -921,6 +1149,8 @@ export default function SchedulePage() {
         // Trigger settle animation
         setRecentlyMovedShiftId(String(shiftId));
         setTimeout(() => setRecentlyMovedShiftId(null), 2500); // Clear after animation
+
+        setAnnouncement(`Shift dropped on ${formattedDate}`);
 
         toast({
           title: 'Shift moved',
@@ -1034,6 +1264,161 @@ export default function SchedulePage() {
     });
   };
 
+  // Handle undo functionality
+  const handleUndo = async () => {
+    if (moveHistory.length === 0 || isUndoing) return;
+
+    const lastMove = moveHistory[0];
+    setIsUndoing(true);
+
+    try {
+      await api.shifts.move(
+        lastMove.shiftId,
+        lastMove.previousDate,
+        lastMove.previousStartTime,
+        lastMove.previousEndTime,
+        true // force to avoid conflict checks on undo
+      );
+
+      // Update local state
+      setShifts((prevShifts) =>
+        prevShifts.map((s) =>
+          String(s.id) === lastMove.shiftId
+            ? {
+                ...s,
+                date: new Date(lastMove.previousDate),
+                startTime: lastMove.previousStartTime,
+                endTime: lastMove.previousEndTime,
+              }
+            : s
+        )
+      );
+
+      // Remove from history
+      setMoveHistory((prev) => prev.slice(1));
+
+      // Trigger animation
+      setRecentlyMovedShiftId(lastMove.shiftId);
+      setTimeout(() => setRecentlyMovedShiftId(null), 2500);
+
+      toast({
+        title: 'Undo successful',
+        description: 'Shift returned to previous position',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Undo failed',
+        description: error.message || 'Could not undo the last move',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUndoing(false);
+    }
+  };
+
+  // Keyboard shortcut for undo (Ctrl/Cmd + Z)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [moveHistory, isUndoing]);
+
+  // Handle time change confirmation
+  const handleConfirmTimeChange = async (updateTimes: boolean) => {
+    if (!pendingTimeChange) return;
+
+    const { shiftId, shift, newDate, suggestedStartTime, suggestedEndTime } = pendingTimeChange;
+
+    try {
+      await api.shifts.move(
+        shiftId,
+        newDate,
+        updateTimes ? suggestedStartTime : shift.startTime,
+        updateTimes ? suggestedEndTime : shift.endTime
+      );
+
+      // Record move for undo
+      setMoveHistory((prev) => {
+        const entry: MoveHistoryEntry = {
+          shiftId: String(shiftId),
+          previousDate: format(shift.date, 'yyyy-MM-dd'),
+          previousStartTime: shift.startTime,
+          previousEndTime: shift.endTime,
+          newDate: newDate,
+          newStartTime: updateTimes ? suggestedStartTime : shift.startTime,
+          newEndTime: updateTimes ? suggestedEndTime : shift.endTime,
+          timestamp: Date.now(),
+        };
+        return [entry, ...prev].slice(0, MAX_HISTORY);
+      });
+
+      setShifts((prevShifts) =>
+        prevShifts.map((s) =>
+          String(s.id) === String(shiftId)
+            ? {
+                ...s,
+                date: new Date(newDate),
+                startTime: updateTimes ? suggestedStartTime : shift.startTime,
+                endTime: updateTimes ? suggestedEndTime : shift.endTime,
+              }
+            : s
+        )
+      );
+
+      setRecentlyMovedShiftId(String(shiftId));
+      setTimeout(() => setRecentlyMovedShiftId(null), 2500);
+
+      toast({
+        title: 'Shift moved',
+        description: updateTimes
+          ? `Moved to ${newDate} (${suggestedStartTime} - ${suggestedEndTime})`
+          : `Moved to ${newDate}`,
+      });
+    } catch (error: any) {
+      // Handle conflicts
+      if (error.message?.includes('conflicts') || error.message?.includes('Move would create')) {
+        try {
+          const validationResult = await api.shifts.validateMove(
+            shiftId,
+            newDate,
+            updateTimes ? suggestedStartTime : shift.startTime,
+            updateTimes ? suggestedEndTime : shift.endTime
+          );
+
+          if (!validationResult.valid && validationResult.conflicts?.length > 0) {
+            setPendingMove({
+              shiftId,
+              newDate,
+              shift,
+              conflicts: validationResult.conflicts,
+            });
+            setIsConflictDialogOpen(true);
+            setIsTimeChangeDialogOpen(false);
+            setPendingTimeChange(null);
+            return;
+          }
+        } catch (validationError) {
+          console.error('Validation error:', validationError);
+        }
+      }
+
+      toast({
+        title: 'Failed to move shift',
+        description: error.message || 'An error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsTimeChangeDialogOpen(false);
+      setPendingTimeChange(null);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -1075,6 +1460,23 @@ export default function SchedulePage() {
               <Button variant="outline" onClick={() => setIsGenerateDialogOpen(true)}>
                 <Sparkles className="mr-2 h-4 w-4" />
                 Generate Schedule
+              </Button>
+            )}
+            {moveHistory.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleUndo}
+                disabled={isUndoing}
+                className="gap-2"
+              >
+                <RotateCcw className={`h-4 w-4 ${isUndoing ? 'animate-spin' : ''}`} />
+                Undo
+                {moveHistory.length > 1 && (
+                  <Badge variant="secondary" className="ml-1 h-5 px-1.5">
+                    {moveHistory.length}
+                  </Badge>
+                )}
               </Button>
             )}
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -1580,21 +1982,23 @@ export default function SchedulePage() {
                         title,
                         shiftList,
                         icon: Icon,
+                        slot,
+                        date,
                       }: {
                         title: string;
                         shiftList: typeof todayShifts;
                         icon: React.ComponentType<{ className?: string }>;
+                        slot: TimeSlotKey;
+                        date: Date;
                       }) => (
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2">
+                        <DroppableTimeSlot date={date} slot={slot}>
+                          <div className="flex items-center gap-2 mb-3">
                             <Icon className="h-5 w-5 text-[#FF6600]" />
-                            <h4 className="font-bold text-gray-700">{title}</h4>
-                            <Badge variant="outline" className="ml-auto">
-                              {shiftList.length} shift{shiftList.length !== 1 ? 's' : ''}
-                            </Badge>
+                            <h3 className="font-semibold">{title}</h3>
+                            <Badge variant="secondary">{shiftList.length}</Badge>
                           </div>
                           {shiftList.length > 0 ? (
-                            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                            <div className="space-y-2">
                               {shiftList.map((shift) => (
                                 <DraggableShift
                                   key={shift.id}
@@ -1605,11 +2009,11 @@ export default function SchedulePage() {
                               ))}
                             </div>
                           ) : (
-                            <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-lg">
-                              No shifts scheduled
+                            <div className="text-center py-4 text-gray-500 bg-white/50 rounded-lg border border-dashed">
+                              Drop shifts here
                             </div>
                           )}
-                        </div>
+                        </DroppableTimeSlot>
                       );
 
                       if (todayShifts.length === 0) {
@@ -1637,16 +2041,22 @@ export default function SchedulePage() {
                             title="Morning (6AM - 12PM)"
                             shiftList={morningShifts}
                             icon={Sunrise}
+                            slot="morning"
+                            date={currentDay}
                           />
                           <TimeSlotSection
                             title="Afternoon (12PM - 6PM)"
                             shiftList={afternoonShifts}
                             icon={Sun}
+                            slot="afternoon"
+                            date={currentDay}
                           />
                           <TimeSlotSection
                             title="Evening/Night (6PM - 6AM)"
                             shiftList={eveningShifts}
                             icon={Moon}
+                            slot="evening"
+                            date={currentDay}
                           />
                         </div>
                       );
@@ -2074,6 +2484,11 @@ export default function SchedulePage() {
           ) : null}
         </DragOverlay>
 
+        {/* ARIA live region for screen readers */}
+        <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+          {announcement}
+        </div>
+
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <AlertDialogContent>
@@ -2211,6 +2626,62 @@ export default function SchedulePage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Time Change Confirmation Dialog */}
+        <Dialog open={isTimeChangeDialogOpen} onOpenChange={setIsTimeChangeDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Adjust Shift Time?</DialogTitle>
+              <DialogDescription>
+                You moved this shift to {pendingTimeChange?.newDate}. Would you like to adjust the
+                times?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Start Time</Label>
+                  <Input
+                    type="time"
+                    value={pendingTimeChange?.suggestedStartTime || ''}
+                    onChange={(e) =>
+                      setPendingTimeChange((prev) =>
+                        prev ? { ...prev, suggestedStartTime: e.target.value } : null
+                      )
+                    }
+                  />
+                </div>
+                <div>
+                  <Label>End Time</Label>
+                  <Input
+                    type="time"
+                    value={pendingTimeChange?.suggestedEndTime || ''}
+                    onChange={(e) =>
+                      setPendingTimeChange((prev) =>
+                        prev ? { ...prev, suggestedEndTime: e.target.value } : null
+                      )
+                    }
+                  />
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Original time: {pendingTimeChange?.shift?.startTime} -{' '}
+                {pendingTimeChange?.shift?.endTime}
+              </p>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  handleConfirmTimeChange(false);
+                }}
+              >
+                Keep Original Times
+              </Button>
+              <Button onClick={() => handleConfirmTimeChange(true)}>Update Times</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* DEV ONLY: Reset Schedule Confirmation Dialog */}
         {isLocalhost && (
