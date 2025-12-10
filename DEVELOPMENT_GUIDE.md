@@ -1,7 +1,7 @@
 # ShiftSmart Development Guide
 
 **Version:** 1.4.6  
-**Last Updated:** December 5, 2025  
+**Last Updated:** December 10, 2025  
 **Database:** ShiftSmart-v2 (Supabase, us-west-2)
 
 ---
@@ -654,8 +654,12 @@ npm run test:debug
 
 **Q: Where are the test credentials?**
 
-- **Admin:** arlyn.gajilan@thomsonreuters.com / `testtest`
-- See README.md "Test Credentials" section for other accounts
+| Account                                  | Password   |
+| ---------------------------------------- | ---------- |
+| arlyn.gajilan@thomsonreuters.com (Admin) | `testtest` |
+| All other team members                   | `changeme` |
+
+See README.md "Test Credentials" section for more details
 
 **Q: How do I add a new test?**
 
@@ -705,7 +709,7 @@ For questions or issues, see documentation in `/docs` or check test examples.
 
 ---
 
-**Last Updated:** December 5, 2025  
+**Last Updated:** December 10, 2025  
 **Version:** 1.4.6  
 **Database:** ShiftSmart-v2 (Supabase)  
 **Maintained by:** Reuters Breaking News Team

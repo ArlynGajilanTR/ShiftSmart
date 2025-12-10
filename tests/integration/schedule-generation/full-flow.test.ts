@@ -489,9 +489,9 @@ describe('Schedule Generation - Full Flow Integration', () => {
       expect(generateResult.success).toBe(true);
 
       // Now save it
-      // Mock bureau lookup
+      // Mock bureau lookup (uses code for lookup)
       mockSupabase.single.mockResolvedValueOnce({
-        data: { id: 'milan-bureau-id', name: 'Milan' },
+        data: { id: 'milan-bureau-id', code: 'ITA-MILAN', name: 'Milan' },
         error: null,
       });
 

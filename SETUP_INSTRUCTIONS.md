@@ -31,11 +31,11 @@ The database has been configured with:
   - 8 Breaking News team members (3 Senior + 5 Correspondents)
 - **Rome Bureau** (ITA-ROME) - Europe/Rome timezone
   - 8 Breaking News team members (1 Editor + 1 Admin + 3 Senior + 3 Correspondents)
-- **Admin Account:**
-  - **Email:** arlyn.gajilan@thomsonreuters.com
-  - **Password:** testtest
-  - **Role:** admin (full access to all features)
-  - **Shift Role:** editor (highest scheduling permissions)
+- **Test Credentials:**
+  | Account | Password |
+  |---------|----------|
+  | arlyn.gajilan@thomsonreuters.com (Admin) | `testtest` |
+  | All other team members | `changeme` |
 - **Shift Preferences:** All 16 team members have preferences configured
 
 ### Step 2: Login to the App
@@ -50,7 +50,7 @@ The database has been configured with:
 
 **Other Team Members:**
 
-You can also login as any Breaking News team member:
+You can also login as any Breaking News team member (password: `changeme`):
 
 | Name              | Email                                | Bureau | Role             |
 | ----------------- | ------------------------------------ | ------ | ---------------- |
@@ -58,7 +58,7 @@ You can also login as any Breaking News team member:
 | Gianluca Semeraro | gianluca.semeraro@thomsonreuters.com | Milan  | Senior           |
 | Giulia Segreti    | giulia.segreti@thomsonreuters.com    | Rome   | Senior           |
 
-> Note: Team members need passwords set before they can login.
+> All team members use password `changeme` (except admin who uses `testtest`).
 
 ### Step 4: Access Dashboard
 
@@ -151,4 +151,4 @@ For MVP, all users are on the **Breaking News** team. Team info is stored in the
 | Milan  | ITA-MILAN | 8       | 3       | 5              | 0         |
 | Rome   | ITA-ROME  | 8       | 3       | 3              | 1 + Admin |
 
-_Last Updated: December 2, 2025_
+_Last Updated: December 10, 2025_

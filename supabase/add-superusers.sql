@@ -1,6 +1,7 @@
 -- Add Rob Lang and Rafal Nowak as superusers
 -- Both users have admin role with full access
--- Password: testtest (same hash as dev admin)
+-- Password: changeme (standard password for non-primary admin users)
+-- Updated: December 10, 2025
 
 DO $$
 DECLARE
@@ -35,7 +36,7 @@ BEGIN
     'Breaking News',
     'active',
     'admin',
-    '$2b$10$t17jXItvi.efFh/LvBn8MeRXPSDxQOPqVTLzLGgFM9s8DH2zPviIC'
+    '$2a$10$uXoJ.lZEy7GquXNml8sW0O9xUNlPCBF0eqrEA0/FLJepOYzWCEhB.'
   ) ON CONFLICT (email) DO UPDATE SET
     password_hash = EXCLUDED.password_hash,
     role = 'admin',
@@ -47,7 +48,7 @@ BEGIN
 
   RAISE NOTICE '✓ Rob Lang created successfully!';
   RAISE NOTICE 'Email: rob.lang@thomsonreuters.com';
-  RAISE NOTICE 'Password: testtest';
+  RAISE NOTICE 'Password: changeme';
   RAISE NOTICE 'Role: admin (full access)';
 
   -- ========================================
@@ -72,7 +73,7 @@ BEGIN
     'Breaking News',
     'active',
     'admin',
-    '$2b$10$t17jXItvi.efFh/LvBn8MeRXPSDxQOPqVTLzLGgFM9s8DH2zPviIC'
+    '$2a$10$uXoJ.lZEy7GquXNml8sW0O9xUNlPCBF0eqrEA0/FLJepOYzWCEhB.'
   ) ON CONFLICT (email) DO UPDATE SET
     password_hash = EXCLUDED.password_hash,
     role = 'admin',
@@ -84,7 +85,7 @@ BEGIN
 
   RAISE NOTICE '✓ Rafal Wojciech Nowak created successfully!';
   RAISE NOTICE 'Email: RafalWojciech.Nowak@thomsonreuters.com';
-  RAISE NOTICE 'Password: testtest';
+  RAISE NOTICE 'Password: changeme';
   RAISE NOTICE 'Role: admin (full access)';
 
 END $$;

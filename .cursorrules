@@ -1,5 +1,16 @@
 # ShiftSmart Project Rules
 
+## Supabase Database (CRITICAL)
+- **USE:** ShiftSmart-v2 (project_id: `wmozxwlmdyxdnzcxetgl`, region: us-west-2)
+- **DO NOT USE:** Old project `lxjybduwccqurazhibau` (INACTIVE/paused)
+- URL: `https://wmozxwlmdyxdnzcxetgl.supabase.co`
+- When using MCP Supabase tools, always target project `wmozxwlmdyxdnzcxetgl`
+
+## Test Credentials
+- Admin: `arlyn.gajilan@thomsonreuters.com` / password: `testtest`
+- All other users: password `changeme`
+- bcrypt hash for `changeme`: `$2a$10$uXoJ.lZEy7GquXNml8sW0O9xUNlPCBF0eqrEA0/FLJepOYzWCEhB.`
+
 ## Critical: role vs shift_role
 - `role` = System permissions (admin/manager/scheduler/staff)
 - `shift_role` = Editorial role for scheduling (editor/senior/correspondent)
@@ -9,7 +20,7 @@
 - This project uses custom session-based auth, NOT Supabase Auth
 - Tokens use `Authorization: Bearer <token>` header
 - Password field is `password_hash` (bcrypt via bcryptjs)
-- Session tokens stored in `sessions` table
+- Session tokens stored in `users` table (session_token, session_expires_at columns)
 
 ## API Response Mapping
 - API returns `name` (from DB `full_name`)
