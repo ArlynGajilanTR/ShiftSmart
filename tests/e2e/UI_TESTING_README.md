@@ -48,17 +48,20 @@ Comprehensive Playwright test suite that systematically tests all 88+ clickable 
     - Employee management
     - Complete workflow journey test
 
-16. ✅ **Access Control** - Role-based permission verification
+16. ✅ **Access Control** - Role-based permission verification (26/26 tests passing)
     - Staffer page access restrictions
     - Manager feature visibility
     - Admin full access
     - Unauthenticated user redirects
     - API access control
+    - Cross-role feature matrix
 
-17. ✅ **Cross-Role Integration** - Data flow between user types
+17. ✅ **Cross-Role Integration** - Data flow between user types (12/12 tests passing)
     - Staffer preferences → Manager visibility
     - Manager schedule → Staffer view
     - Data consistency across sessions
+    - Workflow handoff points (preference → schedule, time-off → exclusion)
+    - Real-time data sync
     - Multi-bureau visibility
 
 ## 🚀 Quick Start
@@ -286,6 +289,8 @@ test.describe('My Page', () => {
 
 - Use `test.describe.configure({ mode: 'serial' })` at file level
 - Tests that share auth state should run sequentially
+- **IMPORTANT**: Run test suites sequentially (one at a time), not in parallel
+- Running multiple serial suites simultaneously causes server overload and login timeouts
 - See `manager-workflow.spec.ts` for example
 
 ### Dynamic navigation not found (Team Availability, Schedule Health)
@@ -304,6 +309,14 @@ test.describe('My Page', () => {
 - Use `getByRole()` instead of `text=` selectors
 - Add `.first()` when multiple matches expected
 - Use `{ exact: true }` for precise name matching
+- Verify actual UI text matches test expectations (e.g., "Preferred Shift Types" not "Preferred Shifts")
+
+### Test suite execution strategy
+
+- **Sequential suite execution**: Run workflow test suites one at a time
+- When run sequentially, all tests pass (98/98 total: 25 staffer + 35 manager + 26 access + 12 cross-role)
+- Parallel suite execution causes server overload and cascading timeouts
+- Individual test files use serial mode internally to prevent login conflicts
 
 ---
 

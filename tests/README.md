@@ -173,15 +173,17 @@ Located in `tests/e2e/tests/workflows/`:
 | ---------------------- | -------------------------------- | ----- | ------ | ------------------------------------------------ |
 | Staffer Workflow       | `staffer-workflow.spec.ts`       | 25    | ✅     | Login, preferences, time-off, schedule viewing   |
 | Manager Workflow       | `manager-workflow.spec.ts`       | 35    | ✅     | Team review, AI scheduling, conflicts, employees |
-| Access Control         | `access-control.spec.ts`         | 15+   | ⏳     | Role permission verification                     |
-| Cross-Role Integration | `cross-role-integration.spec.ts` | 10+   | ⏳     | Data flow between user types                     |
+| Access Control         | `access-control.spec.ts`         | 26    | ✅     | Role permission verification                     |
+| Cross-Role Integration | `cross-role-integration.spec.ts` | 12    | ✅     | Data flow between user types                     |
 
 ### Test Configuration Notes
 
 - **Serial Execution**: Workflow tests use `test.describe.configure({ mode: 'serial' })` to prevent parallel login conflicts
+- **Sequential Suite Execution**: Run test suites one at a time (not in parallel) to avoid server overload and login timeouts
 - **Dynamic Navigation**: Role-based navigation (Team Availability, Schedule Health) loads after user profile API - use `waitForDynamicNav()` helper
 - **Timeouts**: Extended timeouts (10-15s) for API-dependent content
 - **Logout Helper**: Uses `{ force: true }` to bypass Next.js dev overlay
+- **Test Selectors**: Use `getByRole()` and `getByText()` with `.first()` for robust element location
 
 ### Test Users
 
@@ -196,12 +198,17 @@ Located in `tests/e2e/tests/workflows/`:
 ```bash
 cd tests/e2e
 
-# Run all workflow tests
-npx playwright test tests/workflows/
+# ⚠️ IMPORTANT: Run suites sequentially (one at a time) to avoid server overload
+# Running multiple serial suites in parallel causes login timeouts
 
-# Run specific suite
+# Run specific suite (recommended)
 npx playwright test tests/workflows/staffer-workflow.spec.ts
 npx playwright test tests/workflows/manager-workflow.spec.ts
+npx playwright test tests/workflows/access-control.spec.ts
+npx playwright test tests/workflows/cross-role-integration.spec.ts
+
+# Run all workflow tests (may timeout if server is slow)
+npx playwright test tests/workflows/
 
 # Run with UI mode
 npx playwright test tests/workflows/ --ui
@@ -217,10 +224,10 @@ See `tests/e2e/UI_TESTING_README.md` for full documentation.
 2. ✅ Add test data fixtures
 3. ✅ Configure test environment
 4. ✅ Create role-based workflow tests
-5. ✅ Staffer workflow tests (25 tests passing)
-6. ✅ Manager workflow tests (35 tests passing)
-7. ⏳ Access control tests
-8. ⏳ Cross-role integration tests
+5. ✅ Staffer workflow tests (25/25 tests passing)
+6. ✅ Manager workflow tests (35/35 tests passing)
+7. ✅ Access control tests (26/26 tests passing)
+8. ✅ Cross-role integration tests (12/12 tests passing)
 9. ⏳ Generate coverage report
 10. ⏳ Set up CI/CD automation
 
