@@ -11,6 +11,13 @@
 - All other users: password `changeme`
 - bcrypt hash for `changeme`: `$2a$10$uXoJ.lZEy7GquXNml8sW0O9xUNlPCBF0eqrEA0/FLJepOYzWCEhB.`
 
+## Designated Team Leaders
+- `arlyn.gajilan@thomsonreuters.com` (Arlyn Gajilan) - Admin + Team Leader
+- `sabina.suzzi@thomsonreuters.com` (Sabina Suzzi) - Team Leader
+- `gianluca.semeraro@thomsonreuters.com` (Gianluca Semeraro) - Team Leader
+- Team leaders have `is_team_leader = true` in the database
+- Team leader permissions: confirm preferences, generate schedules, manage employees
+
 ## Critical: role vs shift_role
 - `role` = System permissions (admin/manager/scheduler/staff)
 - `shift_role` = Editorial role for scheduling (editor/senior/correspondent)

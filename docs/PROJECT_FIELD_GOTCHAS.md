@@ -147,6 +147,16 @@ export const TEST_SHIFT_ID = '22222222-2222-2222-2222-222222222222';
 - Seeded users: all use password `changeme`
 - Dev admin: `arlyn.gajilan@thomsonreuters.com` / `testtest`
 
+**Designated Team Leaders:**
+
+| Name              | Email                                | is_team_leader |
+| ----------------- | ------------------------------------ | -------------- |
+| Arlyn Gajilan     | arlyn.gajilan@thomsonreuters.com     | true           |
+| Sabina Suzzi      | sabina.suzzi@thomsonreuters.com      | true           |
+| Gianluca Semeraro | gianluca.semeraro@thomsonreuters.com | true           |
+
+Team leaders can confirm preferences, generate schedules, and manage employees regardless of their `role` value.
+
 ## AI Integration Gotchas
 
 | Field/Concept   | ✅ Use This                              | ❌ Not This      | Reason                        |

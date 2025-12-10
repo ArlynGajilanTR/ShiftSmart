@@ -161,13 +161,24 @@ CREATE TABLE users (
 | `password_hash`      | VARCHAR(255) | Yes      | bcrypt hash                                            |
 | `session_token`      | VARCHAR(255) | Yes      | Current session token                                  |
 | `session_expires_at` | TIMESTAMPTZ  | Yes      | Token expiry time                                      |
-| `is_team_leader`     | BOOLEAN      | Yes      | Can confirm preferences                                |
+| `is_team_leader`     | BOOLEAN      | Yes      | Can confirm preferences and generate schedules         |
 
 **⚠️ Important Field Distinctions:**
 
 - `role` = System permissions (admin, manager, scheduler, staff)
 - `shift_role` = Scheduling role (editor, senior, correspondent)
 - `title` = Human-readable job title
+- `is_team_leader` = Grants team leader permissions regardless of `role`
+
+**Designated Team Leaders:**
+
+| Name              | Email                                | Role  | is_team_leader |
+| ----------------- | ------------------------------------ | ----- | -------------- |
+| Arlyn Gajilan     | arlyn.gajilan@thomsonreuters.com     | admin | true           |
+| Sabina Suzzi      | sabina.suzzi@thomsonreuters.com      | staff | true           |
+| Gianluca Semeraro | gianluca.semeraro@thomsonreuters.com | staff | true           |
+
+Team leaders can: confirm staff preferences, generate AI schedules, view team availability/time-off, and manage employees.
 
 ---
 

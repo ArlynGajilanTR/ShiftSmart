@@ -37,6 +37,8 @@ The database has been configured with:
   | arlyn.gajilan@thomsonreuters.com (Admin) | `testtest` |
   | All other team members | `changeme` |
 - **Shift Preferences:** All 16 team members have preferences configured
+- **Designated Team Leaders:** Arlyn Gajilan, Sabina Suzzi, Gianluca Semeraro
+  - Team leaders can confirm preferences, generate schedules, and manage employees
 
 ### Step 2: Login to the App
 

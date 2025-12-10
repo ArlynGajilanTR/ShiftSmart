@@ -221,6 +221,16 @@ The system manages **16 Breaking News team members** across two bureaus:
 - **Editor Example:** gavin.jones@thomsonreuters.com / `changeme` (manager role)
 - All team members have shift preferences configured based on their availability
 
+**Designated Team Leaders:**
+
+| Name              | Email                                | Permissions         |
+| ----------------- | ------------------------------------ | ------------------- |
+| Arlyn Gajilan     | arlyn.gajilan@thomsonreuters.com     | Admin + Team Leader |
+| Sabina Suzzi      | sabina.suzzi@thomsonreuters.com      | Team Leader         |
+| Gianluca Semeraro | gianluca.semeraro@thomsonreuters.com | Team Leader         |
+
+Team leaders can confirm staff preferences, generate AI schedules, and manage employees.
+
 ## Frontend
 
 This is an API-only backend. The frontend is built separately:
