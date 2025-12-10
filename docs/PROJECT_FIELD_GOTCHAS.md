@@ -63,10 +63,31 @@ The `conflicts` table is intentionally modeled to match the domain language used
 
 ### Bureaus Table
 
-| Field Name | ✅ Use This | ❌ Not This                     | Reason                                               |
-| ---------- | ----------- | ------------------------------- | ---------------------------------------------------- |
-| bureaus    | `code`      | `bureau_code` or `abbreviation` | Unique identifier for API/UI (e.g., "MILAN", "ROME") |
-| bureaus    | `settings`  | `config` or `preferences`       | JSONB for bureau-specific scheduling rules           |
+| Field Name | ✅ Use This | ❌ Not This                     | Reason                                                       |
+| ---------- | ----------- | ------------------------------- | ------------------------------------------------------------ |
+| bureaus    | `code`      | `bureau_code` or `abbreviation` | Unique identifier for API/UI (e.g., "ITA-MILAN", "ITA-ROME") |
+| bureaus    | `name`      | -                               | Display name only - can vary (e.g., "Reuters Italy - Milan") |
+| bureaus    | `settings`  | `config` or `preferences`       | JSONB for bureau-specific scheduling rules                   |
+
+**Critical: Bureau Lookups**
+
+- **Always use `code`** for bureau lookups, NOT `name`
+- `code` is stable and predictable: `ITA-MILAN`, `ITA-ROME`
+- `name` is a display field and may vary: "Milan", "Reuters Italy - Milan", etc.
+- API/frontend uses short names: 'Milan' → convert to code: `ITA-${bureau.toUpperCase()}`
+
+```typescript
+// ✅ Correct: Lookup by code
+const bureauCode = `ITA-${bureau.toUpperCase()}`; // 'Milan' -> 'ITA-MILAN'
+const { data } = await supabase.from('bureaus').select('id').eq('code', bureauCode).single();
+
+// ❌ Wrong: Lookup by name (may not match)
+const { data } = await supabase
+  .from('bureaus')
+  .select('id')
+  .eq('name', bureau) // 'Milan' won't match 'Reuters Italy - Milan'
+  .single();
+```
 
 ## API Response Field Gotchas
 

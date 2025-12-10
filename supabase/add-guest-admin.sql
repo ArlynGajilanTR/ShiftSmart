@@ -1,7 +1,8 @@
 -- Add Guest Admin user for testing/demo access
 -- Email: test.test@thomsonreuters.com
--- Password: testtest
+-- Password: changeme (standard password for non-primary admin)
 -- Role: admin (full access)
+-- Updated: December 10, 2025
 
 DO $$
 DECLARE
@@ -36,7 +37,7 @@ BEGIN
     'Breaking News',
     'active',
     'admin',
-    '$2b$10$t17jXItvi.efFh/LvBn8MeRXPSDxQOPqVTLzLGgFM9s8DH2zPviIC'
+    '$2a$10$uXoJ.lZEy7GquXNml8sW0O9xUNlPCBF0eqrEA0/FLJepOYzWCEhB.'
   ) ON CONFLICT (email) DO UPDATE SET
     password_hash = EXCLUDED.password_hash,
     role = 'admin',
@@ -48,7 +49,7 @@ BEGIN
 
   RAISE NOTICE '✓ Guest Admin created successfully!';
   RAISE NOTICE 'Email: test.test@thomsonreuters.com';
-  RAISE NOTICE 'Password: testtest';
+  RAISE NOTICE 'Password: changeme';
   RAISE NOTICE 'Role: admin (full access)';
 
 END $$;

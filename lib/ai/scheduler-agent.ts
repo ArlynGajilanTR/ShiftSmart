@@ -262,15 +262,26 @@ async function generateScheduleSingle(request: ScheduleRequest): Promise<{
       .eq('status', 'active');
 
     if (request.bureau && request.bureau !== 'both') {
-      const { data: bureauData } = await supabase
+      // Map bureau parameter to bureau code (e.g., 'Milan' -> 'ITA-MILAN')
+      const bureauCode = `ITA-${request.bureau.toUpperCase()}`;
+      const { data: bureauData, error: bureauError } = await supabase
         .from('bureaus')
         .select('id')
-        .eq('name', request.bureau)
+        .eq('code', bureauCode)
         .single();
 
-      if (bureauData) {
-        employeeQuery = employeeQuery.eq('bureau_id', bureauData.id);
+      if (bureauError || !bureauData) {
+        console.error(
+          `[Schedule] Bureau lookup failed for code "${bureauCode}":`,
+          bureauError?.message
+        );
+        return {
+          success: false,
+          error: `Bureau "${request.bureau}" not found (code: ${bureauCode})`,
+        };
       }
+
+      employeeQuery = employeeQuery.eq('bureau_id', bureauData.id);
     }
 
     const { data: employees, error: empError } = await employeeQuery;

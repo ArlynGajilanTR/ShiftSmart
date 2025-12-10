@@ -1,7 +1,18 @@
 # Add Superusers Guide
 
-**Date:** November 18, 2025  
+**Date:** December 10, 2025  
 **Status:** Ready to execute
+
+---
+
+## Current Test Credentials
+
+> **Note:** As of December 10, 2025, the ShiftSmart-v2 database uses these credentials:
+>
+> | Account                                  | Password   |
+> | ---------------------------------------- | ---------- |
+> | arlyn.gajilan@thomsonreuters.com (Admin) | `testtest` |
+> | All other team members                   | `changeme` |
 
 ---
 
@@ -10,21 +21,21 @@
 ### 1. Rob Lang
 
 - **Email:** `rob.lang@thomsonreuters.com`
-- **Password:** `testtest`
+- **Password:** `changeme` (default for non-primary admin)
 - **Role:** admin (full access)
 - **Shift Role:** editor (highest scheduling level)
 
 ### 2. Rafal Wojciech Nowak
 
 - **Email:** `RafalWojciech.Nowak@thomsonreuters.com`
-- **Password:** `testtest`
+- **Password:** `changeme` (default for non-primary admin)
 - **Role:** admin (full access)
 - **Shift Role:** editor (highest scheduling level)
 
 ### 3. Guest Admin (Test Account)
 
 - **Email:** `test.test@thomsonreuters.com`
-- **Password:** `testtest`
+- **Password:** `changeme` (default for non-primary admin)
 - **Role:** admin (full access)
 - **Shift Role:** editor (highest scheduling level)
 - **Script:** `supabase/add-guest-admin.sql`
@@ -122,13 +133,13 @@ ORDER BY email;
 1. Go to your app: http://localhost:3000 (or your Vercel URL)
 2. Try logging in as Rob:
    - Email: `rob.lang@thomsonreuters.com`
-   - Password: `testtest`
+   - Password: `changeme`
 3. Try logging in as Rafal:
    - Email: `RafalWojciech.Nowak@thomsonreuters.com`
-   - Password: `testtest`
+   - Password: `changeme`
 4. Try logging in as Guest Admin:
    - Email: `test.test@thomsonreuters.com`
-   - Password: `testtest`
+   - Password: `changeme`
 5. All should have full access to:
    - Dashboard
    - Employee Management
@@ -158,16 +169,25 @@ Both users have **identical permissions** to Arlyn Gajilan:
 
 ## Password Hash Details
 
-The password `testtest` is hashed using bcrypt with 10 rounds:
+### For `changeme` (default for non-primary admin users):
 
 ```
-Hash: $2b$10$t17jXItvi.efFh/LvBn8MeRXPSDxQOPqVTLzLGgFM9s8DH2zPviIC
+Hash: $2a$10$uXoJ.lZEy7GquXNml8sW0O9xUNlPCBF0eqrEA0/FLJepOYzWCEhB.
 Algorithm: bcrypt
 Rounds: 10
+Plain text: changeme
+```
+
+### For `testtest` (primary admin only - arlyn.gajilan@thomsonreuters.com):
+
+```
+Hash: $2a$06$nsQgLQ3BgiP2QJ3RZ4aMoOegLfiOd2cDoyBo9Dkz2uFUOXsvSChOS
+Algorithm: bcrypt
+Rounds: 6
 Plain text: testtest
 ```
 
-This is the same hash used for the dev admin account for consistency.
+> **Note:** The `supabase/add-superusers.sql` script uses the old `testtest` hash. If adding new superusers, update the script to use the `changeme` hash above for consistency.
 
 ---
 
@@ -247,5 +267,5 @@ After adding the users:
 
 ---
 
-**Last Updated:** November 18, 2025  
+**Last Updated:** December 10, 2025  
 **Script Location:** `supabase/add-superusers.sql`

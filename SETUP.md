@@ -38,10 +38,15 @@
 | **Admin Account**     | ✅     | arlyn.gajilan@thomsonreuters.com     |
 | **Shift Preferences** | ✅     | 16 team members configured           |
 
-### Admin Account
+### Test Credentials
 
-- **Email:** arlyn.gajilan@thomsonreuters.com
-- **Password:** testtest
+| Account Type        | Email                            | Password   |
+| ------------------- | -------------------------------- | ---------- |
+| **Admin**           | arlyn.gajilan@thomsonreuters.com | `testtest` |
+| **All other users** | (any team member)                | `changeme` |
+
+**Admin Account Details:**
+
 - **Role:** admin (full access to all features)
 - **Shift Role:** editor (highest scheduling permissions)
 

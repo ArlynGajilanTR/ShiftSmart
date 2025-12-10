@@ -20,7 +20,7 @@ const createQueryBuilder = (table: string) => {
     lte: jest.fn(() => builder),
     limit: jest.fn(() => builder),
     single: jest.fn(() => ({
-      data: table === 'bureaus' ? { id: 'test-bureau-id', name: 'Milan' } : null,
+      data: table === 'bureaus' ? { id: 'test-bureau-id', code: 'ITA-MILAN', name: 'Milan' } : null,
       error: null,
     })),
     then: jest.fn((resolve) =>

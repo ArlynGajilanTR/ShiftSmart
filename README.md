@@ -213,8 +213,12 @@ The system manages **16 Breaking News team members** across two bureaus:
 
 **Test Credentials:**
 
-- **Admin:** arlyn.gajilan@thomsonreuters.com / `testtest` (full access)
-- **Editor:** gavin.jones@thomsonreuters.com (manager role)
+| Account             | Email                            | Password   |
+| ------------------- | -------------------------------- | ---------- |
+| **Admin**           | arlyn.gajilan@thomsonreuters.com | `testtest` |
+| **All other users** | (any team member)                | `changeme` |
+
+- **Editor Example:** gavin.jones@thomsonreuters.com / `changeme` (manager role)
 - All team members have shift preferences configured based on their availability
 
 ## Frontend
@@ -344,10 +348,12 @@ npm run test:a11y              # Accessibility tests (20+ tests)
 
 ### Manual Testing
 
-**Test credentials (all users):**
+**Test credentials:**
 
-- Password: `changeme`
-- Users: All 15 Breaking News team members (see database)
+| Account                                  | Password   |
+| ---------------------------------------- | ---------- |
+| arlyn.gajilan@thomsonreuters.com (Admin) | `testtest` |
+| All other team members                   | `changeme` |
 
 **Example test user:**
 
@@ -432,4 +438,4 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ---
 
 **Maintained by:** Reuters Breaking News Team  
-**Last Updated:** December 5, 2025
+**Last Updated:** December 10, 2025

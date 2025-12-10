@@ -232,7 +232,7 @@ describe('Schedule Generation - Error Recovery', () => {
         insert: jest.fn().mockReturnThis(),
         delete: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
-          data: { id: 'bureau-id', name: 'Milan' },
+          data: { id: 'bureau-id', code: 'ITA-MILAN', name: 'Milan' },
           error: null,
         }),
         then: jest
@@ -278,7 +278,7 @@ describe('Schedule Generation - Error Recovery', () => {
         eq: jest.fn().mockReturnThis(),
         in: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
-          data: { id: 'bureau-id', name: 'Milan' },
+          data: { id: 'bureau-id', code: 'ITA-MILAN', name: 'Milan' },
           error: null,
         }),
         then: jest.fn().mockResolvedValue({

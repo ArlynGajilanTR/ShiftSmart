@@ -36,6 +36,7 @@ Welcome to ShiftSmart! This guide will get you up and running in under 10 minute
 > - ✅ Milan Bureau: 8 Breaking News team members
 > - ✅ Rome Bureau: 8 Breaking News team members
 > - ✅ Admin account: arlyn.gajilan@thomsonreuters.com / `testtest`
+> - ✅ All other team members: password `changeme`
 > - ✅ Shift preferences configured for all team members
 
 **If you need to reset the database**, run in Supabase SQL Editor:
@@ -214,4 +215,4 @@ Questions? Check:
 
 **Ready to schedule smarter?** Let's go! 🚀
 
-_Last Updated: December 2, 2025_
+_Last Updated: December 10, 2025_
