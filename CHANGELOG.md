@@ -43,6 +43,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `idx_audit_logs_created` - Fast time-based queries
   - `idx_audit_logs_entity_time` - Composite index for entity + time queries
 
+### Fixed
+
+- **Time Slot Times Preserved on Force Move** - Fixed bug where force-moving a shift from a time slot would revert to original times instead of preserving the intended slot times (e.g., Morning: 06:00-12:00)
+  - Extended `pendingMove` state to store intended `newStartTime` and `newEndTime`
+  - `handleForceMove` now uses stored times instead of original shift times
+  - Force-moved shifts correctly update to intended slot times in local state
+
+- **Force-Moved Shifts Now Undoable** - Fixed bug where force-moved shifts couldn't be undone via Undo button or Ctrl+Z
+  - `handleForceMove` now records moves to `moveHistory` before API call
+  - Consistent undo experience across all move types (day drops, time slot drops, forced moves)
+
 ### Documentation
 
 - Updated `API_REFERENCE.md` with audit trail information
