@@ -15,12 +15,14 @@
 3. **Authentication Flow Tests** - Verify login/logout works
 4. **Data Flow Tests** - Verify data loads correctly
 5. **E2E Tests** - Verify complete user workflows
+6. **Role-Based Workflow Tests** - Verify staffer and manager E2E journeys (NEW)
 
 ### Test Tools
 
 - **API Testing:** `curl` + bash scripts
 - **Integration Testing:** Node.js test scripts
 - **E2E Testing:** Playwright (browser automation)
+- **Role-Based E2E:** Playwright with multi-user credentials
 - **Assertions:** Exit codes and JSON validation
 
 ---
@@ -157,15 +159,61 @@ Will be measured after first test run.
 
 ---
 
+## Role-Based Workflow Tests (NEW)
+
+### Overview
+
+Complete E2E tests for the two core user types: **Staffers** and **Team Leaders/Managers**.
+
+### Test Suites
+
+Located in `tests/e2e/tests/workflows/`:
+
+| Suite                  | File                             | Coverage                                         |
+| ---------------------- | -------------------------------- | ------------------------------------------------ |
+| Staffer Workflow       | `staffer-workflow.spec.ts`       | Login, preferences, time-off, schedule viewing   |
+| Manager Workflow       | `manager-workflow.spec.ts`       | Team review, AI scheduling, conflicts, employees |
+| Access Control         | `access-control.spec.ts`         | Role permission verification                     |
+| Cross-Role Integration | `cross-role-integration.spec.ts` | Data flow between user types                     |
+
+### Test Users
+
+| Role    | Email                                  | Password   |
+| ------- | -------------------------------------- | ---------- |
+| Admin   | `arlyn.gajilan@thomsonreuters.com`     | `testtest` |
+| Manager | `gavin.jones@thomsonreuters.com`       | `changeme` |
+| Staff   | `gianluca.semeraro@thomsonreuters.com` | `changeme` |
+
+### Running Workflow Tests
+
+```bash
+cd tests/e2e
+
+# Run all workflow tests
+npx playwright test tests/workflows/
+
+# Run specific suite
+npx playwright test tests/workflows/staffer-workflow.spec.ts
+npx playwright test tests/workflows/manager-workflow.spec.ts
+
+# Run with UI mode
+npx playwright test tests/workflows/ --ui
+```
+
+See `tests/e2e/UI_TESTING_README.md` for full documentation.
+
+---
+
 ## Next Steps
 
 1. ✅ Create test scripts
 2. ✅ Add test data fixtures
 3. ✅ Configure test environment
-4. ⏳ Run initial test suite
-5. ⏳ Generate coverage report
-6. ⏳ Set up CI/CD automation
+4. ✅ Create role-based workflow tests
+5. ⏳ Run initial test suite
+6. ⏳ Generate coverage report
+7. ⏳ Set up CI/CD automation
 
 ---
 
-**Ready to create the test scripts!**
+**Ready to run tests!**

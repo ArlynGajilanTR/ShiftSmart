@@ -28,6 +28,38 @@ Comprehensive Playwright test suite that systematically tests all 88+ clickable 
 
 ### Total Tests: 70+ button interactions verified
 
+### 🆕 Role-Based Workflow Tests
+
+14. ✅ **Staffer Workflow** - Complete end-to-end staffer journey
+    - Login and dashboard access
+    - Set shift preferences (My Availability)
+    - Enter time-off dates (My Time Off)
+    - View schedule with "My Shifts" filter
+    - Settings and profile access
+    - Complete workflow journey test
+
+15. ✅ **Manager Workflow** - Complete end-to-end manager journey
+    - Dashboard with full stats
+    - Team availability review and confirmation
+    - Team time-off visibility
+    - AI schedule generation
+    - Drag-and-drop schedule editing
+    - Conflict resolution
+    - Employee management
+
+16. ✅ **Access Control** - Role-based permission verification
+    - Staffer page access restrictions
+    - Manager feature visibility
+    - Admin full access
+    - Unauthenticated user redirects
+    - API access control
+
+17. ✅ **Cross-Role Integration** - Data flow between user types
+    - Staffer preferences → Manager visibility
+    - Manager schedule → Staffer view
+    - Data consistency across sessions
+    - Multi-bureau visibility
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -79,7 +111,8 @@ npm run test:report
 tests/e2e/
 ├── playwright.config.ts          # Playwright configuration
 ├── helpers/
-│   ├── auth.ts                  # Authentication helpers
+│   ├── auth.ts                  # Authentication helpers (legacy)
+│   ├── test-users.ts            # Multi-role test user credentials
 │   └── api-interceptor.ts       # API call tracking
 └── tests/
     ├── ui-01-welcome-login.spec.ts    # Welcome & Login pages
@@ -93,7 +126,12 @@ tests/e2e/
     ├── ui-09-my-time-off.spec.ts      # My Time Off page
     ├── ui-10-chatbot.spec.ts          # ShiftSmart chatbot assistant
     ├── drag-drop-conflict.spec.ts     # Drag-and-drop with conflict handling
-    └── api-integration.spec.ts        # API integration tests
+    ├── api-integration.spec.ts        # API integration tests
+    └── workflows/                     # 🆕 Role-based workflow tests
+        ├── staffer-workflow.spec.ts       # Complete staffer E2E journey
+        ├── manager-workflow.spec.ts       # Complete manager E2E journey
+        ├── access-control.spec.ts         # Role permission verification
+        └── cross-role-integration.spec.ts # Data flow between roles
 ```
 
 ## 🔍 What Tests Verify
@@ -164,12 +202,33 @@ NEXT_PUBLIC_API_URL=http://localhost:3000
 
 ### Test Credentials
 
-Default test credentials (from `tests/e2e/helpers/auth.ts`):
+Default test credentials are defined in `tests/e2e/helpers/test-users.ts`:
+
+**Admin User:**
+
+- Email: `arlyn.gajilan@thomsonreuters.com`
+- Password: `testtest`
+
+**Manager User:**
+
+- Email: `gavin.jones@thomsonreuters.com`
+- Password: `changeme`
+
+**Staff User (Milan):**
 
 - Email: `gianluca.semeraro@thomsonreuters.com`
 - Password: `changeme`
 
-Update in `tests/e2e/helpers/auth.ts` if needed.
+**Staff User (Rome):**
+
+- Email: `alvise.armellini@thomsonreuters.com`
+- Password: `changeme`
+
+For role-based tests, use the helper functions from `test-users.ts`:
+
+```typescript
+import { loginAsAdmin, loginAsManager, loginAsStaffer } from '../helpers/test-users';
+```
 
 ## 📝 Writing New Tests
 
