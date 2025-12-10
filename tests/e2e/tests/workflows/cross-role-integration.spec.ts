@@ -1,12 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import {
   loginAsStaffer,
-  loginAsManager,
+  loginAsAdmin,
   STAFFER_MILAN,
-  MANAGER_USER,
+  ADMIN_USER,
   logout,
 } from '../../helpers/test-users';
-import { ApiInterceptor } from '../../helpers/api-interceptor';
+
+// Run all tests serially to avoid parallel login conflicts
+test.describe.configure({ mode: 'serial' });
 
 /**
  * Cross-Role Integration E2E Tests
@@ -16,8 +18,19 @@ import { ApiInterceptor } from '../../helpers/api-interceptor';
  * - Manager actions that affect staffer views
  * - Data consistency across user sessions
  *
+ * NOTE: Using Admin user instead of Manager because Admin has is_team_leader: true
+ * which grants access to Team Management page.
+ *
  * Based on: docs/USER_WORKFLOWS.md - Workflow Integration Points
  */
+
+// Helper to wait for dynamic navigation to load
+async function waitForDynamicNav(page: Page) {
+  if (!page.url().includes('/dashboard')) {
+    await page.goto('/dashboard');
+  }
+  await page.waitForLoadState('networkidle');
+}
 
 test.describe('Staffer Actions → Manager Views', () => {
   test.describe('Preference Updates Flow', () => {
@@ -49,8 +62,9 @@ test.describe('Staffer Actions → Manager Views', () => {
       // Step 2: Logout staffer
       await logout(page);
 
-      // Step 3: Login as manager
-      await loginAsManager(page);
+      // Step 3: Login as admin (team leader)
+      await loginAsAdmin(page);
+      await waitForDynamicNav(page);
       await page.goto('/dashboard/team');
       await expect(page.getByRole('heading', { name: 'Team Management' })).toBeVisible({
         timeout: 10000,
@@ -70,8 +84,9 @@ test.describe('Staffer Actions → Manager Views', () => {
 
   test.describe('Time-Off Entry Flow', () => {
     test('staffer time-off entry appears in manager team view', async ({ page }) => {
-      // Step 1: Login as manager and check Time Off tab
-      await loginAsManager(page);
+      // Step 1: Login as admin (team leader) and check Time Off tab
+      await loginAsAdmin(page);
+      await waitForDynamicNav(page);
       await page.goto('/dashboard/team');
       await expect(page.getByRole('heading', { name: 'Team Management' })).toBeVisible({
         timeout: 10000,
@@ -113,8 +128,9 @@ test.describe('Manager Actions → Staffer Views', () => {
       // Logout staffer
       await logout(page);
 
-      // Step 2: Login as manager and find the staffer
-      await loginAsManager(page);
+      // Step 2: Login as admin (team leader) and find the staffer
+      await loginAsAdmin(page);
+      await waitForDynamicNav(page);
       await page.goto('/dashboard/team');
       await expect(page.getByRole('heading', { name: 'Team Management' })).toBeVisible({
         timeout: 10000,
@@ -134,8 +150,9 @@ test.describe('Manager Actions → Staffer Views', () => {
 
   test.describe('Schedule Assignment Flow', () => {
     test('shifts assigned by manager are visible to staffer', async ({ page }) => {
-      // Step 1: Login as manager and check schedule
-      await loginAsManager(page);
+      // Step 1: Login as admin (team leader) and check schedule
+      await loginAsAdmin(page);
+      await waitForDynamicNav(page);
       await page.goto('/dashboard/schedule');
       await page.waitForTimeout(2000);
 
@@ -169,8 +186,9 @@ test.describe('Manager Actions → Staffer Views', () => {
       // This test verifies that when a manager modifies the schedule,
       // the staffer sees the updated information
 
-      // Step 1: Login as manager and get current schedule state
-      await loginAsManager(page);
+      // Step 1: Login as admin (team leader) and get current schedule state
+      await loginAsAdmin(page);
+      await waitForDynamicNav(page);
       await page.goto('/dashboard/schedule');
       await page.click('button:has-text("Week View")');
       await page.waitForTimeout(2000);
@@ -204,8 +222,9 @@ test.describe('Manager Actions → Staffer Views', () => {
 
 test.describe('Data Consistency Across Sessions', () => {
   test('employee data is consistent between manager and staffer views', async ({ page }) => {
-    // Step 1: Login as manager and check employee count
-    await loginAsManager(page);
+    // Step 1: Login as admin (team leader) and check employee count
+    await loginAsAdmin(page);
+    await waitForDynamicNav(page);
     await page.goto('/dashboard');
     await page.waitForTimeout(2000);
 
@@ -241,8 +260,9 @@ test.describe('Data Consistency Across Sessions', () => {
   });
 
   test('conflict data is consistent in system', async ({ page }) => {
-    // Step 1: Login as manager and check conflicts
-    await loginAsManager(page);
+    // Step 1: Login as admin (team leader) and check conflicts
+    await loginAsAdmin(page);
+    await waitForDynamicNav(page);
     await page.goto('/dashboard');
     await page.waitForTimeout(2000);
 
@@ -291,8 +311,9 @@ test.describe('Workflow Handoff Points', () => {
 
     await logout(page);
 
-    // Phase 2: Manager reviews team
-    await loginAsManager(page);
+    // Phase 2: Admin (team leader) reviews team
+    await loginAsAdmin(page);
+    await waitForDynamicNav(page);
     await page.goto('/dashboard/team');
     await expect(page.getByRole('heading', { name: 'Team Management' })).toBeVisible({
       timeout: 10000,
@@ -343,8 +364,9 @@ test.describe('Workflow Handoff Points', () => {
 
     await logout(page);
 
-    // Phase 2: Manager can see team time-off
-    await loginAsManager(page);
+    // Phase 2: Admin (team leader) can see team time-off
+    await loginAsAdmin(page);
+    await waitForDynamicNav(page);
     await page.goto('/dashboard/team');
     await expect(page.getByRole('heading', { name: 'Team Management' })).toBeVisible({
       timeout: 10000,
@@ -366,8 +388,9 @@ test.describe('Workflow Handoff Points', () => {
 
 test.describe('Real-Time Data Sync', () => {
   test('dashboard stats are current after actions', async ({ page }) => {
-    // Login as manager
-    await loginAsManager(page);
+    // Login as admin (team leader)
+    await loginAsAdmin(page);
+    await waitForDynamicNav(page);
 
     // Get initial stats
     await page.goto('/dashboard');
@@ -434,7 +457,8 @@ test.describe('Real-Time Data Sync', () => {
 
 test.describe('Multi-Bureau Data Visibility', () => {
   test('manager sees both Milan and Rome data', async ({ page }) => {
-    await loginAsManager(page);
+    await loginAsAdmin(page);
+    await waitForDynamicNav(page);
     await page.goto('/dashboard/team');
     await expect(page.getByRole('heading', { name: 'Team Management' })).toBeVisible({
       timeout: 10000,
