@@ -401,6 +401,8 @@ export default function SchedulePage() {
   const [pendingMove, setPendingMove] = useState<{
     shiftId: string;
     newDate: string;
+    newStartTime: string;
+    newEndTime: string;
     shift: any;
     conflicts: any[];
   } | null>(null);
@@ -1093,6 +1095,8 @@ export default function SchedulePage() {
                 setPendingMove({
                   shiftId,
                   newDate: formattedDate,
+                  newStartTime: newStartTime,
+                  newEndTime: newEndTime,
                   shift,
                   conflicts: validationResult.conflicts,
                 });
@@ -1174,6 +1178,8 @@ export default function SchedulePage() {
               setPendingMove({
                 shiftId,
                 newDate: formattedDate,
+                newStartTime: shift.startTime,
+                newEndTime: shift.endTime,
                 shift,
                 conflicts: validationResult.conflicts,
               });
@@ -1206,20 +1212,41 @@ export default function SchedulePage() {
       const movedShiftId = pendingMove.shiftId;
       const conflictCount = pendingMove.conflicts.length;
       const newDate = pendingMove.newDate;
+      const newStartTime = pendingMove.newStartTime;
+      const newEndTime = pendingMove.newEndTime;
+      const originalShift = pendingMove.shift;
 
       // Call move with force=true to override conflict warnings
+      // Use the intended times from pendingMove, not the original shift times
       await api.shifts.move(
         movedShiftId,
         newDate,
-        pendingMove.shift.startTime,
-        pendingMove.shift.endTime,
+        newStartTime,
+        newEndTime,
         true // force = true
       );
 
-      // Update local state
+      // Record move for undo (Bug 2 fix: force moves should also be undoable)
+      setMoveHistory((prev) => {
+        const entry: MoveHistoryEntry = {
+          shiftId: String(movedShiftId),
+          previousDate: format(originalShift.date, 'yyyy-MM-dd'),
+          previousStartTime: originalShift.startTime,
+          previousEndTime: originalShift.endTime,
+          newDate: newDate,
+          newStartTime: newStartTime,
+          newEndTime: newEndTime,
+          timestamp: Date.now(),
+        };
+        return [entry, ...prev].slice(0, MAX_HISTORY);
+      });
+
+      // Update local state with the intended times (Bug 1 fix: preserve slot times)
       setShifts((prevShifts) =>
         prevShifts.map((s) =>
-          String(s.id) === String(movedShiftId) ? { ...s, date: new Date(newDate) } : s
+          String(s.id) === String(movedShiftId)
+            ? { ...s, date: new Date(newDate), startTime: newStartTime, endTime: newEndTime }
+            : s
         )
       );
 
@@ -1392,9 +1419,13 @@ export default function SchedulePage() {
           );
 
           if (!validationResult.valid && validationResult.conflicts?.length > 0) {
+            const intendedStartTime = updateTimes ? suggestedStartTime : shift.startTime;
+            const intendedEndTime = updateTimes ? suggestedEndTime : shift.endTime;
             setPendingMove({
               shiftId,
               newDate,
+              newStartTime: intendedStartTime,
+              newEndTime: intendedEndTime,
               shift,
               conflicts: validationResult.conflicts,
             });
