@@ -55,6 +55,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { NotificationBell } from '@/components/notification-bell';
 import {
   Plus,
   Edit,
@@ -77,6 +78,8 @@ import {
   User,
   Filter,
   X,
+  Download,
+  FileText,
 } from 'lucide-react';
 import {
   Filters,
@@ -316,6 +319,15 @@ export default function SchedulePage() {
   // Track recently moved shifts for settle animation
   const [recentlyMovedShiftId, setRecentlyMovedShiftId] = useState<string | null>(null);
 
+  // My Schedule filter state
+  const [showMyShiftsOnly, setShowMyShiftsOnly] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('schedule_view_my_shifts') === 'true';
+    }
+    return false;
+  });
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
   // Navigation state for Today and Week views
   const [currentDay, setCurrentDay] = useState(new Date());
   const [currentWeek, setCurrentWeek] = useState(new Date());
@@ -443,6 +455,19 @@ export default function SchedulePage() {
     fetchUserAndPrefs();
   }, []);
 
+  // Get current user ID for "My Shifts" filter
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setCurrentUserId(user.id);
+      } catch (e) {
+        console.error('Failed to parse user from localStorage');
+      }
+    }
+  }, []);
+
   // Filter field configurations
   const filterFields: FilterFieldConfig[] = [
     {
@@ -494,8 +519,14 @@ export default function SchedulePage() {
     },
   ];
 
-  // Apply filters to shifts
-  const filteredShifts = shifts.filter((shift) => {
+  // Apply "My Shifts" filter first
+  const displayedShifts =
+    showMyShiftsOnly && currentUserId
+      ? shifts.filter((s: any) => s.employee_id === currentUserId)
+      : shifts;
+
+  // Apply additional filters to displayed shifts
+  const filteredShifts = displayedShifts.filter((shift) => {
     for (const filter of activeFilters) {
       if (filter.field === 'bureau' && shift.bureau !== filter.value) {
         return false;
@@ -1034,6 +1065,29 @@ export default function SchedulePage() {
     });
   };
 
+  // Export handlers
+  const handleExportICS = async () => {
+    try {
+      const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
+      const endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
+      await api.exports.ics(startDate, endDate);
+      toast({ title: 'Calendar exported', description: 'Check your downloads folder' });
+    } catch (error: any) {
+      toast({ title: 'Export failed', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
+      const endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
+      await api.exports.pdf(startDate, endDate, 'both');
+      toast({ title: 'PDF exported', description: 'Check your downloads folder' });
+    } catch (error: any) {
+      toast({ title: 'Export failed', description: error.message, variant: 'destructive' });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -1060,6 +1114,31 @@ export default function SchedulePage() {
             <p className="text-muted-foreground">Create and manage shift assignments</p>
           </div>
           <div className="flex items-center gap-2">
+            {/* Notification Bell */}
+            <NotificationBell />
+            {/* Export Buttons */}
+            <Button variant="outline" size="sm" onClick={handleExportICS}>
+              <Download className="h-4 w-4 mr-2" />
+              Export Calendar
+            </Button>
+            {canGenerateSchedule && (
+              <Button variant="outline" size="sm" onClick={handleExportPDF}>
+                <FileText className="h-4 w-4 mr-2" />
+                Export PDF
+              </Button>
+            )}
+            {/* My Shifts / All Shifts toggle */}
+            <Button
+              variant={showMyShiftsOnly ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => {
+                const newValue = !showMyShiftsOnly;
+                setShowMyShiftsOnly(newValue);
+                localStorage.setItem('schedule_view_my_shifts', String(newValue));
+              }}
+            >
+              {showMyShiftsOnly ? 'My Shifts' : 'All Shifts'}
+            </Button>
             {/* DEV ONLY: Reset Schedule Button - only visible on localhost */}
             {isLocalhost && (
               <Button

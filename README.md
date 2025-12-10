@@ -1,8 +1,8 @@
-# ShiftSmart v1.6.1
+# ShiftSmart v1.8.0
 
 Unified fullstack application for Reuters Breaking News shift scheduling system.
 
-**Version:** 1.6.1 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 350+
+**Version:** 1.8.0 | **Status:** ✅ Production Ready | **Test Coverage:** 100% | **Tests:** 350+
 
 ## Overview
 
@@ -32,7 +32,10 @@ ShiftSmart is an internal scheduling application for Reuters Breaking News edito
 🛡️ **Schedule Health** - AI-powered conflict prevention and resolution  
 📊 **Real-time Dashboard** - Statistics and upcoming shifts  
 🔐 **Secure Authentication** - Session-based with bcrypt hashing  
-📱 **Reuters Branding** - Professional UI with Knowledge2017 font
+📱 **Reuters Branding** - Professional UI with Knowledge2017 font  
+📥 **Calendar Export** - Download schedule as .ics for Outlook/Google Calendar (NEW in v1.8.0)  
+📄 **PDF Export** - Team leaders export schedules as PDF for sharing (NEW in v1.8.0)  
+🔔 **Notifications** - In-app notification system infrastructure (NEW in v1.8.0)
 
 ### AI-Powered Schedule Health (NEW in v1.4.0)
 
@@ -49,9 +52,10 @@ shiftsmart-v1/
 │   ├── api/                    # API routes (27 endpoints)
 │   │   ├── auth/              # Authentication (login, signup, session)
 │   │   ├── employees/         # Employee management (CRUD + preferences)
-│   │   ├── shifts/            # Shift scheduling (list, create, move, delete)
+│   │   ├── shifts/            # Shift scheduling (list, create, move, delete, export)
 │   │   ├── conflicts/         # Conflict detection and resolution
 │   │   ├── dashboard/         # Statistics and aggregations
+│   │   ├── notifications/     # User notification system
 │   │   └── ai/                # AI-powered scheduling (Claude Haiku 4.5)
 │   ├── dashboard/             # Frontend pages (employees, schedule, conflicts, availability)
 │   ├── login/                 # Authentication UI

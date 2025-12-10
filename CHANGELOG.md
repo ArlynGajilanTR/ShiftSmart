@@ -5,6 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2025-12-10
+
+### Added
+
+- **ICS Calendar Export** - Staffers can export assigned shifts to Outlook/Google Calendar
+  - `GET /api/shifts/export/ics` - Returns .ics file for date range
+  - "Export Calendar" button on Schedule page
+  - Exports only user's assigned shifts with correct timezone handling
+
+- **PDF Schedule Export** - Team leaders can export schedules as PDF for sharing
+  - `GET /api/shifts/export/pdf` - Returns PDF file for date range
+  - "Export PDF" button on Schedule page (team leaders/admins only)
+  - Professional table format with bureau filter option
+  - New dependency: `@react-pdf/renderer`
+
+- **My Shifts Filter** - Staffers can toggle between all shifts and only their assignments
+  - Toggle button in Schedule toolbar
+  - Preference persists in localStorage
+  - Works across all calendar views (Today, Week, Month, Quarter)
+
+- **Notification System Infrastructure** - Foundation for user alerts
+  - `notifications` table with RLS policies
+  - `GET /api/notifications` - List user's notifications
+  - `PATCH /api/notifications` - Mark notifications as read
+  - `lib/notifications/service.ts` - Notification creation service (email stubbed)
+  - Notification bell component with unread count badge
+  - Auto-refresh every 60 seconds
+
+### Documentation
+
+- **User Workflows Guide** (`docs/USER_WORKFLOWS.md`) - Complete step-by-step workflows for both user types:
+  - Staffer workflow: preferences, time-off, viewing schedule, calendar export
+  - Manager workflow: review team, confirm preferences, AI generation, fine-tuning, PDF export
+  - Detailed user stories with acceptance criteria
+  - Mermaid flowcharts and sequence diagrams
+  - FAQ sections for each user type
+
+- **User Workflow Analysis** (`docs/USER_WORKFLOW_ANALYSIS.md`) - Feature gap analysis and implementation roadmap
+
+- **Implementation Summary** (`WORKFLOW_IMPLEMENTATION_SUMMARY.md`) - Technical details of code changes
+
+### Database
+
+- New migration: `003_notifications.sql`
+  - `notifications` table with user_id, type, title, message, read status
+  - Indexes for efficient queries
+  - Row-Level Security policies
+
+---
+
 ## [1.7.2] - 2025-12-09
 
 ### Fixed

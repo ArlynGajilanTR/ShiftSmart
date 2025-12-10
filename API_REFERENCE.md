@@ -1,10 +1,10 @@
 # ShiftSmart API Reference
 
-**Version:** 1.7.0  
+**Version:** 1.8.0  
 **Base URL:** `https://your-api-domain.vercel.app`  
-**Last Updated:** December 9, 2025
+**Last Updated:** December 10, 2025
 
-> **v1.7.0 Changes:** Enhanced Time-Off features with edit functionality (PUT endpoint), overlap validation, and team time-off visibility for team leaders/admins.
+> **v1.8.0 Changes:** Added ICS/PDF export endpoints, notification system API, and "My Shifts" filter. See [Export API](#export-api) and [Notifications API](#notifications-api).
 
 ---
 
@@ -14,14 +14,16 @@
 2. [User Profile API](#user-profile-api)
 3. [Employees API](#employees-api)
 4. [Team Availability API](#team-availability-api)
-5. [Time Off API](#time-off-api) _(NEW in v1.6.1)_
+5. [Time Off API](#time-off-api)
 6. [Shifts API](#shifts-api)
-7. [Conflicts API](#conflicts-api)
-8. [Dashboard API](#dashboard-api)
-9. [AI Scheduling API](#ai-scheduling-api)
-10. [Error Handling](#error-handling)
-11. [Rate Limiting](#rate-limiting)
-12. [Versioning](#versioning)
+7. [Export API](#export-api) _(NEW in v1.8.0)_
+8. [Notifications API](#notifications-api) _(NEW in v1.8.0)_
+9. [Conflicts API](#conflicts-api)
+10. [Dashboard API](#dashboard-api)
+11. [AI Scheduling API](#ai-scheduling-api)
+12. [Error Handling](#error-handling)
+13. [Rate Limiting](#rate-limiting)
+14. [Versioning](#versioning)
 
 ---
 
@@ -1298,6 +1300,196 @@ Host: localhost:3000
 - Will not work in production deployments
 - Useful for clearing test data during development
 - A "DEV: Reset" button is available in the Schedule page UI on localhost
+
+---
+
+## Export API
+
+Export schedules in various formats for calendar integration and sharing.
+
+### GET /api/shifts/export/ics
+
+Export user's assigned shifts as iCalendar file for Outlook/Google Calendar.
+
+**Request:**
+
+```http
+GET /api/shifts/export/ics?start_date=2025-01-01&end_date=2025-01-31
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Query Parameters:**
+
+- `start_date` (string, required) - Start date in YYYY-MM-DD format
+- `end_date` (string, required) - End date in YYYY-MM-DD format
+
+**Response (200 OK):**
+
+```
+Content-Type: text/calendar; charset=utf-8
+Content-Disposition: attachment; filename="shiftsmart-schedule-2025-01-01-to-2025-01-31.ics"
+
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ShiftSmart//Reuters Breaking News//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:ShiftSmart Schedule
+BEGIN:VEVENT
+UID:shift-uuid@shiftsmart
+DTSTART:20250115T080000Z
+DTEND:20250115T160000Z
+SUMMARY:Shift - Milan
+DESCRIPTION:Role: Correspondent
+LOCATION:Milan
+END:VEVENT
+END:VCALENDAR
+```
+
+**Errors:**
+
+- `400` - Missing start_date or end_date
+- `401` - Unauthorized
+
+**Notes:**
+
+- Returns only shifts assigned to the authenticated user
+- Times are exported in UTC format
+- Compatible with Outlook, Google Calendar, Apple Calendar
+
+---
+
+### GET /api/shifts/export/pdf
+
+Export schedule as PDF document (team leaders and admins only).
+
+**Request:**
+
+```http
+GET /api/shifts/export/pdf?start_date=2025-01-01&end_date=2025-01-31&bureau=both
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Query Parameters:**
+
+- `start_date` (string, required) - Start date in YYYY-MM-DD format
+- `end_date` (string, required) - End date in YYYY-MM-DD format
+- `bureau` (string, optional) - Filter by bureau: "Milan", "Rome", or "both" (default: "both")
+
+**Response (200 OK):**
+
+```
+Content-Type: application/pdf
+Content-Disposition: attachment; filename="shiftsmart-schedule-2025-01-01-to-2025-01-31.pdf"
+
+[PDF binary content]
+```
+
+**Errors:**
+
+- `400` - Missing start_date or end_date
+- `401` - Unauthorized
+- `403` - Only team leaders and administrators can export PDF schedules
+
+**Notes:**
+
+- Requires team leader or admin role
+- PDF includes all shifts with assignments in date range
+- Table format: Date, Time, Employee, Bureau, Role
+- Header shows date range and bureau filter
+- Footer shows generation timestamp
+
+---
+
+## Notifications API
+
+Manage user notifications for schedule changes and alerts.
+
+### GET /api/notifications
+
+List notifications for the authenticated user.
+
+**Request:**
+
+```http
+GET /api/notifications?unread_only=true&limit=20
+Authorization: Bearer YOUR_TOKEN
+```
+
+**Query Parameters:**
+
+- `unread_only` (boolean, optional) - Only return unread notifications (default: false)
+- `limit` (number, optional) - Maximum notifications to return (default: 20)
+
+**Response (200 OK):**
+
+```json
+{
+  "notifications": [
+    {
+      "id": "uuid",
+      "user_id": "uuid",
+      "type": "new_assignment",
+      "title": "New Shift Assigned",
+      "message": "You have been assigned to the morning shift on Jan 15",
+      "read": false,
+      "created_at": "2025-01-10T08:30:00.000Z"
+    }
+  ],
+  "unread_count": 3
+}
+```
+
+**Notification Types:**
+
+- `new_assignment` - User assigned to a new shift
+- `schedule_change` - An assigned shift was modified
+- `preference_confirmed` - Shift preferences confirmed by team leader
+- `shift_cancelled` - An assigned shift was cancelled
+
+**Errors:**
+
+- `401` - Unauthorized
+
+---
+
+### PATCH /api/notifications
+
+Mark notifications as read.
+
+**Request:**
+
+```http
+PATCH /api/notifications
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
+  "notification_ids": ["uuid-1", "uuid-2"]
+}
+```
+
+**Request Body:**
+
+- `notification_ids` (array, optional) - Specific notification IDs to mark as read. If omitted, marks ALL notifications as read.
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true
+}
+```
+
+**Errors:**
+
+- `401` - Unauthorized
+- `500` - Failed to update notifications
+
+**Notes:**
+
+- Pass empty object `{}` or omit `notification_ids` to mark all as read
+- Commonly used for "Mark all read" functionality
 
 ---
 

@@ -670,6 +670,54 @@ export const api = {
       return apiCall('/api/ai/status');
     },
   },
+
+  // ============================================================================
+  // EXPORTS
+  // ============================================================================
+
+  exports: {
+    ics: async (startDate: string, endDate: string) => {
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(
+        `/api/shifts/export/ics?start_date=${startDate}&end_date=${endDate}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to export calendar');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `shiftsmart-schedule-${startDate}-to-${endDate}.ics`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    },
+
+    pdf: async (startDate: string, endDate: string, bureau: string = 'both') => {
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(
+        `/api/shifts/export/pdf?start_date=${startDate}&end_date=${endDate}&bureau=${bureau}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to export PDF');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `shiftsmart-schedule-${startDate}-to-${endDate}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    },
+  },
 };
 
 /**
