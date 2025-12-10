@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { loginAsStaffer, STAFFER_MILAN, logout } from '../../helpers/test-users';
 
+// Run all tests in this file serially to avoid login conflicts
+test.describe.configure({ mode: 'serial' });
+
 /**
  * Staffer Complete Workflow E2E Tests
  *
