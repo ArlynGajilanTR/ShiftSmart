@@ -220,7 +220,7 @@ Default test credentials are defined in `tests/e2e/helpers/test-users.ts`:
 
 **Staff User (Milan):**
 
-- Email: `gianluca.semeraro@thomsonreuters.com`
+- Email: `sara.rossi@thomsonreuters.com`
 - Password: `changeme`
 
 **Staff User (Rome):**

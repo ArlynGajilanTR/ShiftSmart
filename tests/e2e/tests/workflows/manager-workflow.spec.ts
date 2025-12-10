@@ -168,7 +168,7 @@ test.describe('Manager Complete Workflow', () => {
       await expect(searchInput).toBeVisible();
 
       // Search for a specific employee
-      await searchInput.fill('Gianluca');
+      await searchInput.fill('Sara');
       await page.waitForTimeout(500);
 
       // Table should show filtered results
@@ -518,7 +518,7 @@ test.describe('Manager Complete Workflow', () => {
       const searchInput = page.locator('input[placeholder*="Search"]');
       await expect(searchInput).toBeVisible();
 
-      await searchInput.fill('Gianluca');
+      await searchInput.fill('Sara');
       await page.waitForTimeout(500);
     });
 

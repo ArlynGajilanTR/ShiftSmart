@@ -24,11 +24,12 @@ export const MANAGER_USER = {
 };
 
 // Staff user - basic staffer (Milan bureau)
+// Note: Using Sara Rossi instead of Gianluca Semeraro because Gianluca is a team leader
 export const STAFFER_MILAN = {
-  email: 'gianluca.semeraro@thomsonreuters.com',
+  email: 'sara.rossi@thomsonreuters.com',
   password: 'changeme',
   role: 'staff',
-  name: 'Gianluca Semeraro',
+  name: 'Sara Rossi',
   bureau: 'Reuters Italy - Milan',
   shift_role: 'senior',
 };

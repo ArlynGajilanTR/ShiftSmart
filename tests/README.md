@@ -187,11 +187,11 @@ Located in `tests/e2e/tests/workflows/`:
 
 ### Test Users
 
-| Role    | Email                                  | Password   |
-| ------- | -------------------------------------- | ---------- |
-| Admin   | `arlyn.gajilan@thomsonreuters.com`     | `testtest` |
-| Manager | `gavin.jones@thomsonreuters.com`       | `changeme` |
-| Staff   | `gianluca.semeraro@thomsonreuters.com` | `changeme` |
+| Role    | Email                              | Password   |
+| ------- | ---------------------------------- | ---------- |
+| Admin   | `arlyn.gajilan@thomsonreuters.com` | `testtest` |
+| Manager | `gavin.jones@thomsonreuters.com`   | `changeme` |
+| Staff   | `sara.rossi@thomsonreuters.com`    | `changeme` |
 
 ### Running Workflow Tests
 
