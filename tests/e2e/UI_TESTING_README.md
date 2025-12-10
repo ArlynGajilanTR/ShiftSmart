@@ -38,7 +38,7 @@ Comprehensive Playwright test suite that systematically tests all 88+ clickable 
     - Settings and profile access
     - Complete workflow journey test
 
-15. ✅ **Manager Workflow** - Complete end-to-end manager journey
+15. ✅ **Manager Workflow** - Complete end-to-end manager journey (35/35 tests passing)
     - Dashboard with full stats
     - Team availability review and confirmation
     - Team time-off visibility
@@ -46,6 +46,7 @@ Comprehensive Playwright test suite that systematically tests all 88+ clickable 
     - Drag-and-drop schedule editing
     - Conflict resolution
     - Employee management
+    - Complete workflow journey test
 
 16. ✅ **Access Control** - Role-based permission verification
     - Staffer page access restrictions
@@ -280,6 +281,29 @@ test.describe('My Page', () => {
 - Increase timeout in `playwright.config.ts`
 - Check network latency
 - Verify backend response times
+
+### Parallel execution login conflicts
+
+- Use `test.describe.configure({ mode: 'serial' })` at file level
+- Tests that share auth state should run sequentially
+- See `manager-workflow.spec.ts` for example
+
+### Dynamic navigation not found (Team Availability, Schedule Health)
+
+- Role-based navigation loads after user profile API call
+- Use `waitForDynamicNav()` helper before navigating
+- Increase timeout for `getByRole('link')` assertions to 15s+
+
+### Next.js dev overlay intercepting clicks
+
+- Use `{ force: true }` option in click actions
+- Example: `await button.click({ force: true })`
+
+### Element locator ambiguity
+
+- Use `getByRole()` instead of `text=` selectors
+- Add `.first()` when multiple matches expected
+- Use `{ exact: true }` for precise name matching
 
 ---
 

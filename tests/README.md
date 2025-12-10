@@ -169,12 +169,19 @@ Complete E2E tests for the two core user types: **Staffers** and **Team Leaders/
 
 Located in `tests/e2e/tests/workflows/`:
 
-| Suite                  | File                             | Coverage                                         |
-| ---------------------- | -------------------------------- | ------------------------------------------------ |
-| Staffer Workflow       | `staffer-workflow.spec.ts`       | Login, preferences, time-off, schedule viewing   |
-| Manager Workflow       | `manager-workflow.spec.ts`       | Team review, AI scheduling, conflicts, employees |
-| Access Control         | `access-control.spec.ts`         | Role permission verification                     |
-| Cross-Role Integration | `cross-role-integration.spec.ts` | Data flow between user types                     |
+| Suite                  | File                             | Tests | Status | Coverage                                         |
+| ---------------------- | -------------------------------- | ----- | ------ | ------------------------------------------------ |
+| Staffer Workflow       | `staffer-workflow.spec.ts`       | 25    | ✅     | Login, preferences, time-off, schedule viewing   |
+| Manager Workflow       | `manager-workflow.spec.ts`       | 35    | ✅     | Team review, AI scheduling, conflicts, employees |
+| Access Control         | `access-control.spec.ts`         | 15+   | ⏳     | Role permission verification                     |
+| Cross-Role Integration | `cross-role-integration.spec.ts` | 10+   | ⏳     | Data flow between user types                     |
+
+### Test Configuration Notes
+
+- **Serial Execution**: Workflow tests use `test.describe.configure({ mode: 'serial' })` to prevent parallel login conflicts
+- **Dynamic Navigation**: Role-based navigation (Team Availability, Schedule Health) loads after user profile API - use `waitForDynamicNav()` helper
+- **Timeouts**: Extended timeouts (10-15s) for API-dependent content
+- **Logout Helper**: Uses `{ force: true }` to bypass Next.js dev overlay
 
 ### Test Users
 
@@ -210,9 +217,12 @@ See `tests/e2e/UI_TESTING_README.md` for full documentation.
 2. ✅ Add test data fixtures
 3. ✅ Configure test environment
 4. ✅ Create role-based workflow tests
-5. ⏳ Run initial test suite
-6. ⏳ Generate coverage report
-7. ⏳ Set up CI/CD automation
+5. ✅ Staffer workflow tests (25 tests passing)
+6. ✅ Manager workflow tests (35 tests passing)
+7. ⏳ Access control tests
+8. ⏳ Cross-role integration tests
+9. ⏳ Generate coverage report
+10. ⏳ Set up CI/CD automation
 
 ---
 
