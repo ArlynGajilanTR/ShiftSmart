@@ -9,20 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Drag-and-Drop Consistency Across All Views** - Fixed critical issue where drag-and-drop was not working in Today view
-  - Removed nested droppable zones (`DroppableDay` containing `DroppableTimeSlot`) that confused collision detection
-  - Unified `DraggableShift` component styling across all views (Today, Week, Month)
+- **Drag-and-Drop in Today View** - Fixed critical issue where drag-and-drop was not persisting schedule changes
+  - Today view now uses `DroppableTimeSlot` components as drop targets (not nested inside `DroppableDay`)
+  - Dragging a shift between time slots (Morning ↔ Afternoon ↔ Evening) updates the shift's start/end times
+  - All time changes are logged in the audit trail for full traceability
+  - Empty time slots show "Drop shifts here" placeholder to indicate they accept drops
+
+- **Unified DraggableShift Styling** - Consistent card appearance across all views
+  - Removed separate "today" view styling that caused visual inconsistency
   - Standardized GripVertical icon visibility (opacity-50 always visible, brighter on hover)
-  - Removed unused `DroppableTimeSlot` component and time-slot-specific drop handling
-  - Today view now uses single `DroppableDay` with visual-only time slot groupings
-  - All views now have identical drag-and-drop functionality, styling, and UX
 
 ### Changed
 
-- **Today View Structure** - Simplified drop target hierarchy
-  - Time slot sections (Morning/Afternoon/Evening) are now visual groupings only
-  - All shifts drop to the same `DroppableDay` target regardless of time slot
-  - Maintains visual organization while fixing drag-and-drop functionality
+- **Today View Time Slot Behavior**
+  - Morning slot: Shifts dropped here get times 06:00 - 12:00
+  - Afternoon slot: Shifts dropped here get times 12:00 - 18:00
+  - Evening slot: Shifts dropped here get times 18:00 - 23:59
+  - Enables accommodating schedule changes (e.g., morning person covering evening shift)
+  - Time changes logged to `audit_logs` table via existing shift move API
 
 ---
 

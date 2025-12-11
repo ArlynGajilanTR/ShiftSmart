@@ -14,13 +14,24 @@ This document summarizes the comprehensive enhancements made to the drag and dro
 
 ### ⚠️ Important Update (v1.8.1)
 
-**Nested Droppables Removed for Consistency:** The initial implementation used nested droppable zones (`DroppableDay` containing `DroppableTimeSlot`) in the Today view, which caused collision detection issues. This has been simplified:
+**Today View Time Slot Implementation Fixed:** The initial implementation had nested droppable zones which caused issues. This has been corrected:
 
-- **Before:** Today view had nested droppables (day → time slot), causing drag-and-drop to fail
-- **After:** All views now use a single droppable target (`DroppableDay`) with visual-only time slot groupings
-- **Result:** Consistent drag-and-drop functionality, styling, and UX across all views (Today, Week, Month)
+- **Before:** Today view had nested droppables (`DroppableDay` containing `DroppableTimeSlot`), which confused collision detection
+- **After:** Today view uses `DroppableTimeSlot` components directly as drop targets (no nesting)
+- **Result:** Dragging shifts between time slots now properly updates shift times and persists to database
 
-The time slot sections in Today view are now purely visual organizational elements, not separate drop targets. All shifts drop to the same `DroppableDay` regardless of which time slot section they appear in.
+**How it works:**
+
+- **Week/Month Views:** Use `DroppableDay` - dropping changes the shift's DATE
+- **Today View:** Uses `DroppableTimeSlot` - dropping changes the shift's TIME (same date, different hours)
+
+**Time slot mappings:**
+
+- Morning: 06:00 - 12:00
+- Afternoon: 12:00 - 18:00
+- Evening: 18:00 - 23:59
+
+All time changes are logged in the audit trail via the existing shift move API.
 
 ---
 

@@ -253,6 +253,49 @@ function DroppableMonthDay({
   );
 }
 
+// Time slot definitions for Today view - enables moving shifts between time periods
+const TIME_SLOTS = {
+  morning: { label: 'Morning', start: '06:00', end: '12:00' },
+  afternoon: { label: 'Afternoon', start: '12:00', end: '18:00' },
+  evening: { label: 'Evening/Night', start: '18:00', end: '23:59' },
+} as const;
+
+type TimeSlotKey = keyof typeof TIME_SLOTS;
+
+function DroppableTimeSlot({
+  date,
+  slot,
+  children,
+}: {
+  date: Date;
+  slot: TimeSlotKey;
+  children: React.ReactNode;
+}) {
+  const slotConfig = TIME_SLOTS[slot];
+  const { setNodeRef, isOver } = useDroppable({
+    id: `timeslot-${format(date, 'yyyy-MM-dd')}-${slot}`,
+    data: {
+      date,
+      slot,
+      startTime: slotConfig.start,
+      endTime: slotConfig.end,
+    },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      data-testid="droppable-timeslot"
+      data-slot={slot}
+      className={`rounded-lg p-4 transition-all ${
+        isOver ? 'bg-primary/10 ring-2 ring-primary/30 scale-[1.01]' : 'bg-gray-50'
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function SchedulePage() {
   const { toast } = useToast();
   const [shifts, setShifts] = useState<any[]>([]);
@@ -941,6 +984,103 @@ export default function SchedulePage() {
 
     const shiftId = active.data.current?.shift?.id;
     const shift = active.data.current?.shift;
+
+    // Check if dropped on a time slot (Today view - changes time, not date)
+    const isTimeSlotDrop = over.id.toString().startsWith('timeslot-');
+
+    if (isTimeSlotDrop) {
+      const newDate = over.data.current?.date;
+      const newStartTime = over.data.current?.startTime;
+      const newEndTime = over.data.current?.endTime;
+
+      if (shiftId && newDate) {
+        const formattedDate = format(newDate, 'yyyy-MM-dd');
+
+        // Check if shift is already in this time slot (no change needed)
+        if (shift.startTime === newStartTime && shift.endTime === newEndTime) {
+          return; // No change needed
+        }
+
+        try {
+          // Move shift to new time slot (same date, different time)
+          await api.shifts.move(shiftId, formattedDate, newStartTime, newEndTime);
+
+          // Record move for undo
+          setMoveHistory((prev) => {
+            const entry: MoveHistoryEntry = {
+              shiftId: String(shiftId),
+              previousDate: format(shift.date, 'yyyy-MM-dd'),
+              previousStartTime: shift.startTime,
+              previousEndTime: shift.endTime,
+              newDate: formattedDate,
+              newStartTime: newStartTime,
+              newEndTime: newEndTime,
+              timestamp: Date.now(),
+            };
+            return [entry, ...prev].slice(0, MAX_HISTORY);
+          });
+
+          // Update local state with new times
+          setShifts((prevShifts) =>
+            prevShifts.map((s) =>
+              String(s.id) === String(shiftId)
+                ? { ...s, date: new Date(newDate), startTime: newStartTime, endTime: newEndTime }
+                : s
+            )
+          );
+
+          // Trigger settle animation
+          setRecentlyMovedShiftId(String(shiftId));
+          setTimeout(() => setRecentlyMovedShiftId(null), 2500);
+
+          setAnnouncement(`Shift moved to ${over.data.current?.slot} slot`);
+
+          toast({
+            title: 'Shift moved',
+            description: `Shift moved to ${TIME_SLOTS[over.data.current?.slot as TimeSlotKey]?.label} (${newStartTime} - ${newEndTime})`,
+          });
+        } catch (error: any) {
+          // Handle conflicts
+          if (
+            error.message?.includes('conflicts') ||
+            error.message?.includes('Move would create')
+          ) {
+            try {
+              const validationResult = await api.shifts.validateMove(
+                shiftId,
+                formattedDate,
+                newStartTime,
+                newEndTime
+              );
+
+              if (!validationResult.valid && validationResult.conflicts?.length > 0) {
+                setPendingMove({
+                  shiftId,
+                  newDate: formattedDate,
+                  newStartTime: newStartTime,
+                  newEndTime: newEndTime,
+                  shift,
+                  conflicts: validationResult.conflicts,
+                });
+                setIsConflictDialogOpen(true);
+                return;
+              }
+            } catch (validationError) {
+              console.error('Validation error:', validationError);
+            }
+          }
+
+          toast({
+            title: 'Failed to move shift',
+            description: error.message || 'An error occurred while moving the shift',
+            variant: 'destructive',
+          });
+        }
+      }
+      return;
+    }
+
+    // Day drop logic (Week/Month views - changes date)
     const newDate = over.data.current?.date;
 
     if (shiftId && newDate) {
@@ -1812,99 +1952,122 @@ export default function SchedulePage() {
               </CardHeader>
               <CardContent>
                 <div key={dayAnimationKey} className={getAnimationClass(dayAnimationDirection)}>
-                  <DroppableDay date={currentDay}>
-                    {(() => {
-                      const todayShifts = getShiftsForDate(currentDay);
+                  {(() => {
+                    const todayShifts = getShiftsForDate(currentDay);
 
-                      // Group shifts by time slot
-                      const morningShifts = todayShifts.filter(
-                        (s) => parseInt(s.startTime.split(':')[0]) < 12
-                      );
-                      const afternoonShifts = todayShifts.filter(
-                        (s) =>
-                          parseInt(s.startTime.split(':')[0]) >= 12 &&
-                          parseInt(s.startTime.split(':')[0]) < 18
-                      );
-                      const eveningShifts = todayShifts.filter(
-                        (s) =>
-                          parseInt(s.startTime.split(':')[0]) >= 18 ||
-                          parseInt(s.startTime.split(':')[0]) < 6
-                      );
+                    // Group shifts by time slot
+                    const morningShifts = todayShifts.filter(
+                      (s) =>
+                        parseInt(s.startTime.split(':')[0]) >= 6 &&
+                        parseInt(s.startTime.split(':')[0]) < 12
+                    );
+                    const afternoonShifts = todayShifts.filter(
+                      (s) =>
+                        parseInt(s.startTime.split(':')[0]) >= 12 &&
+                        parseInt(s.startTime.split(':')[0]) < 18
+                    );
+                    const eveningShifts = todayShifts.filter(
+                      (s) =>
+                        parseInt(s.startTime.split(':')[0]) >= 18 ||
+                        parseInt(s.startTime.split(':')[0]) < 6
+                    );
 
-                      const TimeSlotSection = ({
-                        title,
-                        shiftList,
-                        icon: Icon,
-                      }: {
-                        title: string;
-                        shiftList: typeof todayShifts;
-                        icon: React.ComponentType<{ className?: string }>;
-                      }) => (
-                        <div className="rounded-lg p-4 bg-gray-50">
-                          <div className="flex items-center gap-2 mb-3">
-                            <Icon className="h-5 w-5 text-[#FF6600]" />
-                            <h3 className="font-semibold">{title}</h3>
-                            <Badge variant="secondary">{shiftList.length}</Badge>
-                          </div>
-                          {shiftList.length > 0 ? (
-                            <div className="space-y-2">
-                              {shiftList.map((shift) => (
-                                <DraggableShift
-                                  key={shift.id}
-                                  shift={shift}
-                                  view="week"
-                                  justMoved={recentlyMovedShiftId === String(shift.id)}
-                                />
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center py-4 text-gray-500 text-sm">
-                              No shifts in this time slot
-                            </div>
-                          )}
+                    const TimeSlotSection = ({
+                      title,
+                      shiftList,
+                      icon: Icon,
+                      slot,
+                    }: {
+                      title: string;
+                      shiftList: typeof todayShifts;
+                      icon: React.ComponentType<{ className?: string }>;
+                      slot: TimeSlotKey;
+                    }) => (
+                      <DroppableTimeSlot date={currentDay} slot={slot}>
+                        <div className="flex items-center gap-2 mb-3">
+                          <Icon className="h-5 w-5 text-[#FF6600]" />
+                          <h3 className="font-semibold">{title}</h3>
+                          <Badge variant="secondary">{shiftList.length}</Badge>
                         </div>
-                      );
-
-                      if (todayShifts.length === 0) {
-                        return (
-                          <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg">
-                            <Clock className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                            <p className="text-lg font-medium">No shifts scheduled for today</p>
-                            <p className="text-sm mt-1">
-                              Drag shifts from other views or enjoy your day off!
-                            </p>
+                        {shiftList.length > 0 ? (
+                          <div className="space-y-2">
+                            {shiftList.map((shift) => (
+                              <DraggableShift
+                                key={shift.id}
+                                shift={shift}
+                                view="week"
+                                justMoved={recentlyMovedShiftId === String(shift.id)}
+                              />
+                            ))}
                           </div>
-                        );
-                      }
+                        ) : (
+                          <div className="text-center py-4 text-gray-500 text-sm border border-dashed rounded-lg">
+                            Drop shifts here
+                          </div>
+                        )}
+                      </DroppableTimeSlot>
+                    );
 
+                    if (todayShifts.length === 0) {
                       return (
-                        <div className="space-y-6">
-                          <div className="text-center">
-                            <span className="text-3xl font-bold text-[#FF6600]">
-                              {todayShifts.length}
-                            </span>
-                            <span className="text-gray-600 ml-2">total shifts today</span>
+                        <div className="space-y-4">
+                          <div className="text-center py-6 text-gray-500">
+                            <Clock className="h-10 w-10 mx-auto mb-3 text-gray-400" />
+                            <p className="text-lg font-medium">No shifts scheduled</p>
+                            <p className="text-sm mt-1">Drop shifts into a time slot below</p>
                           </div>
-
                           <TimeSlotSection
                             title="Morning (6AM - 12PM)"
-                            shiftList={morningShifts}
+                            shiftList={[]}
                             icon={Sunrise}
+                            slot="morning"
                           />
                           <TimeSlotSection
                             title="Afternoon (12PM - 6PM)"
-                            shiftList={afternoonShifts}
+                            shiftList={[]}
                             icon={Sun}
+                            slot="afternoon"
                           />
                           <TimeSlotSection
-                            title="Evening/Night (6PM - 6AM)"
-                            shiftList={eveningShifts}
+                            title="Evening/Night (6PM - 12AM)"
+                            shiftList={[]}
                             icon={Moon}
+                            slot="evening"
                           />
                         </div>
                       );
-                    })()}
-                  </DroppableDay>
+                    }
+
+                    return (
+                      <div className="space-y-4">
+                        <div className="text-center py-2">
+                          <span className="text-3xl font-bold text-[#FF6600]">
+                            {todayShifts.length}
+                          </span>
+                          <span className="text-gray-600 ml-2">total shifts today</span>
+                        </div>
+
+                        <TimeSlotSection
+                          title="Morning (6AM - 12PM)"
+                          shiftList={morningShifts}
+                          icon={Sunrise}
+                          slot="morning"
+                        />
+                        <TimeSlotSection
+                          title="Afternoon (12PM - 6PM)"
+                          shiftList={afternoonShifts}
+                          icon={Sun}
+                          slot="afternoon"
+                        />
+                        <TimeSlotSection
+                          title="Evening/Night (6PM - 12AM)"
+                          shiftList={eveningShifts}
+                          icon={Moon}
+                          slot="evening"
+                        />
+                      </div>
+                    );
+                  })()}
                 </div>
               </CardContent>
             </Card>
