@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.1] - 2025-12-11
+
+### Fixed
+
+- **Drag-and-Drop Consistency Across All Views** - Fixed critical issue where drag-and-drop was not working in Today view
+  - Removed nested droppable zones (`DroppableDay` containing `DroppableTimeSlot`) that confused collision detection
+  - Unified `DraggableShift` component styling across all views (Today, Week, Month)
+  - Standardized GripVertical icon visibility (opacity-50 always visible, brighter on hover)
+  - Removed unused `DroppableTimeSlot` component and time-slot-specific drop handling
+  - Today view now uses single `DroppableDay` with visual-only time slot groupings
+  - All views now have identical drag-and-drop functionality, styling, and UX
+
+### Changed
+
+- **Today View Structure** - Simplified drop target hierarchy
+  - Time slot sections (Morning/Afternoon/Evening) are now visual groupings only
+  - All shifts drop to the same `DroppableDay` target regardless of time slot
+  - Maintains visual organization while fixing drag-and-drop functionality
+
+---
+
 ## [1.8.0] - 2025-12-10
 
 ### Added

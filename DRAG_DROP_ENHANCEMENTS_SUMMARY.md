@@ -4,11 +4,23 @@
 **Version:** 1.7.0  
 **Status:** ✅ COMPLETE
 
+**Updated:** December 11, 2025 (v1.8.1) - Fixed nested droppables issue for consistency
+
 ---
 
 ## Overview
 
 This document summarizes the comprehensive enhancements made to the drag and drop feature in ShiftSmart. All identified gaps have been addressed, bringing the implementation in line with documentation and adding significant UX and accessibility improvements.
+
+### ⚠️ Important Update (v1.8.1)
+
+**Nested Droppables Removed for Consistency:** The initial implementation used nested droppable zones (`DroppableDay` containing `DroppableTimeSlot`) in the Today view, which caused collision detection issues. This has been simplified:
+
+- **Before:** Today view had nested droppables (day → time slot), causing drag-and-drop to fail
+- **After:** All views now use a single droppable target (`DroppableDay`) with visual-only time slot groupings
+- **Result:** Consistent drag-and-drop functionality, styling, and UX across all views (Today, Week, Month)
+
+The time slot sections in Today view are now purely visual organizational elements, not separate drop targets. All shifts drop to the same `DroppableDay` regardless of which time slot section they appear in.
 
 ---
 
