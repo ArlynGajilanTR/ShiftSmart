@@ -223,6 +223,17 @@ export const api = {
     },
 
     move: async (id: string, newDate: string, startTime?: string, endTime?: string) => {
+      /**
+       * Move a shift to a new date/time.
+       *
+       * For Week/Month views: Only newDate is required (changes shift date)
+       * For Today view: newDate, startTime, and endTime are required (changes shift time within same day)
+       *
+       * Time slot mappings for Today view:
+       * - Morning: 06:00 - 12:00
+       * - Afternoon: 12:00 - 18:00
+       * - Evening: 18:00 - 23:59
+       */
       return apiCall(`/api/shifts/${id}`, {
         method: 'PATCH',
         body: JSON.stringify({
@@ -653,12 +664,12 @@ The Schedule Management page supports full drag-and-drop across all views using 
 
 #### Views with Drag-and-Drop Support
 
-| View        | Draggable | Droppable | Description                                             |
-| ----------- | --------- | --------- | ------------------------------------------------------- |
-| **Today**   | ✅        | ✅        | Shifts grouped by time slot (Morning/Afternoon/Evening) |
-| **Week**    | ✅        | ✅        | 7-day calendar grid                                     |
-| **Month**   | ✅        | ✅        | Full month calendar                                     |
-| **Quarter** | ✅        | ❌        | 3-month overview (read-only)                            |
+| View        | Draggable | Droppable | Description                                                                                                                      |
+| ----------- | --------- | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Today**   | ✅        | ✅        | Shifts grouped by time slot (Morning/Afternoon/Evening). Dropping between slots changes shift TIME (same date, different hours). |
+| **Week**    | ✅        | ✅        | 7-day calendar grid. Dropping changes shift DATE.                                                                                |
+| **Month**   | ✅        | ✅        | Full month calendar. Dropping changes shift DATE.                                                                                |
+| **Quarter** | ✅        | ❌        | 3-month overview (read-only)                                                                                                     |
 
 #### Key Components
 
@@ -672,11 +683,32 @@ function DraggableShift({ shift, view = 'week' }: { shift: any; view?: string })
   // Renders different layouts based on view: 'today', 'week', 'month'
 }
 
-// DroppableDay - Makes a day cell accept dropped shifts
+// DroppableDay - Makes a day cell accept dropped shifts (Week/Month views)
 function DroppableDay({ date, children }: { date: Date; children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `day-${format(date, 'yyyy-MM-dd')}`,
     data: { date },
+  });
+  // Highlights when shift is dragged over
+}
+
+// DroppableTimeSlot - Makes a time slot accept dropped shifts (Today view)
+function DroppableTimeSlot({
+  date,
+  slot,
+}: {
+  date: Date;
+  slot: 'morning' | 'afternoon' | 'evening';
+}) {
+  const slotConfig = {
+    morning: { start: '06:00', end: '12:00' },
+    afternoon: { start: '12:00', end: '18:00' },
+    evening: { start: '18:00', end: '23:59' },
+  }[slot];
+
+  const { setNodeRef, isOver } = useDroppable({
+    id: `timeslot-${format(date, 'yyyy-MM-dd')}-${slot}`,
+    data: { date, slot, startTime: slotConfig.start, endTime: slotConfig.end },
   });
   // Highlights when shift is dragged over
 }
@@ -693,6 +725,41 @@ const handleDragEnd = async (event: DragEndEvent) => {
 
   const shiftId = active.data.current?.shift?.id;
   const shift = active.data.current?.shift;
+
+  // Check if dropped on a time slot (Today view - changes time, not date)
+  const isTimeSlotDrop = over.id.toString().startsWith('timeslot-');
+
+  if (isTimeSlotDrop) {
+    // Today view: Change shift TIME
+    const newDate = over.data.current?.date;
+    const newStartTime = over.data.current?.startTime;
+    const newEndTime = over.data.current?.endTime;
+
+    if (shiftId && newDate) {
+      try {
+        // Move with new times (same date, different hours)
+        await api.shifts.move(shiftId, format(newDate, 'yyyy-MM-dd'), newStartTime, newEndTime);
+
+        // Update local state with new times
+        setShifts((prevShifts) =>
+          prevShifts.map((s) =>
+            s.id === shiftId
+              ? { ...s, date: new Date(newDate), startTime: newStartTime, endTime: newEndTime }
+              : s
+          )
+        );
+        toast({
+          title: 'Shift moved',
+          description: `Shift moved to ${over.data.current?.slot} slot`,
+        });
+      } catch (error: any) {
+        // Handle conflicts...
+      }
+    }
+    return;
+  }
+
+  // Week/Month views: Change shift DATE
   const newDate = over.data.current?.date;
 
   if (shiftId && newDate) {

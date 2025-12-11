@@ -1,9 +1,15 @@
 # ShiftSmart API Reference
 
-**Version:** 1.8.0  
+**Version:** 1.8.1  
 **Base URL:** `https://your-api-domain.vercel.app`  
-**Last Updated:** December 10, 2025
+**Last Updated:** December 11, 2025
 
+> **v1.8.1 Changes:**
+>
+> - Fixed drag-and-drop in Today view - now properly updates shift times when moving between time slots
+> - Today view supports moving shifts between Morning (06:00-12:00), Afternoon (12:00-18:00), and Evening (18:00-23:59) slots
+> - All time changes logged in audit trail for full traceability
+>
 > **v1.8.0 Changes:**
 >
 > - Added comprehensive audit trail logging for all shift operations (create, move, update, delete)
@@ -1169,6 +1175,14 @@ Content-Type: application/json
 
 Move a shift (drag-and-drop support). Includes pre-move conflict validation.
 
+**Use Cases:**
+
+- **Week/Month Views:** Change shift DATE (drag between days)
+- **Today View:** Change shift TIME (drag between time slots: Morning ↔ Afternoon ↔ Evening)
+  - Morning slot: Sets times to `06:00 - 12:00`
+  - Afternoon slot: Sets times to `12:00 - 18:00`
+  - Evening slot: Sets times to `18:00 - 23:59`
+
 **Request:**
 
 ```http
@@ -1187,9 +1201,9 @@ Content-Type: application/json
 
 **Body Parameters:**
 
-- `date` (string, required) - New date for the shift (YYYY-MM-DD)
-- `start_time` (string, optional) - New start time (HH:mm), defaults to existing
-- `end_time` (string, optional) - New end time (HH:mm), defaults to existing
+- `date` (string, required) - New date for the shift (YYYY-MM-DD). For Today view time slot changes, use the same date.
+- `start_time` (string, optional) - New start time (HH:mm), defaults to existing. Required when changing time slots in Today view.
+- `end_time` (string, optional) - New end time (HH:mm), defaults to existing. Required when changing time slots in Today view.
 - `validate_only` (boolean, optional) - If `true`, only check for conflicts without moving
 - `force` (boolean, optional) - If `true`, move even if conflicts exist (logged as `conflict_force_moved` in audit trail)
 

@@ -299,9 +299,14 @@ Option B - Batch confirmation:
 **Step 3.1: Make Adjustments**
 
 - Use drag-and-drop to move shifts:
-  - Drag shift card from one date to another
-  - Drag from one employee to another
+  - **Week/Month Views:** Drag shift card from one date to another (changes DATE)
+  - **Today View:** Drag shift between time slots to change TIME:
+    - Morning slot (6AM-12PM) → Sets shift times to 06:00 - 12:00
+    - Afternoon slot (12PM-6PM) → Sets shift times to 12:00 - 18:00
+    - Evening slot (6PM-12AM) → Sets shift times to 18:00 - 23:59
+    - Enables accommodating schedule changes (e.g., morning person covering evening shift)
   - Pre-save validation warns of conflicts
+  - All changes logged in audit trail
 - Manually create shifts:
   - Click "Add Shift" button
   - Select date, time, employee
