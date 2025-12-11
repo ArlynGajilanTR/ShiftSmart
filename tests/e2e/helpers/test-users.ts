@@ -1,5 +1,16 @@
 import { Page } from '@playwright/test';
 
+// Base URL for tests - fallback if not set in config
+const BASE_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+/**
+ * Get the full URL, handling both relative and absolute paths
+ */
+function getFullUrl(path: string): string {
+  if (path.startsWith('http')) return path;
+  return `${BASE_URL}${path}`;
+}
+
 /**
  * Test user credentials for different roles
  * Based on actual database users in ShiftSmart-v2 project
@@ -68,16 +79,28 @@ export interface TestUser {
  * Login with a specific test user
  */
 export async function loginAs(page: Page, user: TestUser): Promise<string> {
-  await page.goto('/login');
-  await page.fill('input[type="email"]', user.email);
-  await page.fill('input[type="password"]', user.password);
+  // Navigate to login page
+  await page.goto(getFullUrl('/login'));
+
+  // Wait for the form to be ready using ID selectors (most reliable)
+  await page.waitForSelector('#email', { state: 'visible', timeout: 10000 });
+
+  // Use ID-based selectors which are most reliable
+  await page.fill('#email', user.email);
+  await page.fill('#password', user.password);
+
+  // Submit and wait for navigation
   await page.click('button[type="submit"]');
+  await page.waitForURL(/\/dashboard/, { timeout: 30000 });
 
-  // Wait for navigation to dashboard (increased timeout for slow responses)
-  await page.waitForURL('/dashboard', { timeout: 30000 });
+  // Verify token with retry
+  let token: string | null = null;
+  for (let i = 0; i < 5; i++) {
+    token = await page.evaluate(() => localStorage.getItem('auth_token'));
+    if (token) break;
+    await page.waitForTimeout(500);
+  }
 
-  // Verify token is stored
-  const token = await page.evaluate(() => localStorage.getItem('auth_token'));
   if (!token) {
     throw new Error(`Login failed for ${user.email}: No auth token found in localStorage`);
   }
@@ -110,18 +133,18 @@ export async function loginAsStaffer(page: Page, user: TestUser = STAFFER_MILAN)
  * Logout from the application
  */
 export async function logout(page: Page): Promise<void> {
-  // Click logout button with force to bypass any overlays
+  // Try to click logout button
   const logoutButton = page.getByRole('button', { name: 'Log Out' });
-  await logoutButton.click({ force: true });
+  if (await logoutButton.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await logoutButton.click({ force: true });
+    await page.waitForURL(/^\/$|\/login/, { timeout: 5000 }).catch(() => {});
+  }
 
-  // Wait for navigation to start
-  await page.waitForTimeout(1000);
-
-  // Clear token from localStorage as a fallback
+  // Clear token from localStorage as fallback
   await page.evaluate(() => localStorage.removeItem('auth_token'));
 
-  // Navigate to login page
-  await page.goto('/login');
+  // Navigate to login page with full URL
+  await page.goto(getFullUrl('/login'));
   await page.waitForLoadState('networkidle');
 }
 
