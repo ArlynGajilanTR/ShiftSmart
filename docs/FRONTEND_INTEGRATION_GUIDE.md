@@ -786,10 +786,12 @@ const handleDragEnd = async (event: DragEndEvent) => {
         );
 
         if (!validation.valid && validation.conflicts?.length > 0) {
-          // Open conflict confirmation dialog
+          // Open conflict confirmation dialog with intended times
           setPendingMove({
             shiftId,
             newDate: formattedDate,
+            newStartTime: shift.startTime, // Store intended times for force move
+            newEndTime: shift.endTime, // Store intended times for force move
             shift,
             conflicts: validation.conflicts,
           });
@@ -812,18 +814,43 @@ const handleDragEnd = async (event: DragEndEvent) => {
 const handleForceMove = async () => {
   if (!pendingMove) return;
 
+  // Use stored intended times (not original shift times) to preserve time slot selection
   await api.shifts.move(
     pendingMove.shiftId,
     pendingMove.newDate,
-    pendingMove.shift.startTime,
-    pendingMove.shift.endTime,
+    pendingMove.newStartTime, // Intended time from drop target
+    pendingMove.newEndTime, // Intended time from drop target
     true // force = true
   );
 
-  // Update local state and close dialog
+  // Record move for undo functionality (force moves should be undoable too)
+  setMoveHistory((prev) =>
+    [
+      {
+        shiftId: pendingMove.shiftId,
+        previousDate: format(pendingMove.shift.date, 'yyyy-MM-dd'),
+        previousStartTime: pendingMove.shift.startTime,
+        previousEndTime: pendingMove.shift.endTime,
+        newDate: pendingMove.newDate,
+        newStartTime: pendingMove.newStartTime,
+        newEndTime: pendingMove.newEndTime,
+        timestamp: Date.now(),
+      },
+      ...prev,
+    ].slice(0, MAX_HISTORY)
+  );
+
+  // Update local state with intended times
   setShifts((prevShifts) =>
     prevShifts.map((s) =>
-      s.id === pendingMove.shiftId ? { ...s, date: new Date(pendingMove.newDate) } : s
+      s.id === pendingMove.shiftId
+        ? {
+            ...s,
+            date: new Date(pendingMove.newDate),
+            startTime: pendingMove.newStartTime,
+            endTime: pendingMove.newEndTime,
+          }
+        : s
     )
   );
   setIsConflictDialogOpen(false);
