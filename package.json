@@ -41,7 +41,9 @@
     "test:integration": "jest --config=tests/integration/jest.config.js",
     "test:live-ai": "jest --config=tests/e2e/jest.config.js --testPathPattern=ai-schedule-generation",
     "test:all": "npm run test:unit && npm run test:api && npm run test && npm run test:a11y",
-    "mock:server": "node tests/integration/mock-claude-server.ts"
+    "mock:server": "node tests/integration/mock-claude-server.ts",
+    "generate:chatbot-knowledge": "npx tsx scripts/generate-chatbot-knowledge.ts",
+    "generate:chatbot-knowledge:dry": "npx tsx scripts/generate-chatbot-knowledge.ts --dry-run --verbose"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.68.0",
@@ -113,6 +115,7 @@
     "prettier": "^3.3.3",
     "tailwindcss": "^4.0.0",
     "ts-jest": "^29.1.1",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.0.15"
   },

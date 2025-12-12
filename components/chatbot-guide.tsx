@@ -8,12 +8,12 @@ import { cn } from '@/lib/utils';
 
 // FAQ chips for quick access
 const faqChips = [
-  { label: 'Create a shift', question: 'How do I create a new shift?' },
+  { label: 'Set availability', question: 'How do I set my availability preferences?' },
+  { label: 'Time off', question: 'How do I enter my time-off dates?' },
   { label: 'AI scheduling', question: 'How does AI schedule generation work?' },
-  { label: 'Schedule Health', question: 'How do I view and resolve conflicts in Schedule Health?' },
-  { label: 'Add employee', question: 'How do I add a new employee?' },
+  { label: 'Team availability', question: 'How do I confirm staff preferences as a team leader?' },
   { label: 'Drag & drop', question: 'How does drag and drop work for shifts?' },
-  { label: 'AI resolution', question: 'How does AI-powered conflict resolution work?' },
+  { label: 'Schedule Health', question: 'How do I view and resolve conflicts in Schedule Health?' },
 ];
 
 interface Message {
