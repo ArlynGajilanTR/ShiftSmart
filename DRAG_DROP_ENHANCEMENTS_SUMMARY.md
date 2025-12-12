@@ -4,7 +4,59 @@
 **Version:** 1.7.0  
 **Status:** ✅ COMPLETE
 
-**Updated:** December 11, 2025 (v1.8.1) - Fixed nested droppables issue for consistency
+**Updated:** December 11, 2025 (v1.8.1) - Fixed nested droppables issue for consistency  
+**Updated:** December 12, 2025 (v1.9.0) - Added Trello-like animations for enhanced UX
+
+---
+
+## 🎨 Trello-Like Animation Update (v1.9.0)
+
+Implemented premium drag-and-drop animations inspired by [Trello's card interactions](https://dribbble.com/shots/22321500-Trello-Like-Animation). This update transforms the basic drag-drop experience into a polished, satisfying interaction.
+
+### Animation Features
+
+| Feature               | Description                                                         |
+| --------------------- | ------------------------------------------------------------------- |
+| **Card Lift**         | Cards scale up 5% and rotate 2° when picked up with elevated shadow |
+| **Ghost Placeholder** | Diagonal striped pattern shows where card was during drag           |
+| **Spring Drop**       | Elastic settle animation (105% → 97% → 102% → 99% → 100%)           |
+| **Drop Zone Glow**    | Pulsing orange glow when hovering over valid drop targets           |
+| **Hover States**      | Cards lift 2px on hover with enhanced shadow                        |
+
+### New CSS Classes
+
+```css
+.drag-overlay-card    /* Lifted card appearance during drag */
+.drag-placeholder     /* Ghost where card was */
+.droppable-receiving  /* Active drop zone feedback */
+.shift-dropped        /* Spring settle animation after drop */
+.draggable-shift-card /* Base card with hover animations */
+.droppable-zone       /* Smooth transition for drop areas */
+```
+
+### Key Animations
+
+- `card-lift` - 0.2s pickup animation with shadow elevation
+- `card-drop` - 0.5s elastic spring settle
+- `placeholder-pulse` - 1.5s breathing effect on ghost
+- `drop-zone-pulse` - 0.8s glowing feedback on targets
+
+### Files Modified
+
+- `app/globals.css` - +185 lines of animation CSS
+- `app/dashboard/schedule/page.tsx` - Updated all drag-drop components
+- `tests/e2e/tests/drag-drop-animation.spec.ts` - New test suite (6 tests)
+
+### Test Coverage
+
+All 6 animation tests passing:
+
+- ✓ Draggable shift cards have proper hover animations
+- ✓ Droppable zones have proper styling classes
+- ✓ Drag overlay renders with lift animation class
+- ✓ Placeholder appears when dragging shift
+- ✓ Drop animation triggers after successful drop
+- ✓ Today view time slots have proper droppable styling
 
 ---
 

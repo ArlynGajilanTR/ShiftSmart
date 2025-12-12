@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2025-12-12
+
+### Added
+
+- **Trello-Like Drag & Drop Animations** - Premium animation system inspired by Trello's card interactions
+  - **Card Lift Effect**: Cards scale up 5% and rotate 2° when picked up with elevated shadow (20px offset)
+  - **Ghost Placeholder**: Diagonal striped pattern shows where card was during drag with pulsing animation
+  - **Spring Drop Animation**: Elastic settle effect (105% → 97% → 102% → 99% → 100%) when card is dropped
+  - **Drop Zone Glow**: Pulsing orange glow animation when hovering over valid drop targets
+  - **Enhanced Hover States**: Cards lift 2px on hover with shadow; press state scales to 98%
+  - **Smooth Transitions**: All interactions use spring-physics easing curves for natural feel
+
+- **New Animation Test Suite** - E2E tests for animation verification
+  - `tests/e2e/tests/drag-drop-animation.spec.ts` with 6 passing tests
+  - Validates hover animations, placeholder visibility, overlay rendering, drop animations
+
+### Changed
+
+- **DraggableShift Component** - Refactored for better visual feedback
+  - Shows ghost placeholder at origin when dragging (instead of opacity fade)
+  - White background cards with subtle shadow for better visual hierarchy
+  - Larger grip handle icon with improved hover feedback
+  - Uses new `draggable-shift-card` class for hover/active animations
+
+- **DragOverlay** - Enhanced lifted card appearance
+  - Custom `dropAnimation` with 300ms spring easing
+  - Gradient background with brand orange border
+  - Includes grip handle icon for visual consistency
+
+- **Droppable Zones** - Improved drop target feedback
+  - `droppable-zone` class with smooth transition properties
+  - `droppable-receiving` class with pulsing glow and gradient background
+  - Subtle scale (1.01x) when receiving a dragged item
+
+### Technical Details
+
+- Added 185 lines of CSS animations in `app/globals.css`
+- New keyframes: `card-lift`, `card-drop`, `placeholder-pulse`, `drop-zone-pulse`
+- Uses `cubic-bezier(0.34, 1.56, 0.64, 1)` for spring physics
+- `will-change` and `backface-visibility` optimizations for smooth 60fps
+
+---
+
 ## [1.8.1] - 2025-12-11
 
 ### Fixed

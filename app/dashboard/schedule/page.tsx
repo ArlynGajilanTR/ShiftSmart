@@ -116,17 +116,35 @@ function DraggableShift({
     data: { shift },
   });
 
-  const baseStyle: React.CSSProperties = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        opacity: isDragging ? 0.5 : 1,
-      }
-    : {};
+  // When dragging, hide the original card (we show DragOverlay instead)
+  // When not dragging, show the card normally
+  const style: React.CSSProperties = isDragging ? { opacity: 0, pointerEvents: 'none' } : {};
 
-  const style: React.CSSProperties = baseStyle;
+  // CSS classes for animations
+  const settleClass = justMoved ? 'shift-dropped' : '';
+  const draggingClass = isDragging ? 'is-dragging' : '';
 
-  // CSS class for the settle animation (defined in globals.css)
-  const settleClass = justMoved ? 'shift-just-moved' : '';
+  // Placeholder component - shown when card is being dragged
+  if (isDragging) {
+    return (
+      <div className="relative">
+        {/* Ghost placeholder showing where card was */}
+        <div
+          className={`drag-placeholder min-h-[60px] ${view === 'month' ? 'min-h-[40px]' : ''}`}
+          style={{
+            height: view === 'month' ? '40px' : '72px',
+            opacity: 0.6,
+          }}
+        />
+        {/* Hidden original for ref */}
+        <div
+          ref={setNodeRef}
+          style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
+          {...attributes}
+        />
+      </div>
+    );
+  }
 
   if (view === 'month') {
     return (
@@ -141,15 +159,17 @@ function DraggableShift({
         role="button"
         aria-roledescription="draggable shift"
         aria-describedby={`shift-${shift.id}-instructions`}
-        className={`bg-primary/10 border border-primary/20 rounded px-1.5 py-1 text-[10px] cursor-grab active:cursor-grabbing hover:bg-primary/20 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${settleClass}`}
+        className={`draggable-shift-card bg-white border border-primary/20 rounded px-1.5 py-1 text-[10px] cursor-grab active:cursor-grabbing shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${settleClass} ${draggingClass}`}
       >
         <span id={`shift-${shift.id}-instructions`} className="sr-only">
           Press Space or Enter to pick up. Use arrow keys to move. Press Space or Enter to drop.
         </span>
         <div className="flex items-center gap-1">
-          <GripVertical className="h-2 w-2 text-muted-foreground flex-shrink-0" />
+          <GripVertical className="h-2 w-2 text-muted-foreground flex-shrink-0 opacity-40" />
           <div className="flex-1 min-w-0">
-            <div className="font-medium truncate">{shift.employee.split(' ')[0]}</div>
+            <div className="font-medium truncate text-foreground">
+              {shift.employee.split(' ')[0]}
+            </div>
             <div className="text-muted-foreground truncate">{shift.startTime}</div>
           </div>
         </div>
@@ -170,19 +190,19 @@ function DraggableShift({
       role="button"
       aria-roledescription="draggable shift"
       aria-describedby={`shift-${shift.id}-instructions`}
-      className={`bg-primary/10 border border-primary/20 rounded p-2 text-xs cursor-grab active:cursor-grabbing hover:bg-primary/20 hover:shadow-md group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${settleClass}`}
+      className={`draggable-shift-card bg-white border border-primary/20 rounded-lg p-2.5 text-xs cursor-grab active:cursor-grabbing shadow-sm group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${settleClass} ${draggingClass}`}
     >
       <span id={`shift-${shift.id}-instructions`} className="sr-only">
         Press Space or Enter to pick up. Use arrow keys to move. Press Space or Enter to drop.
       </span>
-      <div className="flex items-start gap-1">
-        <GripVertical className="h-3 w-3 text-muted-foreground mt-0.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+      <div className="flex items-start gap-2">
+        <GripVertical className="h-4 w-4 text-muted-foreground/40 mt-0.5 group-hover:text-muted-foreground transition-colors" />
         <div className="flex-1 min-w-0">
-          <div className="font-medium truncate">{shift.employee}</div>
-          <div className="text-muted-foreground">
+          <div className="font-medium truncate text-foreground">{shift.employee}</div>
+          <div className="text-muted-foreground mt-0.5">
             {shift.startTime} - {shift.endTime}
           </div>
-          <Badge variant="secondary" className="mt-1 text-[10px] h-4">
+          <Badge variant="secondary" className="mt-1.5 text-[10px] h-4">
             {shift.bureau}
           </Badge>
         </div>
@@ -210,8 +230,8 @@ function DroppableDay({
       ref={setNodeRef}
       data-testid="droppable-day"
       data-date={format(date, 'yyyy-MM-dd')}
-      className={`border rounded-lg p-3 min-h-[200px] transition-all ${
-        isOver ? 'bg-primary/5 border-primary ring-2 ring-primary/20' : ''
+      className={`droppable-zone border rounded-lg p-3 min-h-[200px] bg-white ${
+        isOver ? 'droppable-receiving border-primary' : 'border-border'
       } ${isActive ? 'ring-1 ring-primary/30' : ''}`}
     >
       {children}
@@ -236,7 +256,7 @@ function DroppableMonthDay({
   });
 
   if (!day) {
-    return <div className="border rounded-lg p-2 min-h-[120px] bg-muted/20" />;
+    return <div className="border border-border/50 rounded-lg p-2 min-h-[120px] bg-muted/10" />;
   }
 
   return (
@@ -244,9 +264,11 @@ function DroppableMonthDay({
       ref={setNodeRef}
       data-testid="droppable-day"
       data-date={format(day, 'yyyy-MM-dd')}
-      className={`border rounded-lg p-2 min-h-[120px] transition-all ${
-        !isCurrentMonth ? 'bg-muted/20 text-muted-foreground' : ''
-      } ${isOver ? 'bg-primary/5 border-primary ring-2 ring-primary/20' : ''}`}
+      className={`droppable-zone border rounded-lg p-2 min-h-[120px] ${
+        !isCurrentMonth
+          ? 'bg-muted/20 text-muted-foreground border-border/50'
+          : 'bg-white border-border'
+      } ${isOver ? 'droppable-receiving border-primary' : ''}`}
     >
       {children}
     </div>
@@ -287,8 +309,10 @@ function DroppableTimeSlot({
       ref={setNodeRef}
       data-testid="droppable-timeslot"
       data-slot={slot}
-      className={`rounded-lg p-4 transition-all ${
-        isOver ? 'bg-primary/10 ring-2 ring-primary/30 scale-[1.01]' : 'bg-gray-50'
+      className={`droppable-zone rounded-xl p-4 border ${
+        isOver
+          ? 'droppable-receiving border-primary'
+          : 'bg-gradient-to-br from-gray-50 to-gray-100/50 border-gray-200/60'
       }`}
     >
       {children}
@@ -2476,16 +2500,28 @@ export default function SchedulePage() {
           </TabsContent>
         </Tabs>
 
-        <DragOverlay>
+        <DragOverlay
+          dropAnimation={{
+            duration: 300,
+            easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+          }}
+        >
           {activeShift ? (
-            <div className="bg-primary/20 border-2 border-primary rounded p-2 text-xs shadow-lg rotate-3">
-              <div className="font-medium">{activeShift.employee}</div>
-              <div className="text-muted-foreground">
-                {activeShift.startTime} - {activeShift.endTime}
+            <div className="drag-overlay-card text-sm min-w-[180px] max-w-[220px]">
+              <div className="flex items-start gap-2">
+                <GripVertical className="h-4 w-4 text-primary/60 mt-0.5 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-foreground truncate">
+                    {activeShift.employee}
+                  </div>
+                  <div className="text-muted-foreground mt-0.5 text-xs">
+                    {activeShift.startTime} - {activeShift.endTime}
+                  </div>
+                  <Badge variant="secondary" className="mt-2 text-[10px] h-5 px-2">
+                    {activeShift.bureau}
+                  </Badge>
+                </div>
               </div>
-              <Badge variant="secondary" className="mt-1 text-[10px] h-4">
-                {activeShift.bureau}
-              </Badge>
             </div>
           ) : null}
         </DragOverlay>
